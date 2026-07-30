@@ -4,75 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tugas Penarikan</title>
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0F172A; color: white; font-family: system-ui, sans-serif; padding: 16px; min-height: 100vh; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h2 { font-size: 20px; }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-        .btn { padding: 10px 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; text-decoration: none; display: block; text-align: center; margin-top: 8px; }
-        .btn-danger { background: #DC2626; color: white; width: auto; }
-        .btn-success { background: #16A34A; color: white; }
-        .btn-whatsapp { background: #25D366; color: white; }
-        .btn-map { background: #4285F4; color: white; }
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
-        .badge-red { background: rgba(220,38,38,0.2); color: #FCA5A5; border: 1px solid #DC2626; }
-        .badge-green { background: rgba(22,163,74,0.2); color: #86EFAC; border: 1px solid #16A34A; }
-        input { width: 100%; padding: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 14px; }
-        input:focus { outline: none; border-color: #2563EB; }
-        .customer-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-        .customer-info { font-size: 13px; color: #94A3B8; margin: 4px 0; }
-        .customer-info a { color: #25D366; text-decoration: none; }
-        .loading, .empty { text-align: center; padding: 40px; color: #94A3B8; }
+        .teknisi-container {
+            padding: 32px 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .search-box {
+            margin-bottom: 32px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .customer-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+        }
+        
+        .customer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+        
+        .customer-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .customer-info a {
+            color: #25D366;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn-full {
+            grid-column: 1 / -1;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>📋 Tugas Penarikan</h2>
-        <button onclick="doLogout()" class="btn btn-danger">Logout</button>
-    </div>
-    
-    <input type="text" id="searchInput" placeholder="🔍 Cari Nama, HP, atau Wilayah...">
-    
-    <div id="customerList">
-        <div class="loading">Memuat data...</div>
+    <div class="teknisi-container">
+        <div class="header">
+            <h1 class="header-title"> Tugas Penarikan</h1>
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari Nama, HP, atau Wilayah...">
+        </div>
+        
+        <div id="customerList">
+            <div class="skeleton" style="height: 200px; margin-bottom: 20px;"></div>
+            <div class="skeleton" style="height: 200px; margin-bottom: 20px;"></div>
+        </div>
     </div>
 
     <script>
-        // === GLOBAL VARIABLES ===
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        var supabaseClient = null;
+        if (!userLoggedIn) { window.location.href = 'login.html'; }
         
-        // === CEK LOGIN ===
-        if (!userLoggedIn) { 
-            window.location.href = 'login.html'; 
+        var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.href = 'login.html';
         }
         
-        // === INISIALISASI SUPABASE (GLOBAL SCOPE) ===
-        if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined') {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabase initialized');
-        } else {
-            document.getElementById('customerList').innerHTML = '<div class="empty">❌ Error: Supabase tidak terload</div>';
-        }
-
-        // === FUNGSI LOGOUT ===
-        function doLogout() { 
-            localStorage.removeItem('userLoggedIn'); 
-            window.location.href = 'login.html'; 
-        }
-
-        // === FUNGSI FORMAT WHATSAPP ===
         function formatWA(nomor) {
             var clean = nomor.replace(/\D/g, '');
             if (clean.startsWith('0')) clean = '62' + clean.substring(1);
             return 'https://wa.me/' + clean;
         }
-
-        // === FUNGSI SELESAI ===
+        
         async function completeTask(pelangganId) {
             const { value: formValues } = await Swal.fire({
                 title: 'Konfirmasi Penyelesaian',
@@ -106,78 +178,74 @@
                 }
             }
         }
-
-        // === FUNGSI LOAD DATA ===
+        
         async function loadCustomers() {
-            if (!supabaseClient) {
-                document.getElementById('customerList').innerHTML = '<div class="empty">❌ Supabase client tidak tersedia</div>';
+            const { data: pelanggan, error } = await supabaseClient
+                .from('pelanggan')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                document.getElementById('customerList').innerHTML = '<div class="customer-card">Error: ' + error.message + '</div>';
                 return;
             }
             
-            try {
-                const { data: pelanggan, error } = await supabaseClient
-                    .from('pelanggan')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+            const container = document.getElementById('customerList');
+            
+            if (!pelanggan || pelanggan.length === 0) {
+                container.innerHTML = '<div class="customer-card" style="text-align:center; color: var(--text-secondary);">📭 Belum ada data pelanggan</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            pelanggan.forEach(function(p) {
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                const waLink = formatWA(p.nomor_hp);
+                const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
                 
-                if (error) throw error;
+                let actionButtons = `
+                    <div class="action-buttons">
+                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">📱 WhatsApp</a>
+                        <a href="${mapsLink}" target="_blank" class="btn btn-map">🗺️ Maps</a>
+                `;
                 
-                const container = document.getElementById('customerList');
-                
-                if (!pelanggan || pelanggan.length === 0) {
-                    container.innerHTML = '<div class="empty">📭 Belum ada data pelanggan</div>';
-                    return;
+                if (p.status !== 'Sudah Diambil') {
+                    actionButtons += `
+                        <button onclick="completeTask('${p.id}')" class="btn btn-success btn-full">✅ DONE / SELESAI</button>
+                    `;
                 }
                 
-                container.innerHTML = '';
+                actionButtons += '</div>';
                 
-                pelanggan.forEach(function(p) {
-                    const badgeClass = p.status === 'Sudah Diambil' ? 'badge-green' : 'badge-red';
-                    const waLink = formatWA(p.nomor_hp);
-                    const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
-                    
-                    let actionButtons = `
-                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">📱 WhatsApp</a>
-                        <a href="${mapsLink}" target="_blank" class="btn btn-map">🗺️ Buka Maps</a>
-                    `;
-                    
-                    if (p.status !== 'Sudah Diambil') {
-                        actionButtons += `
-                            <button onclick="completeTask('${p.id}')" class="btn btn-success">✅ DONE / SELESAI</button>
-                        `;
-                    }
-                    
-                    container.innerHTML += `
-                        <div class="card">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                                <div class="customer-name">${p.nama_pelanggan}</div>
-                                <span class="badge ${badgeClass}">${p.status}</span>
-                            </div>
-                            <div class="customer-info"> <a href="${waLink}" target="_blank">${p.nomor_hp}</a></div>
-                            <div class="customer-info">📍 ${p.wilayah || '-'}</div>
-                            ${p.alamat ? `<div class="customer-info" style="font-size:12px; margin-top:4px;">${p.alamat.substring(0, 60)}${p.alamat.length > 60 ? '...' : ''}</div>` : ''}
-                            ${actionButtons}
+                container.innerHTML += `
+                    <div class="customer-card fade-in">
+                        <div class="customer-header">
+                            <div class="customer-name">${p.nama_pelanggan}</div>
+                            <span class="badge ${badgeClass}">${p.status}</span>
                         </div>
-                    `;
-                });
-                
-            } catch (err) {
-                console.error('Error loading customers:', err);
-                document.getElementById('customerList').innerHTML = `<div class="empty">❌ Error: ${err.message}</div>`;
-            }
+                        <div class="customer-info">
+                            📱 <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
+                        </div>
+                        <div class="customer-info">
+                            📍 ${p.wilayah || '-'}
+                        </div>
+                        ${p.alamat ? `<div class="customer-info" style="font-size:13px; margin-top:8px;">${p.alamat.substring(0, 80)}${p.alamat.length > 80 ? '...' : ''}</div>` : ''}
+                        ${actionButtons}
+                    </div>
+                `;
+            });
         }
-
-        // === SEARCH ===
+        
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const keyword = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('#customerList .card');
+            const cards = document.querySelectorAll('.customer-card');
             cards.forEach(function(card) {
                 const text = card.textContent.toLowerCase();
                 card.style.display = text.includes(keyword) ? 'block' : 'none';
             });
         });
-
-        // === LOAD SAAT HALAMAN DIBUKA ===
+        
         loadCustomers();
     </script>
 </body>
