@@ -2,99 +2,54 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Data - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelola Data</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .admin-container {
-            padding: 32px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        
-        .header-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .form-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 32px;
-            margin-bottom: 32px;
+        .form-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) var(--spacing-xl);
         }
         
         .form-title {
             font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: white;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xl);
         }
         
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
+        .form-row {
+            margin-bottom: var(--spacing-lg);
         }
         
         .form-label {
-            margin-bottom: 8px;
+            display: block;
+            font-size: 13px;
             color: var(--text-secondary);
-            font-size: 14px;
+            margin-bottom: var(--spacing-sm);
             font-weight: 500;
         }
         
-        .form-input, .form-select, .form-textarea {
-            padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s ease;
+        .table-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            margin: var(--spacing-lg) var(--spacing-xl);
+            overflow: hidden;
         }
         
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        .table-header {
+            padding: var(--spacing-xl);
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
         }
         
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .table-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 32px;
-            overflow-x: auto;
+        .table-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
         }
         
         table {
@@ -104,75 +59,99 @@
         
         th {
             text-align: left;
-            padding: 16px;
+            padding: var(--spacing-md) var(--spacing-xl);
             color: var(--text-secondary);
             font-size: 13px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
         }
         
         td {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            color: white;
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+            font-size: 15px;
         }
         
-        tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .btn-delete {
+            background: var(--ios-red);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-delete:active {
+            transform: scale(0.96);
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="header">
-            <h1 class="header-title">📝 Kelola Data Pelanggan</h1>
-            <button onclick="logout()" class="btn btn-danger">Logout</button>
+    <div class="nav-bar">
+        <div class="nav-title">Kelola Data</div>
+    </div>
+    
+    <h1 class="nav-large-title">Tambah Data</h1>
+    
+    <form id="formPelanggan">
+        <div class="form-section">
+            <div class="form-row">
+                <label class="form-label">Nama Pelanggan</label>
+                <input type="text" id="nama" class="ios-input" style="padding: 0; border: none;" required>
+            </div>
+            
+            <div class="form-row">
+                <label class="form-label">Nomor HP</label>
+                <input type="text" id="nomor_hp" class="ios-input" style="padding: 0; border: none;" required>
+            </div>
+            
+            <div class="form-row">
+                <label class="form-label">Wilayah</label>
+                <select id="wilayah" class="ios-input" style="padding: 0; border: none;" required>
+                    <option value="">Pilih Wilayah</option>
+                    <option value="Sukamelang">Sukamelang</option>
+                    <option value="Cibarola">Cibarola</option>
+                    <option value="Panglejar">Panglejar</option>
+                    <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <label class="form-label">Alamat Lengkap</label>
+                <textarea id="alamat" class="ios-textarea" style="margin: 0; width: 100%;" required></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div class="form-row">
+                    <label class="form-label">Latitude</label>
+                    <input type="number" id="latitude" class="ios-input" style="padding: 0; border: none;" step="any">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Longitude</label>
+                    <input type="number" id="longitude" class="ios-input" style="padding: 0; border: none;" step="any">
+                </div>
+            </div>
         </div>
         
-        <div class="form-card">
-            <h2 class="form-title">Tambah Data Pelanggan</h2>
-            <form id="formPelanggan">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Nama Pelanggan</label>
-                        <input type="text" id="nama" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nomor HP</label>
-                        <input type="text" id="nomor_hp" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Wilayah</label>
-                        <select id="wilayah" class="form-select" required>
-                            <option value="">Pilih Wilayah</option>
-                            <option value="Sukamelang">Sukamelang</option>
-                            <option value="Cibarola">Cibarola</option>
-                            <option value="Panglejar">Panglejar</option>
-                            <option value="Perum / Flamboyan">Perum / Flamboyan</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" id="latitude" class="form-input" step="any">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" id="longitude" class="form-input" step="any">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label">Alamat Lengkap</label>
-                    <textarea id="alamat" class="form-textarea" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-success" style="margin-top: 24px;">💾 Simpan Data</button>
-            </form>
+        <div style="padding: var(--spacing-xl);">
+            <button type="submit" class="ios-btn ios-btn-success ios-btn-full ios-btn-large">
+                💾 Simpan Data
+            </button>
         </div>
-        
-        <div class="table-card">
-            <h2 class="form-title">Daftar Pelanggan</h2>
-            <input type="text" id="searchTable" class="form-input" placeholder="🔍 Cari..." style="margin-bottom: 20px;">
+    </form>
+    
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">Daftar Pelanggan</div>
+            <input type="text" id="searchTable" class="ios-input" style="padding: 0; border: none;" placeholder="🔍 Cari...">
+        </div>
+        <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -195,11 +174,6 @@
         }
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        function logout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.href = 'login.html';
-        }
         
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -247,14 +221,14 @@
             tbody.innerHTML = '';
             
             pelanggan.forEach(p => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                const badgeClass = p.status === 'Sudah Diambil' ? 'ios-badge-success' : 'ios-badge-warning';
                 tbody.innerHTML += `
                     <tr>
                         <td>${p.nama_pelanggan}</td>
                         <td>${p.nomor_hp}</td>
                         <td>${p.wilayah}</td>
-                        <td><span class="badge ${badgeClass}">${p.status}</span></td>
-                        <td><button onclick="deleteData('${p.id}')" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">🗑️ Hapus</button></td>
+                        <td><span class="ios-badge ${badgeClass}">${p.status}</span></td>
+                        <td><button onclick="deleteData('${p.id}')" class="btn-delete">Hapus</button></td>
                     </tr>
                 `;
             });
