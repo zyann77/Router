@@ -4,64 +4,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Data - Admin</title>
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0F172A; color: white; font-family: system-ui, sans-serif; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
-        .btn-danger { background: #DC2626; color: white; }
-        .btn-primary { background: #2563EB; color: white; }
-        .btn-success { background: #16A34A; color: white; }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        th { color: #94A3B8; }
+        .admin-container {
+            padding: 32px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: white;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .table-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 16px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>📝 Kelola Data Pelanggan</h2>
-        <button onclick="logout()" class="btn btn-danger">Logout</button>
-    </div>
-    <div class="card">
-        <h3>Tambah Data Pelanggan</h3>
-        <form id="formPelanggan">
-            <input type="text" id="nama" placeholder="Nama Pelanggan" required>
-            <input type="text" id="nomor_hp" placeholder="Nomor HP (08xx)" required>
-            <textarea id="alamat" placeholder="Alamat Lengkap" required></textarea>
-            <input type="number" id="latitude" placeholder="Latitude" step="any">
-            <input type="number" id="longitude" placeholder="Longitude" step="any">
-            <select id="wilayah" required>
-                <option value="">Pilih Wilayah</option>
-                <option value="Sukamelang">Sukamelang</option>
-                <option value="Cibarola">Cibarola</option>
-                <option value="Panglejar">Panglejar</option>
-                <option value="Perum / Flamboyan">Perum / Flamboyan</option>
-            </select>
-            <button type="submit" class="btn btn-success">💾 Simpan</button>
-        </form>
-    </div>
-    <div class="card">
-        <h3>Daftar Pelanggan</h3>
-        <input type="text" id="searchTable" placeholder="🔍 Cari...">
-        <div style="overflow-x: auto;">
-            <table id="tabelPelanggan">
+    <div class="admin-container">
+        <div class="header">
+            <h1 class="header-title">📝 Kelola Data Pelanggan</h1>
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+        </div>
+        
+        <div class="form-card">
+            <h2 class="form-title">Tambah Data Pelanggan</h2>
+            <form id="formPelanggan">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nama Pelanggan</label>
+                        <input type="text" id="nama" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nomor HP</label>
+                        <input type="text" id="nomor_hp" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Wilayah</label>
+                        <select id="wilayah" class="form-select" required>
+                            <option value="">Pilih Wilayah</option>
+                            <option value="Sukamelang">Sukamelang</option>
+                            <option value="Cibarola">Cibarola</option>
+                            <option value="Panglejar">Panglejar</option>
+                            <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Latitude</label>
+                        <input type="number" id="latitude" class="form-input" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Longitude</label>
+                        <input type="number" id="longitude" class="form-input" step="any">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Alamat Lengkap</label>
+                    <textarea id="alamat" class="form-textarea" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success" style="margin-top: 24px;">💾 Simpan Data</button>
+            </form>
+        </div>
+        
+        <div class="table-card">
+            <h2 class="form-title">Daftar Pelanggan</h2>
+            <input type="text" id="searchTable" class="form-input" placeholder="🔍 Cari..." style="margin-bottom: 20px;">
+            <table>
                 <thead>
-                    <tr><th>Nama</th><th>HP</th><th>Wilayah</th><th>Status</th><th>Aksi</th></tr>
+                    <tr>
+                        <th>Nama</th>
+                        <th>HP</th>
+                        <th>Wilayah</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
+
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'login.html'; }
+        if (!userLoggedIn || userLoggedIn.role !== 'admin') {
+            window.location.href = 'login.html';
+        }
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.href = 'login.html';
+        }
+        
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
             const { error } = await supabaseClient.from('pelanggan').insert([{
@@ -73,6 +212,7 @@
                 wilayah: document.getElementById('wilayah').value,
                 status: 'Belum Diambil'
             }]);
+            
             if (!error) {
                 Swal.fire('Berhasil', 'Data disimpan', 'success');
                 e.target.reset();
@@ -81,6 +221,7 @@
                 Swal.fire('Error', error.message, 'error');
             }
         });
+        
         async function deleteData(id) {
             const { value: confirm } = await Swal.fire({
                 title: 'Hapus data?',
@@ -90,6 +231,7 @@
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal'
             });
+            
             if (confirm) {
                 const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
                 if (!error) {
@@ -98,23 +240,26 @@
                 }
             }
         }
+        
         async function loadTable() {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
+            
             pelanggan.forEach(p => {
-                const badgeColor = p.status === 'Sudah Diambil' ? '#86EFAC' : '#FCA5A5';
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 tbody.innerHTML += `
                     <tr>
                         <td>${p.nama_pelanggan}</td>
                         <td>${p.nomor_hp}</td>
                         <td>${p.wilayah}</td>
-                        <td style="color: ${badgeColor}">${p.status}</td>
-                        <td><button onclick="deleteData('${p.id}')" style="background:#DC2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">🗑️ Hapus</button></td>
+                        <td><span class="badge ${badgeClass}">${p.status}</span></td>
+                        <td><button onclick="deleteData('${p.id}')" class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;">🗑️ Hapus</button></td>
                     </tr>
                 `;
             });
         }
+        
         document.getElementById('searchTable').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#tableBody tr');
@@ -123,6 +268,7 @@
                 row.style.display = text.includes(keyword) ? '' : 'none';
             });
         });
+        
         loadTable();
     </script>
 </body>
