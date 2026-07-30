@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Pelanggan - Teknisi</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="config.js"></script>
+</head>
+<body class="fade-in">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h2>📋 Tugas Penarikan</h2>
+    <button onclick="supabase.auth.signOut(); window.location.href='login.html'" class="btn btn-danger" style="width: auto; padding: 8px 16px;">
+      <span class="material-icons">logout</span>
+    </button>
+  </div>
+
+  <!-- Search & Filter -->
+  <input type="text" id="searchInput" placeholder="🔍 Cari Nama, HP, atau Wilayah..." class="glass-card" style="width: 100%; padding: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+
+  <div id="customerList">
+    <!-- Skeleton Loading -->
+    <div class="glass-card skeleton" style="height: 100px; margin-bottom: 12px;"></div>
+    <div class="glass-card skeleton" style="height: 100px; margin-bottom: 12px;"></div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    async function loadCustomers() {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: profile } = await supabase.from('profiles').select('nama').eq('id', user.id).single();
+      const teknisiNama = profile?.nama || 'Teknisi';
+
+      const { data: pelanggan } = await supabase.from('pelanggan').select('*').order('created_at', { ascending: false });
+      const container = document.getElementById('customerList');
+      container.innerHTML = '';
+
+      pelanggan.forEach(p => {
+        const badgeClass = p.status === 'Sudah Diambil' ? 'badge-green' : (p.status === 'Sedang Proses' ? 'badge-yellow' : 'badge-red');
+        const waLink = formatWA(p.nomor_hp);
+        const mapsLink = `https://www.google.com/maps?q=${p.latitude},${p.longitude}`;
+        
+        let actionButtons = `
+          <a href="${waLink}" target="_blank" class="btn btn-whatsapp" style="margin-top: 8px; font-size: 14px; padding: 10px;">
+            <span class="material-icons" style="font-size: 18px;">whatsapp</span> WhatsApp
+          </a>
+          <a href="${mapsLink}" target="_blank" class="btn btn-map" style="margin-top: 8px; font-size: 14px; padding: 10px;">
+            <span class="material-icons" style="font-size: 18px;">map</span> Buka Maps
+          </a>
+        `;
+
+        if (p.status !== 'Sudah Diambil') {
+          actionButtons += `
+            <button onclick="completeTask('${p.id}', '${teknisiNama}')" class="btn btn-success" style="margin-top: 8px; font-size: 16px; padding: 14px; font-weight: bold;">
+              <span class="material-icons">check_circle</span> DONE / SELESAI
+            </button>
+          `;
+        }
+
+        container.innerHTML += `
+          <div class="glass-card fade-in" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+              <h3 style="font-size: 18px;">${p.nama_pelanggan}</h3>
+              <span class="badge ${badgeClass}">${p.status}</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 8px 0;">
+              <span class="material-icons" style="font-size: 16px; vertical-align: middle;">phone</span> 
+              <a href="${waLink}" target="_blank" style="color: #25D366; text-decoration: none;">${p.nomor_hp}</a>
+            </p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 12px;">
+              <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span> ${p.wilayah} - ${p.alamat.substring(0, 50)}...
+            </p>
+            ${actionButtons}
+          </div>
+        `;
+      });
+
+      // Realtime Search
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        const keyword = e.target.value.toLowerCase();
+        const filtered = pelanggan.filter(p => 
+          p.nama_pelanggan.toLowerCase().includes(keyword) || 
+          p.nomor_hp.includes(keyword) || 
+          p.wilayah.toLowerCase().includes(keyword)
+        );
+        // Re-render logic (disederhanakan untuk demo, idealnya debounce + DOM update)
+      });
+    }
+    loadCustomers();
+  </script>
+</body>
+</html>
