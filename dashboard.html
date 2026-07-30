@@ -2,28 +2,173 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beranda — Penarikan Perangkat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="config.js"></script>
+    <style>
+        .wilayah-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            padding: 0 var(--spacing-xl) var(--spacing-xl);
+        }
+        
+        .wilayah-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: var(--spacing-xl);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .wilayah-card::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 1px dashed rgba(201, 169, 97, 0.25);
+            border-radius: 14px;
+            pointer-events: none;
+        }
+        
+        .wilayah-card:active {
+            transform: scale(0.97);
+            border-color: var(--gold);
+        }
+        
+        .wilayah-icon {
+            font-size: 32px;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+        }
+        
+        .wilayah-name {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: var(--spacing-xs);
+            position: relative;
+        }
+        
+        .wilayah-count {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--gold);
+            position: relative;
+        }
+        
+        .wilayah-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid rgba(201, 169, 97, 0.1);
+            position: relative;
+        }
+        
+        .wilayah-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .wilayah-stat-value {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .wilayah-stat-label {
+            font-size: 10px;
+            color: var(--cream-dark);
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        
+        .action-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            padding: 0 var(--spacing-xl) var(--spacing-xl);
+        }
+    </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <div>
-            <div class="nav-eyebrow" id="greetTime">Selamat Datang</div>
-            <div class="nav-title">Admin</div>
+    <div id="toast" class="toast"></div>
+
+    <div class="top-header">
+        <div class="header-content">
+            <div>
+                <div class="header-subtitle">Panel Administrasi</div>
+                <div class="header-title">Dashboard</div>
+            </div>
+            <div class="header-icon">A</div>
         </div>
-        <button onclick="logout()" class="btn btn-icon btn-ghost" aria-label="Keluar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
     </div>
 
-    <h1 class="nav-large-title">Pilih Wilayah</h1>
-    <p class="nav-sub">Ketuk wilayah untuk melihat dan menambah data pelanggan di area tersebut.</p>
+    <div class="hero-section">
+        <div class="hero-card">
+            <div class="hero-label">Total Perangkat</div>
+            <div class="hero-value" id="totalData">0</div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalDiambil">0</div>
+                    <div class="hero-stat-label">Selesai</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalBelum">0</div>
+                    <div class="hero-stat-label">Pending</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="region-tile-grid" id="wilayahGrid">
-        <!-- filled by loadRegions() -->
+    <div class="section-header">
+        <div class="section-label">Pilih Wilayah</div>
+        <div class="section-title">Area Operasi</div>
+    </div>
+
+    <div class="wilayah-grid" id="wilayahGrid"></div>
+
+    <div class="section-header">
+        <div class="section-label">Aksi Cepat</div>
+        <div class="section-title">Import / Export</div>
+    </div>
+
+    <div class="action-bar">
+        <button onclick="exportToExcel()" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Excel
+        </button>
+        <label class="btn btn-outline" style="cursor: pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import Excel
+            <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display: none;" onchange="importFromExcel(event)">
+        </label>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <div class="nav-label">Dashboard</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='admin.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div class="nav-label">Kelola Data</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <div class="nav-label">Keluar</div>
+        </div>
     </div>
 
     <script>
@@ -31,51 +176,149 @@
         if (!userLoggedIn || userLoggedIn.role !== 'admin') {
             window.location.href = 'login.html';
         }
-
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const hour = new Date().getHours();
-        document.getElementById('greetTime').textContent = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam';
-
+        let allData = [];
+        
         function logout() {
             localStorage.removeItem('userLoggedIn');
             window.location.href = 'login.html';
         }
-
-        const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
-
-        async function loadRegions() {
-            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('wilayah, status');
-            const grid = document.getElementById('wilayahGrid');
-            grid.innerHTML = '';
-
+        
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+        
+        async function loadDashboard() {
+            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*');
+            if (!pelanggan) return;
+            
+            allData = pelanggan;
+            document.getElementById('totalData').textContent = pelanggan.length;
+            document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
+            document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status !== 'Sudah Diambil').length;
+            
+            const wilayahList = [
+                { name: 'Sukamelang', icon: '️' },
+                { name: 'Cibarola', icon: '🏡' },
+                { name: 'Panglejar', icon: '🏠' },
+                { name: 'Perum / Flamboyan', icon: '🏢' }
+            ];
+            
+            const wilayahGrid = document.getElementById('wilayahGrid');
+            wilayahGrid.innerHTML = '';
+            
             wilayahList.forEach(w => {
-                const dataW = (pelanggan || []).filter(p => p.wilayah === w);
+                const dataW = pelanggan.filter(p => p.wilayah === w.name);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status !== 'Sudah Diambil').length;
-
-                const tile = document.createElement('div');
-                tile.className = 'region-tile';
-                tile.onclick = () => window.location.href = 'admin.html?wilayah=' + encodeURIComponent(w);
-                tile.innerHTML = `
-                    <div class="signet sm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    </div>
-                    <div class="region-tile-body">
-                        <div class="region-tile-name">${w}</div>
-                        <div class="region-tile-tally">
-                            <span><b>${dataW.length}</b> total</span>
-                            <span><b>${diambil}</b> diambil</span>
-                            <span><b>${belum}</b> belum</span>
+                
+                wilayahGrid.innerHTML += `
+                    <div class="wilayah-card" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w.name)}'">
+                        <div>
+                            <div class="wilayah-icon">${w.icon}</div>
+                            <div class="wilayah-name">${w.name}</div>
+                            <div class="wilayah-count">${dataW.length} perangkat</div>
+                        </div>
+                        <div class="wilayah-stats">
+                            <div class="wilayah-stat">
+                                <div class="wilayah-stat-value">${diambil}</div>
+                                <div class="wilayah-stat-label">Selesai</div>
+                            </div>
+                            <div class="wilayah-stat">
+                                <div class="wilayah-stat-value">${belum}</div>
+                                <div class="wilayah-stat-label">Pending</div>
+                            </div>
                         </div>
                     </div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--ink-faint);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
                 `;
-                grid.appendChild(tile);
             });
         }
-
-        loadRegions();
+        
+        // EXPORT TO EXCEL
+        function exportToExcel() {
+            if (allData.length === 0) {
+                showToast('Tidak ada data untuk diexport', 'error');
+                return;
+            }
+            
+            const exportData = allData.map(p => ({
+                'Nama Pelanggan': p.nama_pelanggan,
+                'Nomor HP': p.nomor_hp,
+                'Alamat': p.alamat,
+                'Latitude': p.latitude,
+                'Longitude': p.longitude,
+                'Wilayah': p.wilayah,
+                'Status': p.status,
+                'Tanggal Input': p.tanggal_input,
+                'Tanggal Penarikan': p.tanggal_penarikan,
+                'Teknisi': p.teknisi,
+                'Catatan': p.catatan
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Pelanggan');
+            
+            const fileName = `Data_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            showToast('Data berhasil diexport!', 'success');
+        }
+        
+        // IMPORT FROM EXCEL
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    if (jsonData.length === 0) {
+                        showToast('File kosong', 'error');
+                        return;
+                    }
+                    
+                    const records = jsonData.map(row => ({
+                        nama_pelanggan: row['Nama Pelanggan'] || row['nama_pelanggan'],
+                        nomor_hp: String(row['Nomor HP'] || row['nomor_hp']),
+                        alamat: row['Alamat'] || row['alamat'] || '',
+                        latitude: row['Latitude'] || row['latitude'] || null,
+                        longitude: row['Longitude'] || row['longitude'] || null,
+                        wilayah: row['Wilayah'] || row['wilayah'] || '',
+                        status: row['Status'] || row['status'] || 'Belum Diambil'
+                    })).filter(r => r.nama_pelanggan && r.nomor_hp);
+                    
+                    if (records.length === 0) {
+                        showToast('Tidak ada data valid', 'error');
+                        return;
+                    }
+                    
+                    const { error } = await supabaseClient.from('pelanggan').insert(records);
+                    
+                    if (error) {
+                        showToast('Error: ' + error.message, 'error');
+                    } else {
+                        showToast(`${records.length} data berhasil diimport!`, 'success');
+                        loadDashboard();
+                    }
+                } catch (err) {
+                    showToast('Error membaca file: ' + err.message, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = '';
+        }
+        
+        loadDashboard();
     </script>
 </body>
 </html>
