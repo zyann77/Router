@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Penarikan Perangkat</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
     <script src="config.js"></script>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: #0F172A;
             color: white;
@@ -17,22 +15,32 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             font-family: system-ui, sans-serif;
             padding: 16px;
         }
-        .glass-card {
+        .card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 400px;
         }
-        .btn-primary {
+        h2 { text-align: center; margin-bottom: 24px; }
+        label { color: #94A3B8; font-size: 14px; display: block; margin-bottom: 4px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            font-size: 15px;
+        }
+        input:focus { outline: none; border-color: #2563EB; }
+        button {
             width: 100%;
             padding: 14px;
             border: none;
@@ -42,75 +50,122 @@
             cursor: pointer;
             background: #2563EB;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
-        .btn-primary:hover { background: #1d4ed8; }
-        .input-field {
-            width: 100%;
+        button:hover:not(:disabled) { background: #1d4ed8; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .error {
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid #DC2626;
+            color: #FCA5A5;
             padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
             border-radius: 12px;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #2563EB;
-        }
-        label {
-            color: #94A3B8;
+            margin-bottom: 16px;
             font-size: 14px;
+            display: none;
         }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="glass-card">
-        <h2 style="text-align: center; margin-bottom: 24px;">🔐 Login Aplikasi</h2>
+    <div class="card">
+        <h2>🔐 Login Aplikasi</h2>
+        <div id="errorMsg" class="error"></div>
+        <div id="loadingMsg" style="display:none; text-align:center; margin-bottom:16px; color:#94A3B8;">
+            <span class="loading"></span> Memproses...
+        </div>
         <form id="loginForm">
-            <div>
-                <label>Email</label>
-                <input type="email" id="email" class="input-field" required>
-            </div>
-            <div>
-                <label>Password</label>
-                <input type="password" id="password" class="input-field" required>
-            </div>
-            <button type="submit" class="btn-primary">
-                ➡️ Masuk
-            </button>
+            <label>Email</label>
+            <input type="email" id="email" required placeholder="admin@test.com">
+            
+            <label>Password</label>
+            <input type="password" id="password" required placeholder="••••••••">
+            
+            <button type="submit" id="btnLogin">Masuk</button>
         </form>
     </div>
 
     <script>
+        // Cek apakah Supabase sudah terload
+        if (typeof supabase === 'undefined') {
+            document.getElementById('errorMsg').innerHTML = '❌ <b>Config Error:</b> Supabase tidak terload. Periksa file config.js!<br><br><small>Pastikan SUPABASE_URL dan SUPABASE_ANON_KEY sudah benar.</small>';
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('btnLogin').disabled = true;
+        } else {
+            // Inisialisasi Supabase
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            console.log('Supabase loaded:', SUPABASE_URL);
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const btn = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('errorMsg');
+            const loadingMsg = document.getElementById('loadingMsg');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            // Reset error
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
             
-            if (error) {
-                Swal.fire('Error', error.message, 'error');
-            } else {
-                // Ambil role user
-                const { data: profile } = await supabase
+            // Cek Supabase
+            if (typeof supabaseClient === 'undefined') {
+                errorMsg.innerHTML = '❌ Supabase tidak terinisialisasi. Periksa config.js!';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Memproses...';
+            loadingMsg.style.display = 'block';
+            
+            try {
+                console.log('Login attempt:', email);
+                
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ 
+                    email, 
+                    password 
+                });
+                
+                if (error) {
+                    console.error('Login error:', error);
+                    throw error;
+                }
+                
+                console.log('Login success:', data);
+                
+                // Ambil role user dari profiles
+                const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
-                    .select('role')
+                    .select('role, nama')
                     .eq('id', data.user.id)
                     .single();
                 
+                if (profileError) {
+                    console.error('Profile error:', profileError);
+                    throw new Error('Gagal mengambil data profile: ' + profileError.message);
+                }
+                
+                console.log('Profile:', profile);
+                
+                // Redirect sesuai role
                 if (profile?.role === 'admin') {
                     window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'teknisi.html';
                 }
+                
+            } catch (err) {
+                console.error('Error:', err);
+                errorMsg.innerHTML = '❌ <b>Login Gagal:</b><br>' + err.message;
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Masuk';
+                loadingMsg.style.display = 'none';
             }
         });
     </script>
