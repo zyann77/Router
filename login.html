@@ -4,110 +4,214 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#08090d">
-    <title>Masuk — Penarikan Perangkat</title>
+    <title>Tugas Penarikan</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="no-nav">
-    <div class="login-container">
-        <div class="card login-card">
-            <div class="login-header">
-                <div class="login-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-                </div>
-                <h1 class="login-title">Selamat Datang</h1>
-                <p class="login-subtitle">Masuk untuk mengelola penarikan perangkat</p>
+<body>
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-6 0v4"></path><rect x="4" y="9" width="16" height="12" rx="2"></rect><circle cx="12" cy="15" r="1.5"></circle></svg>
             </div>
-
-            <div id="errorMsg" class="error-message">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <span id="errorText"></span>
+            <div class="brand-text">
+                <span class="brand-title">Tugas Penarikan</span>
+                <span class="brand-sub" id="teknisiName">Teknisi</span>
             </div>
+        </div>
+        <button onclick="logout()" class="icon-btn" aria-label="Keluar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
+    </header>
 
-            <form id="loginForm">
-                <div class="form-group" style="margin-bottom: 18px;">
-                    <label class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="Masukkan username" autocomplete="username" required>
-                </div>
+    <div class="page">
+        <div class="page-head">
+            <span class="eyebrow">Lapangan Hari Ini</span>
+            <h1 class="page-title display">Daftar <em>Tugas</em></h1>
+            <p class="page-desc">Sentuh kartu untuk menghubungi atau menuju lokasi pelanggan.</p>
+        </div>
 
-                <div class="form-group" style="margin-bottom: 26px;">
-                    <label class="form-label">Password</label>
-                    <div class="field-wrap">
-                        <input type="password" id="password" class="form-input" placeholder="Masukkan password" autocomplete="current-password" required>
-                        <button type="button" class="field-toggle" id="togglePw" aria-label="Tampilkan password">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                    </div>
-                </div>
+        <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Cari nama, HP, atau wilayah…">
+        </div>
 
-                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
-                    <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                    Masuk
-                </button>
-            </form>
+        <div class="chip-row" id="chipRow">
+            <button class="chip active" data-filter="semua">Semua</button>
+            <button class="chip" data-filter="Belum Diambil">Belum Diambil</button>
+            <button class="chip" data-filter="Sudah Diambil">Sudah Diambil</button>
+        </div>
 
-            <p class="login-footer">SISTEM MANAJEMEN · PENARIKAN PERANGKAT</p>
+        <div id="customerList">
+            <div class="skeleton" style="height: 190px; margin-bottom: 16px;"></div>
+            <div class="skeleton" style="height: 190px; margin-bottom: 16px;"></div>
         </div>
     </div>
 
+    <nav class="bottom-nav">
+        <a href="teknisi.html" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Tugas
+        </a>
+        <button onclick="logout()" class="nav-item logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Keluar
+        </button>
+    </nav>
+
     <script>
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
+        if (!userLoggedIn) { window.location.href = 'login.html'; }
+        else { document.getElementById('teknisiName').textContent = userLoggedIn.nama || userLoggedIn.username; }
 
-        document.getElementById('togglePw').addEventListener('click', () => {
-            const pw = document.getElementById('password');
-            const isText = pw.type === 'text';
-            pw.type = isText ? 'password' : 'text';
-        });
+        var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var activeFilter = 'semua';
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.href = 'login.html';
+        }
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
-            const errorText = document.getElementById('errorText');
-            const submitBtn = document.getElementById('submitBtn');
+        function formatWA(nomor) {
+            var clean = nomor.replace(/\D/g, '');
+            if (clean.startsWith('0')) clean = '62' + clean.substring(1);
+            return 'https://wa.me/' + clean;
+        }
 
-            errorMsg.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.7';
+        async function completeTask(pelangganId) {
+            const { value: formValues } = await Swal.fire({
+                title: 'Konfirmasi Penyelesaian',
+                html: `
+                    <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
+                    <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'YA, Sudah Diambil',
+                cancelButtonText: 'Batal',
+                preConfirm: () => ({
+                    tanggal: document.getElementById('swal-tanggal').value,
+                    catatan: document.getElementById('swal-catatan').value
+                })
+            });
 
-            try {
-                const { data: user, error } = await supabaseClient
-                    .from('profiles')
-                    .select('id, username, password_hash, nama, role')
-                    .eq('username', username)
-                    .single();
+            if (formValues) {
+                const { error } = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil',
+                    tanggal_penarikan: formValues.tanggal,
+                    teknisi: userLoggedIn.nama,
+                    catatan: formValues.catatan
+                }).eq('id', pelangganId);
 
-                if (error || !user) {
-                    throw new Error('Username tidak ditemukan');
-                }
-
-                if (user.password_hash !== password) {
-                    throw new Error('Password salah');
-                }
-
-                localStorage.setItem('userLoggedIn', JSON.stringify({
-                    id: user.id,
-                    username: user.username,
-                    nama: user.nama,
-                    role: user.role
-                }));
-
-                if (user.role === 'admin') {
-                    window.location.href = 'dashboard.html';
+                if (!error) {
+                    Swal.fire('Berhasil!', 'Perangkat telah diambil.', 'success');
+                    loadCustomers();
                 } else {
-                    window.location.href = 'teknisi.html';
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
+        }
+
+        async function loadCustomers() {
+            const { data: pelanggan, error } = await supabaseClient
+                .from('pelanggan')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('customerList');
+
+            if (error) {
+                container.innerHTML = '<div class="card">Error: ' + error.message + '</div>';
+                return;
+            }
+
+            if (!pelanggan || pelanggan.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state card">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <p>Belum ada data pelanggan.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            pelanggan.forEach(function(p) {
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                const waLink = formatWA(p.nomor_hp);
+                const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+
+                let actionButtons = `
+                    <div class="action-row">
+                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">
+                            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            WhatsApp
+                        </a>
+                        <a href="${mapsLink}" target="_blank" class="btn btn-map">
+                            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Maps
+                        </a>
+                `;
+
+                if (p.status !== 'Sudah Diambil') {
+                    actionButtons += `
+                        <button onclick="completeTask('${p.id}')" class="btn btn-success btn-full">
+                            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Tandai Selesai
+                        </button>
+                    `;
                 }
 
-            } catch (err) {
-                errorText.textContent = err.message;
-                errorMsg.style.display = 'flex';
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-            }
+                actionButtons += '</div>';
+
+                container.innerHTML += `
+                    <div class="card customer-card fade-in" data-status="${p.status}">
+                        <div class="customer-header">
+                            <div class="customer-name">${p.nama_pelanggan}</div>
+                            <span class="badge ${badgeClass}">${p.status}</span>
+                        </div>
+                        <div class="customer-info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
+                        </div>
+                        <div class="customer-info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            ${p.wilayah || '-'}
+                        </div>
+                        ${p.alamat ? `<div class="customer-address">${p.alamat.substring(0, 90)}${p.alamat.length > 90 ? '…' : ''}</div>` : ''}
+                        <div class="seam"></div>
+                        ${actionButtons}
+                    </div>
+                `;
+            });
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.customer-card');
+            cards.forEach(function(card) {
+                const matchesText = card.textContent.toLowerCase().includes(keyword);
+                const matchesStatus = activeFilter === 'semua' || card.getAttribute('data-status') === activeFilter;
+                card.style.display = (matchesText && matchesStatus) ? '' : 'none';
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        document.getElementById('chipRow').addEventListener('click', function(e) {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeFilter = chip.getAttribute('data-filter');
+            applyFilters();
         });
+
+        loadCustomers();
     </script>
 </body>
 </html>
