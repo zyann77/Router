@@ -1,48 +1,184 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Test Supabase</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas Penarikan</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0F172A; color: white; font-family: system-ui, sans-serif; padding: 16px; min-height: 100vh; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h2 { font-size: 20px; }
+        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+        .btn { padding: 10px 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; text-decoration: none; display: block; text-align: center; margin-top: 8px; }
+        .btn-danger { background: #DC2626; color: white; width: auto; }
+        .btn-success { background: #16A34A; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn-map { background: #4285F4; color: white; }
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .badge-red { background: rgba(220,38,38,0.2); color: #FCA5A5; border: 1px solid #DC2626; }
+        .badge-green { background: rgba(22,163,74,0.2); color: #86EFAC; border: 1px solid #16A34A; }
+        input { width: 100%; padding: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 14px; }
+        input:focus { outline: none; border-color: #2563EB; }
+        .customer-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .customer-info { font-size: 13px; color: #94A3B8; margin: 4px 0; }
+        .customer-info a { color: #25D366; text-decoration: none; }
+        .loading, .empty { text-align: center; padding: 40px; color: #94A3B8; }
+    </style>
 </head>
-<body style="background:#0F172A; color:white; padding:20px; font-family:sans-serif;">
-    <h1>Test Supabase Connection</h1>
-    <div id="result"></div>
+<body>
+    <div class="header">
+        <h2>📋 Tugas Penarikan</h2>
+        <button onclick="doLogout()" class="btn btn-danger">Logout</button>
+    </div>
     
+    <input type="text" id="searchInput" placeholder="🔍 Cari Nama, HP, atau Wilayah...">
+    
+    <div id="customerList">
+        <div class="loading">Memuat data...</div>
+    </div>
+
     <script>
-        const result = document.getElementById('result');
+        // === GLOBAL VARIABLES ===
+        var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
+        var supabaseClient = null;
         
-        // Test 1: Cek Supabase
-        if (typeof supabase === 'undefined') {
-            result.innerHTML = '<p style="color:red">❌ Supabase CDN: GAGAL LOAD</p>';
-        } else {
-            result.innerHTML += '<p style="color:green">✅ Supabase CDN: BERHASIL</p>';
+        // === CEK LOGIN ===
+        if (!userLoggedIn) { 
+            window.location.href = 'login.html'; 
         }
         
-        // Test 2: Cek Config
-        if (typeof SUPABASE_URL === 'undefined') {
-            result.innerHTML += '<p style="color:red">❌ Config.js: GAGAL LOAD</p>';
+        // === INISIALISASI SUPABASE (GLOBAL SCOPE) ===
+        if (typeof supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase initialized');
         } else {
-            result.innerHTML += '<p style="color:green">✅ Config.js: BERHASIL</p>';
-            result.innerHTML += '<p>URL: ' + SUPABASE_URL + '</p>';
+            document.getElementById('customerList').innerHTML = '<div class="empty">❌ Error: Supabase tidak terload</div>';
         }
-        
-        // Test 3: Coba Connect
-        try {
-            const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            result.innerHTML += '<p style="color:green">✅ Supabase Client: BERHASIL DIBUAT</p>';
-            
-            // Test 4: Coba Query
-            client.from('profiles').select('*').then(({data, error}) => {
-                if (error) {
-                    result.innerHTML += '<p style="color:orange">️ Query: ERROR - ' + error.message + '</p>';
-                } else {
-                    result.innerHTML += '<p style="color:green">✅ Query Database: BERHASIL (' + data.length + ' rows)</p>';
-                }
+
+        // === FUNGSI LOGOUT ===
+        function doLogout() { 
+            localStorage.removeItem('userLoggedIn'); 
+            window.location.href = 'login.html'; 
+        }
+
+        // === FUNGSI FORMAT WHATSAPP ===
+        function formatWA(nomor) {
+            var clean = nomor.replace(/\D/g, '');
+            if (clean.startsWith('0')) clean = '62' + clean.substring(1);
+            return 'https://wa.me/' + clean;
+        }
+
+        // === FUNGSI SELESAI ===
+        async function completeTask(pelangganId) {
+            const { value: formValues } = await Swal.fire({
+                title: 'Konfirmasi Penyelesaian',
+                html: `
+                    <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
+                    <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '✅ YA, Sudah Diambil',
+                cancelButtonText: 'Batal',
+                preConfirm: () => ({
+                    tanggal: document.getElementById('swal-tanggal').value,
+                    catatan: document.getElementById('swal-catatan').value
+                })
             });
-        } catch (e) {
-            result.innerHTML += '<p style="color:red">❌ Create Client: GAGAL - ' + e.message + '</p>';
+            
+            if (formValues) {
+                const { error } = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil',
+                    tanggal_penarikan: formValues.tanggal,
+                    teknisi: userLoggedIn.nama,
+                    catatan: formValues.catatan
+                }).eq('id', pelangganId);
+                
+                if (!error) {
+                    Swal.fire('Berhasil!', 'Perangkat telah diambil.', 'success');
+                    loadCustomers();
+                } else {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
         }
+
+        // === FUNGSI LOAD DATA ===
+        async function loadCustomers() {
+            if (!supabaseClient) {
+                document.getElementById('customerList').innerHTML = '<div class="empty">❌ Supabase client tidak tersedia</div>';
+                return;
+            }
+            
+            try {
+                const { data: pelanggan, error } = await supabaseClient
+                    .from('pelanggan')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('customerList');
+                
+                if (!pelanggan || pelanggan.length === 0) {
+                    container.innerHTML = '<div class="empty">📭 Belum ada data pelanggan</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                pelanggan.forEach(function(p) {
+                    const badgeClass = p.status === 'Sudah Diambil' ? 'badge-green' : 'badge-red';
+                    const waLink = formatWA(p.nomor_hp);
+                    const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+                    
+                    let actionButtons = `
+                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">📱 WhatsApp</a>
+                        <a href="${mapsLink}" target="_blank" class="btn btn-map">🗺️ Buka Maps</a>
+                    `;
+                    
+                    if (p.status !== 'Sudah Diambil') {
+                        actionButtons += `
+                            <button onclick="completeTask('${p.id}')" class="btn btn-success">✅ DONE / SELESAI</button>
+                        `;
+                    }
+                    
+                    container.innerHTML += `
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <div class="customer-name">${p.nama_pelanggan}</div>
+                                <span class="badge ${badgeClass}">${p.status}</span>
+                            </div>
+                            <div class="customer-info"> <a href="${waLink}" target="_blank">${p.nomor_hp}</a></div>
+                            <div class="customer-info">📍 ${p.wilayah || '-'}</div>
+                            ${p.alamat ? `<div class="customer-info" style="font-size:12px; margin-top:4px;">${p.alamat.substring(0, 60)}${p.alamat.length > 60 ? '...' : ''}</div>` : ''}
+                            ${actionButtons}
+                        </div>
+                    `;
+                });
+                
+            } catch (err) {
+                console.error('Error loading customers:', err);
+                document.getElementById('customerList').innerHTML = `<div class="empty">❌ Error: ${err.message}</div>`;
+            }
+        }
+
+        // === SEARCH ===
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#customerList .card');
+            cards.forEach(function(card) {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(keyword) ? 'block' : 'none';
+            });
+        });
+
+        // === LOAD SAAT HALAMAN DIBUKA ===
+        loadCustomers();
     </script>
 </body>
 </html>
