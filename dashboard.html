@@ -2,60 +2,28 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Beranda — Penarikan Perangkat</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 </head>
 <body>
-    <div class="top-header">
-        <div class="header-content">
-            <div>
-                <div class="header-subtitle">Selamat Datang</div>
-                <div class="header-title" id="userName">Admin</div>
-            </div>
-            <div class="header-icon" id="userAvatar">A</div>
+    <div class="nav-bar">
+        <div>
+            <div class="nav-eyebrow" id="greetTime">Selamat Datang</div>
+            <div class="nav-title">Admin</div>
         </div>
+        <button onclick="logout()" class="btn btn-icon btn-ghost" aria-label="Keluar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
     </div>
 
-    <div class="hero-section">
-        <div class="hero-card">
-            <div class="hero-label">Lapangan Hari Ini</div>
-            <div class="hero-value" id="totalData">0</div>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalDiambil">0</div>
-                    <div class="hero-stat-label">Selesai</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalBelum">0</div>
-                    <div class="hero-stat-label">Pending</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <h1 class="nav-large-title">Pilih Wilayah</h1>
+    <p class="nav-sub">Ketuk wilayah untuk melihat dan menambah data pelanggan di area tersebut.</p>
 
-    <div class="section-header">
-        <div class="section-label">Wilayah Operasi</div>
-        <div class="section-title">Daftar Tugas</div>
-    </div>
-
-    <div id="wilayahGrid"></div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="window.location.href='dashboard.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <div class="nav-label">Dashboard</div>
-        </div>
-        <div class="nav-item" onclick="window.location.href='admin.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            <div class="nav-label">Kelola Data</div>
-        </div>
-        <div class="nav-item" onclick="logout()">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <div class="nav-label">Keluar</div>
-        </div>
+    <div class="region-tile-grid" id="wilayahGrid">
+        <!-- filled by loadRegions() -->
     </div>
 
     <script>
@@ -63,58 +31,51 @@
         if (!userLoggedIn || userLoggedIn.role !== 'admin') {
             window.location.href = 'login.html';
         }
-        
-        document.getElementById('userName').textContent = userLoggedIn.nama;
-        document.getElementById('userAvatar').textContent = userLoggedIn.nama.charAt(0).toUpperCase();
-        
+
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+
+        const hour = new Date().getHours();
+        document.getElementById('greetTime').textContent = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam';
+
         function logout() {
             localStorage.removeItem('userLoggedIn');
             window.location.href = 'login.html';
         }
-        
-        async function loadDashboard() {
-            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*');
-            if (!pelanggan) return;
-            
-            document.getElementById('totalData').textContent = pelanggan.length;
-            document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
-            document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status !== 'Sudah Diambil').length;
-            
-            const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
-            const wilayahGrid = document.getElementById('wilayahGrid');
-            
+
+        const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
+
+        async function loadRegions() {
+            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('wilayah, status');
+            const grid = document.getElementById('wilayahGrid');
+            grid.innerHTML = '';
+
             wilayahList.forEach(w => {
-                const dataW = pelanggan.filter(p => p.wilayah === w);
+                const dataW = (pelanggan || []).filter(p => p.wilayah === w);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status !== 'Sudah Diambil').length;
-                
-                wilayahGrid.innerHTML += `
-                    <div class="seam-card" onclick="window.location.href='admin.html?wilayah=${w}'" style="cursor: pointer;">
-                        <div class="seam-card-header">
-                            <div>
-                                <div class="card-title">${w}</div>
-                                <div class="card-subtitle mono-text">${dataW.length} perangkat</div>
-                            </div>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                        </div>
-                        <div style="display: flex; gap: var(--spacing-2xl);">
-                            <div>
-                                <div class="hero-stat-value">${diambil}</div>
-                                <div class="hero-stat-label">Selesai</div>
-                            </div>
-                            <div>
-                                <div class="hero-stat-value">${belum}</div>
-                                <div class="hero-stat-label">Pending</div>
-                            </div>
+
+                const tile = document.createElement('div');
+                tile.className = 'region-tile';
+                tile.onclick = () => window.location.href = 'admin.html?wilayah=' + encodeURIComponent(w);
+                tile.innerHTML = `
+                    <div class="signet sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div class="region-tile-body">
+                        <div class="region-tile-name">${w}</div>
+                        <div class="region-tile-tally">
+                            <span><b>${dataW.length}</b> total</span>
+                            <span><b>${diambil}</b> diambil</span>
+                            <span><b>${belum}</b> belum</span>
                         </div>
                     </div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--ink-faint);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
                 `;
+                grid.appendChild(tile);
             });
         }
-        
-        loadDashboard();
+
+        loadRegions();
     </script>
 </body>
 </html>
