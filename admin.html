@@ -10,39 +10,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="config.js"></script>
     <style>
-        .wilayah-banner {
-            background: linear-gradient(135deg, var(--leather) 0%, var(--leather-dark) 100%);
-            border: 1px solid rgba(201, 169, 97, 0.3);
-            border-radius: 16px;
-            padding: var(--spacing-lg) var(--spacing-xl);
-            margin: 0 var(--spacing-xl) var(--spacing-lg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .wilayah-banner-label {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--gold);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-        .wilayah-banner-name {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--cream);
-        }
-        .wilayah-banner-btn {
-            background: rgba(201, 169, 97, 0.2);
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .perangkat-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacing-sm); }
+        .perangkat-option { padding: var(--spacing-md); background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 600; }
+        .perangkat-option:active { transform: scale(0.95); }
+        .perangkat-option.selected { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
+        .perangkat-option svg { width: 24px; height: 24px; margin-bottom: 4px; stroke: currentColor; stroke-width: 2; fill: none; display: block; margin: 0 auto 4px; }
     </style>
 </head>
 <body>
@@ -81,9 +53,11 @@
     <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
     <div id="bottomSheet" class="bottom-sheet">
         <div class="bottom-sheet-handle"></div>
-        <div class="bottom-sheet-title">Tambah Data Baru</div>
+        <div class="bottom-sheet-title" id="formTitle">Tambah Data Baru</div>
         
         <form id="formPelanggan">
+            <input type="hidden" id="editId">
+            
             <div class="input-group">
                 <label class="input-label">Nama Pelanggan</label>
                 <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
@@ -106,6 +80,25 @@
             </div>
             
             <div class="input-group">
+                <label class="input-label">Jenis Perangkat</label>
+                <div class="perangkat-selector">
+                    <div class="perangkat-option selected" onclick="selectPerangkat('Router', this)">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        Router
+                    </div>
+                    <div class="perangkat-option" onclick="selectPerangkat('STB', this)">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><line x1="16" y1="10" x2="18" y2="10"/><line x1="16" y1="14" x2="18" y2="14"/></svg>
+                        STB
+                    </div>
+                    <div class="perangkat-option" onclick="selectPerangkat('Router + STB', this)">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="18" width="20" height="4" rx="1"/></svg>
+                        Router+STB
+                    </div>
+                </div>
+                <input type="hidden" id="perangkat" value="Router">
+            </div>
+            
+            <div class="input-group">
                 <label class="input-label">Pilih Lokasi di Peta</label>
                 <div class="map-container">
                     <div id="map-picker"></div>
@@ -114,6 +107,10 @@
                     <div>Lat: <span id="displayLat">-</span></div>
                     <div>Lng: <span id="displayLng">-</span></div>
                 </div>
+                <button type="button" class="btn btn-outline gps-btn" onclick="useMyGPS()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                    Gunakan GPS Saya
+                </button>
                 <input type="hidden" id="latitude">
                 <input type="hidden" id="longitude">
             </div>
@@ -141,18 +138,13 @@
 
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn || userLoggedIn.role !== 'admin') {
-            window.location.href = 'login.html';
-        }
+        if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'login.html'; }
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let map, marker;
         let currentWilayahFilter = null;
 
-        function logout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.href = 'login.html';
-        }
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
 
         function showToast(message, type) {
             const toast = document.getElementById('toast');
@@ -161,10 +153,47 @@
             setTimeout(() => { toast.className = 'toast'; }, 3000);
         }
 
-        function openBottomSheet() {
+        function selectPerangkat(value, element) {
+            document.querySelectorAll('.perangkat-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('perangkat').value = value;
+        }
+
+        function openBottomSheet(editData = null) {
             document.getElementById('bottomSheetOverlay').classList.add('active');
             document.getElementById('bottomSheet').classList.add('active');
-            setTimeout(initMap, 300);
+            
+            if (editData) {
+                document.getElementById('formTitle').textContent = 'Edit Data Pelanggan';
+                document.getElementById('editId').value = editData.id;
+                document.getElementById('nama').value = editData.nama_pelanggan;
+                document.getElementById('nomor_hp').value = editData.nomor_hp;
+                document.getElementById('wilayah').value = editData.wilayah;
+                document.getElementById('latitude').value = editData.latitude;
+                document.getElementById('longitude').value = editData.longitude;
+                document.getElementById('perangkat').value = editData.perangkat || 'Router';
+                
+                // Update perangkat selector
+                document.querySelectorAll('.perangkat-option').forEach(el => {
+                    el.classList.remove('selected');
+                    if (el.textContent.trim() === (editData.perangkat || 'Router')) {
+                        el.classList.add('selected');
+                    }
+                });
+                
+                setTimeout(() => {
+                    initMap(editData.latitude, editData.longitude);
+                }, 300);
+            } else {
+                document.getElementById('formTitle').textContent = 'Tambah Data Baru';
+                document.getElementById('formPelanggan').reset();
+                document.getElementById('editId').value = '';
+                document.getElementById('perangkat').value = 'Router';
+                document.querySelectorAll('.perangkat-option').forEach((el, i) => {
+                    el.classList.toggle('selected', i === 0);
+                });
+                setTimeout(initMap, 300);
+            }
         }
 
         function closeBottomSheet() {
@@ -172,26 +201,24 @@
             document.getElementById('bottomSheet').classList.remove('active');
         }
 
-        function initMap() {
+        function initMap(lat = -6.9175, lng = 107.6191) {
             if (map) {
                 map.invalidateSize();
+                if (lat && lng) {
+                    marker.setLatLng([lat, lng]);
+                    map.setView([lat, lng], 15);
+                    updateCoordDisplay(lat, lng);
+                }
                 return;
             }
             
-            // Default: Bandung
-            const defaultLat = -6.9175;
-            const defaultLng = 107.6191;
-            
-            map = L.map('map-picker').setView([defaultLat, defaultLng], 13);
-            
+            map = L.map('map-picker').setView([lat, lng], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO',
-                maxZoom: 19
+                attribution: '© OpenStreetMap © CARTO', maxZoom: 19
             }).addTo(map);
             
-            marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-            
-            updateCoordDisplay(defaultLat, defaultLng);
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            updateCoordDisplay(lat, lng);
             
             map.on('click', function(e) {
                 marker.setLatLng(e.latlng);
@@ -211,30 +238,68 @@
             document.getElementById('displayLng').textContent = lng.toFixed(6);
         }
 
-        document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const lat = document.getElementById('latitude').value;
-            const lng = document.getElementById('longitude').value;
-            
-            if (!lat || !lng) {
-                showToast('Pilih lokasi di peta terlebih dahulu!', 'error');
+        function useMyGPS() {
+            if (!navigator.geolocation) {
+                showToast('GPS tidak didukung di browser ini', 'error');
                 return;
             }
             
-            const { error } = await supabaseClient.from('pelanggan').insert([{
+            showToast('Mencari lokasi GPS...', 'success');
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    if (map && marker) {
+                        marker.setLatLng([lat, lng]);
+                        map.setView([lat, lng], 16);
+                    }
+                    updateCoordDisplay(lat, lng);
+                    showToast('Lokasi GPS berhasil diambil!', 'success');
+                },
+                (error) => {
+                    let msg = 'Gagal mengambil GPS';
+                    if (error.code === 1) msg = 'Izin GPS ditolak';
+                    else if (error.code === 2) msg = 'GPS tidak tersedia';
+                    else if (error.code === 3) msg = 'Timeout GPS';
+                    showToast(msg, 'error');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const editId = document.getElementById('editId').value;
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+            
+            if (!lat || !lng) { showToast('Pilih lokasi di peta atau gunakan GPS!', 'error'); return; }
+            
+            const data = {
                 nama_pelanggan: document.getElementById('nama').value,
                 nomor_hp: document.getElementById('nomor_hp').value,
                 alamat: `Lat: ${lat}, Lng: ${lng}`,
                 latitude: parseFloat(lat),
                 longitude: parseFloat(lng),
                 wilayah: document.getElementById('wilayah').value,
-                status: 'Belum Diambil'
-            }]);
+                perangkat: document.getElementById('perangkat').value
+            };
+            
+            let error;
+            if (editId) {
+                const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
+                error = result.error;
+            } else {
+                data.status = 'Belum Diambil';
+                const result = await supabaseClient.from('pelanggan').insert([data]);
+                error = result.error;
+            }
             
             if (!error) {
-                showToast('Data berhasil disimpan!', 'success');
-                e.target.reset();
+                showToast(editId ? 'Data berhasil diupdate!' : 'Data berhasil disimpan!', 'success');
                 closeBottomSheet();
                 loadTable();
             } else {
@@ -245,26 +310,26 @@
         async function deleteData(id) {
             if (!confirm('Yakin ingin menghapus data ini?')) return;
             const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
-            if (!error) {
-                showToast('Data dihapus!', 'success');
-                loadTable();
-            } else {
-                showToast('Error: ' + error.message, 'error');
+            if (!error) { showToast('Data dihapus!', 'success'); loadTable(); }
+            else { showToast('Error: ' + error.message, 'error'); }
+        }
+
+        async function editData(id) {
+            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
+            if (pelanggan) {
+                openBottomSheet(pelanggan);
             }
         }
         
         async function loadTable() {
             let query = supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-            
-            if (currentWilayahFilter) {
-                query = query.eq('wilayah', currentWilayahFilter);
-            }
+            if (currentWilayahFilter) query = query.eq('wilayah', currentWilayahFilter);
             
             const { data: pelanggan } = await query;
             const container = document.getElementById('tableContainer');
             
             if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
                 return;
             }
             
@@ -279,15 +344,16 @@
                         <div class="card-header">
                             <div>
                                 <div class="card-title">${p.nama_pelanggan}</div>
-                                <div class="card-subtitle mono-text">${p.wilayah}</div>
+                                <div class="card-subtitle mono-text">${p.wilayah} • ${p.perangkat || 'Router'}</div>
                             </div>
                             <span class="card-badge ${badgeClass}">${p.status}</span>
                         </div>
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
                         ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
-                        <div style="margin-top: var(--spacing-md); position: relative; display: flex; gap: var(--spacing-sm);">
-                            ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map" style="padding: 10px 16px; font-size: 13px; min-height: auto;">Maps</a>` : ''}
-                            <button onclick="deleteData('${p.id}')" class="btn btn-danger" style="padding: 10px 16px; font-size: 13px; min-height: auto;">Hapus</button>
+                        <div style="margin-top: var(--spacing-md); position: relative; display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                            ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
+                            <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
+                            <button onclick="deleteData('${p.id}')" class="btn btn-danger btn-small">Hapus</button>
                         </div>
                     </div>
                 `;
@@ -303,13 +369,12 @@
             });
         });
 
-        // Cek URL params untuk filter wilayah
         const urlParams = new URLSearchParams(window.location.search);
         const wilayahParam = urlParams.get('wilayah');
         if (wilayahParam) {
             currentWilayahFilter = wilayahParam;
             const banner = document.getElementById('wilayahBanner');
-            banner.style.display = 'flex';
+            banner.style.display = 'block';
             banner.innerHTML = `
                 <div class="wilayah-banner" style="flex: 1;">
                     <div>
@@ -321,9 +386,7 @@
             `;
         }
 
-        function clearWilayahFilter() {
-            window.location.href = 'admin.html';
-        }
+        function clearWilayahFilter() { window.location.href = 'admin.html'; }
         
         loadTable();
     </script>
