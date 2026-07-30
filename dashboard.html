@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="config.js"></script>
+</head>
+<body class="fade-in">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h2>📊 Dashboard Admin</h2>
+    <button onclick="supabase.auth.signOut(); window.location.href='login.html'" class="btn btn-danger" style="width: auto; padding: 8px 16px;">
+      <span class="material-icons">logout</span>
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid-2" style="margin-bottom: 24px;">
+    <div class="glass-card" style="text-align: center;">
+      <h3 style="color: var(--text-muted); font-size: 14px;">Total Perangkat</h3>
+      <h1 id="totalData" style="font-size: 36px; color: var(--primary);">0</h1>
+    </div>
+    <div class="glass-card" style="text-align: center;">
+      <h3 style="color: var(--text-muted); font-size: 14px;">Sudah Diambil</h3>
+      <h1 id="totalDiambil" style="font-size: 36px; color: var(--success);">0</h1>
+    </div>
+  </div>
+
+  <!-- Wilayah Cards -->
+  <h3 style="margin-bottom: 16px;">📍 Wilayah</h3>
+  <div class="grid-2" id="wilayahCards">
+    <!-- Diisi oleh JS -->
+  </div>
+
+  <!-- Chart -->
+  <div class="glass-card" style="margin-top: 24px;">
+    <canvas id="wilayahChart"></canvas>
+  </div>
+
+  <a href="admin.html" class="btn btn-primary" style="margin-top: 24px; text-decoration: none;">
+    <span class="material-icons">add</span> Kelola Data Pelanggan
+  </a>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Logic dashboard akan dimuat dari app.js
+    initDashboard();
+  </script>
+</body>
+</html>
