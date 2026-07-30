@@ -2,130 +2,123 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tugas Penarikan</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .teknisi-container {
-            padding: 32px 24px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        
-        .header-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .search-box {
-            margin-bottom: 32px;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 18px 24px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-        
         .customer-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 20px;
-            transition: all 0.4s ease;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) var(--spacing-xl);
+            transition: transform 0.2s ease;
         }
         
-        .customer-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-            border-color: rgba(99, 102, 241, 0.3);
+        .customer-card:active {
+            transform: scale(0.98);
         }
         
         .customer-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 16px;
+            margin-bottom: var(--spacing-md);
         }
         
         .customer-name {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 600;
+            flex: 1;
+            margin-right: var(--spacing-md);
+        }
+        
+        .customer-detail {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .customer-detail a {
+            color: var(--ios-blue);
+            text-decoration: none;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+        
+        .action-btn {
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            min-height: 44px;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .action-btn-wa {
+            background: var(--ios-green);
             color: white;
         }
         
-        .customer-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 12px;
+        .action-btn-map {
+            background: var(--ios-blue);
+            color: white;
         }
         
-        .customer-info a {
-            color: #25D366;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .btn-full {
+        .action-btn-done {
             grid-column: 1 / -1;
+            background: var(--ios-green);
+            color: white;
+            padding: var(--spacing-lg);
+            font-size: 17px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 64px var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <div class="teknisi-container">
-        <div class="header">
-            <h1 class="header-title"> Tugas Penarikan</h1>
-            <button onclick="logout()" class="btn btn-danger">Logout</button>
-        </div>
-        
-        <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari Nama, HP, atau Wilayah...">
-        </div>
-        
-        <div id="customerList">
-            <div class="skeleton" style="height: 200px; margin-bottom: 20px;"></div>
-            <div class="skeleton" style="height: 200px; margin-bottom: 20px;"></div>
-        </div>
+    <div class="nav-bar">
+        <div class="nav-title">Tugas Penarikan</div>
+    </div>
+    
+    <div class="ios-search">
+        <span class="ios-search-icon">🔍</span>
+        <input type="text" id="searchInput" class="ios-search-input" placeholder="Cari nama, HP, atau wilayah">
+    </div>
+    
+    <div id="customerList">
+        <div class="skeleton" style="height: 200px; margin: var(--spacing-lg) var(--spacing-xl);"></div>
+        <div class="skeleton" style="height: 200px; margin: var(--spacing-lg) var(--spacing-xl);"></div>
     </div>
 
     <script>
@@ -133,11 +126,6 @@
         if (!userLoggedIn) { window.location.href = 'login.html'; }
         
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        function logout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.href = 'login.html';
-        }
         
         function formatWA(nomor) {
             var clean = nomor.replace(/\D/g, '');
@@ -147,14 +135,14 @@
         
         async function completeTask(pelangganId) {
             const { value: formValues } = await Swal.fire({
-                title: 'Konfirmasi Penyelesaian',
+                title: 'Konfirmasi',
                 html: `
                     <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
                     <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
-                confirmButtonText: '✅ YA, Sudah Diambil',
+                confirmButtonText: '✅ Selesai',
                 cancelButtonText: 'Batal',
                 preConfirm: () => ({
                     tanggal: document.getElementById('swal-tanggal').value,
@@ -186,51 +174,56 @@
                 .order('created_at', { ascending: false });
             
             if (error) {
-                document.getElementById('customerList').innerHTML = '<div class="customer-card">Error: ' + error.message + '</div>';
+                document.getElementById('customerList').innerHTML = '<div class="empty-state">Error: ' + error.message + '</div>';
                 return;
             }
             
             const container = document.getElementById('customerList');
             
             if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = '<div class="customer-card" style="text-align:center; color: var(--text-secondary);">📭 Belum ada data pelanggan</div>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>Belum ada data pelanggan</div>
+                    </div>
+                `;
                 return;
             }
             
             container.innerHTML = '';
             
             pelanggan.forEach(function(p) {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                const badgeClass = p.status === 'Sudah Diambil' ? 'ios-badge-success' : 'ios-badge-warning';
                 const waLink = formatWA(p.nomor_hp);
                 const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
                 
                 let actionButtons = `
-                    <div class="action-buttons">
-                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">📱 WhatsApp</a>
-                        <a href="${mapsLink}" target="_blank" class="btn btn-map">🗺️ Maps</a>
+                    <div class="action-grid">
+                        <a href="${waLink}" target="_blank" class="action-btn action-btn-wa">📱 WhatsApp</a>
+                        <a href="${mapsLink}" target="_blank" class="action-btn action-btn-map">🗺️ Maps</a>
                 `;
                 
                 if (p.status !== 'Sudah Diambil') {
                     actionButtons += `
-                        <button onclick="completeTask('${p.id}')" class="btn btn-success btn-full">✅ DONE / SELESAI</button>
+                        <button onclick="completeTask('${p.id}')" class="action-btn action-btn-done">✅ DONE / SELESAI</button>
                     `;
                 }
                 
                 actionButtons += '</div>';
                 
                 container.innerHTML += `
-                    <div class="customer-card fade-in">
+                    <div class="customer-card slide-up">
                         <div class="customer-header">
                             <div class="customer-name">${p.nama_pelanggan}</div>
-                            <span class="badge ${badgeClass}">${p.status}</span>
+                            <span class="ios-badge ${badgeClass}">${p.status}</span>
                         </div>
-                        <div class="customer-info">
+                        <div class="customer-detail">
                             📱 <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
                         </div>
-                        <div class="customer-info">
+                        <div class="customer-detail">
                             📍 ${p.wilayah || '-'}
                         </div>
-                        ${p.alamat ? `<div class="customer-info" style="font-size:13px; margin-top:8px;">${p.alamat.substring(0, 80)}${p.alamat.length > 80 ? '...' : ''}</div>` : ''}
+                        ${p.alamat ? `<div class="customer-detail" style="font-size:13px; margin-top:8px; line-height:1.4;">${p.alamat.substring(0, 80)}${p.alamat.length > 80 ? '...' : ''}</div>` : ''}
                         ${actionButtons}
                     </div>
                 `;
