@@ -15,7 +15,7 @@
         .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-xl); text-align: center; color: var(--cream); position: relative; }
         .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
         
-        .filter-section { padding: 0 var(--spacing-xl) var(--spacing-lg); }
+        .filter-section { padding: 0 var(--spacing-xl) var(--spacing-sm); }
         .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md); }
         
         .status-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
@@ -104,10 +104,16 @@
 
         const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>`;
 
+        const wilayahConfig = [
+            { name: 'Sukamelang', class: 'wilayah-sukamelang' },
+            { name: 'Cibarola', class: 'wilayah-cibarola' },
+            { name: 'Panglejar', class: 'wilayah-panglejar' },
+            { name: 'Perum / Flamboyan', class: 'wilayah-perum' }
+        ];
+
         function initApp() {
             if (dataLoaded) return;
             dataLoaded = true;
-            loadWilayahGrid();
             loadCustomers();
             setupSearch();
         }
@@ -128,38 +134,39 @@
         }
 
         function loadWilayahGrid() {
-            const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
             const grid = document.getElementById('wilayahGrid');
             grid.innerHTML = '';
             
-            wilayahList.forEach(w => {
-                const count = allCustomers.filter(p => p.wilayah === w && p.status !== 'Sudah Diambil').length;
+            // Tombol Semua Wilayah
+            const allPending = allCustomers.filter(p => p.status !== 'Sudah Diambil').length;
+            grid.innerHTML += `
+                <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); box-shadow: 0 0 20px rgba(201, 169, 97, 0.4);' : ''}; grid-column: 1 / -1;">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                        <div class="wilayah-icon" style="margin-bottom: 0;">${serverIcon}</div>
+                        <div>
+                            <div class="wilayah-name">Semua Wilayah</div>
+                            <div class="wilayah-count">${allPending} tugas pending</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 4 Wilayah dengan warna
+            wilayahConfig.forEach((w) => {
+                const count = allCustomers.filter(p => p.wilayah === w.name && p.status !== 'Sudah Diambil').length;
                 grid.innerHTML += `
-                    <div class="wilayah-card ${currentWilayah === w ? 'active' : ''}" onclick="filterByWilayah('${w}', this)" style="${currentWilayah === w ? 'border-color: var(--gold); background: rgba(201, 169, 97, 0.1);' : ''}">
+                    <div class="wilayah-card ${w.class}" onclick="filterByWilayah('${w.name}', this)" style="${currentWilayah === w.name ? 'box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transform: scale(1.02);' : ''}">
                         <div>
                             <div class="wilayah-icon">${serverIcon}</div>
-                            <div class="wilayah-name">${w}</div>
-                            <div class="wilayah-count">${count} tugas pending</div>
+                            <div class="wilayah-name">${w.name}</div>
+                            <div class="wilayah-count">${count} tugas</div>
                         </div>
                     </div>
                 `;
             });
-            
-            // Tambah tombol "Semua"
-            grid.innerHTML = `
-                <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); background: rgba(201, 169, 97, 0.1);' : ''}; grid-column: 1 / -1;">
-                    <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
-                        <div class="wilayah-icon" style="margin-bottom: 0;">${serverIcon}</div>
-                        <div>
-                            <div class="wilayah-name">Semua Wilayah</div>
-                            <div class="wilayah-count">${allCustomers.filter(p => p.status !== 'Sudah Diambil').length} total tugas pending</div>
-                        </div>
-                    </div>
-                </div>
-            ` + grid.innerHTML;
         }
 
-        function filterByWilayah(wilayah, element) {
+        function filterByWilayah(wilayah) {
             currentWilayah = wilayah;
             loadWilayahGrid();
             renderCustomers();
@@ -195,7 +202,6 @@
                 var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 var waLink = formatWA(p.nomor_hp);
                 var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
-                var perangkatBadge = p.perangkat ? `<span class="card-badge badge-info">${p.perangkat}</span>` : '';
                 
                 var actionButtons = '<div class="card-actions">';
                 actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
@@ -216,7 +222,7 @@
                 
                 if (p.alamat) {
                     var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ' + alamatText + '</div>';
+                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ' + alamatText + '</div>';
                 }
                 cardHTML += actionButtons;
                 cardHTML += '</div>';
