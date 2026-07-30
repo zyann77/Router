@@ -71,59 +71,38 @@
         <form id="loginForm">
             <label>Username</label>
             <input type="text" id="username" required placeholder="admin atau teknisi">
-            
             <label>Password</label>
             <input type="password" id="password" required placeholder="••••••••">
-            
             <button type="submit">Masuk</button>
         </form>
     </div>
-
     <script>
-        // Inisialisasi Supabase
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
-            
             errorMsg.style.display = 'none';
-            
             try {
-                // Cari user berdasarkan username
                 const { data: user, error } = await supabaseClient
                     .from('profiles')
                     .select('id, username, password_hash, nama, role')
                     .eq('username', username)
                     .single();
-                
-                if (error || !user) {
-                    throw new Error('Username tidak ditemukan');
-                }
-                
-                // Cek password (sederhana, tanpa hash)
-                if (user.password_hash !== password) {
-                    throw new Error('Password salah');
-                }
-                
-                // Simpan session di localStorage
+                if (error || !user) throw new Error('Username tidak ditemukan');
+                if (user.password_hash !== password) throw new Error('Password salah');
                 localStorage.setItem('userLoggedIn', JSON.stringify({
                     id: user.id,
                     username: user.username,
                     nama: user.nama,
                     role: user.role
                 }));
-                
-                // Redirect sesuai role
                 if (user.role === 'admin') {
                     window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'teknisi.html';
                 }
-                
             } catch (err) {
                 errorMsg.textContent = '❌ ' + err.message;
                 errorMsg.style.display = 'block';
