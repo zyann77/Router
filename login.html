@@ -2,150 +2,92 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Penarikan Perangkat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        .login-container {
+        .login-screen {
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            padding: 20px;
-            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-        }
-        
-        .login-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            padding: 48px 40px;
-            width: 100%;
-            max-width: 440px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: var(--spacing-3xl) var(--spacing-xl);
         }
         
         .login-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
         }
         
         .login-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--ios-blue) 0%, #5856D6 100%);
             border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 24px;
-            font-size: 36px;
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+            font-size: 40px;
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
         }
         
         .login-title {
-            font-size: 28px;
+            font-size: 34px;
             font-weight: 700;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.021em;
         }
         
         .login-subtitle {
+            font-size: 17px;
             color: var(--text-secondary);
-            font-size: 14px;
         }
         
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            color: white;
+        .error-banner {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: var(--ios-red);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
             font-size: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-        
-        .btn-login {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border: none;
-            border-radius: 16px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-        }
-        
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.6);
-        }
-        
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #f87171;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            font-size: 14px;
             display: none;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-icon">🔐</div>
-                <h1 class="login-title">Selamat Datang</h1>
-                <p class="login-subtitle">Masuk ke akun Anda untuk melanjutkan</p>
+    <div class="login-screen">
+        <div class="login-header">
+            <div class="login-icon">🔐</div>
+            <h1 class="login-title">Selamat Datang</h1>
+            <p class="login-subtitle">Masuk untuk melanjutkan</p>
+        </div>
+        
+        <div id="errorMsg" class="error-banner"></div>
+        
+        <form id="loginForm">
+            <div class="ios-input-group">
+                <input type="text" id="username" class="ios-input" placeholder="Username" required>
+                <input type="password" id="password" class="ios-input" placeholder="Password" required>
             </div>
             
-            <div id="errorMsg" class="error-message"></div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="Masukkan username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="password" class="form-input" placeholder="Masukkan password" required>
-                </div>
-                
-                <button type="submit" class="btn-login">Masuk</button>
-            </form>
+            <button type="submit" class="ios-btn ios-btn-primary ios-btn-full ios-btn-large" style="margin-top: 24px;">
+                Masuk
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            Penarikan Perangkat v1.0
         </div>
     </div>
 
@@ -190,7 +132,7 @@
                 }
                 
             } catch (err) {
-                errorMsg.textContent = '❌ ' + err.message;
+                errorMsg.textContent = err.message;
                 errorMsg.style.display = 'block';
             }
         });
