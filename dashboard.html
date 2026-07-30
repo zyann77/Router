@@ -2,151 +2,155 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#08090d">
-    <title>Dashboard — Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 </head>
 <body>
-    <header class="app-header">
-        <div class="brand">
-            <div class="brand-mark">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+    <!-- Top Header -->
+    <div class="top-header">
+        <div class="header-content">
+            <div>
+                <div class="greeting">Selamat Datang 👋</div>
+                <div class="user-name" id="userName">Admin</div>
             </div>
-            <div class="brand-text">
-                <span class="brand-title">Dashboard</span>
-                <span class="brand-sub">Panel Admin</span>
-            </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span class="role-pill" id="userPill"><span class="dot"></span><span id="userName">—</span></span>
-            <button onclick="logout()" class="icon-btn" aria-label="Keluar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </button>
-        </div>
-    </header>
-
-    <div class="page">
-        <div class="page-head">
-            <span class="eyebrow">Ringkasan Operasional</span>
-            <h1 class="page-title display">Ikhtisar <em>Penarikan</em></h1>
-            <p class="page-desc">Status perangkat pelanggan secara keseluruhan &amp; per wilayah.</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="card stat-card fade-in">
-                <div class="stat-icon brass">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                </div>
-                <div class="stat-label">Total Perangkat</div>
-                <div class="stat-value" id="totalData">0</div>
-            </div>
-
-            <div class="card stat-card fade-in">
-                <div class="stat-icon green">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-                <div class="stat-label">Sudah Diambil</div>
-                <div class="stat-value" id="totalDiambil">0</div>
-            </div>
-
-            <div class="card stat-card fade-in">
-                <div class="stat-icon amber">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                </div>
-                <div class="stat-label">Belum Diambil</div>
-                <div class="stat-value" id="totalBelum">0</div>
-            </div>
-        </div>
-
-        <div class="wilayah-section">
-            <h2 class="section-title">Sebaran Wilayah</h2>
-            <div class="wilayah-grid" id="wilayahGrid"></div>
-        </div>
-
-        <div style="margin-top: 32px;">
-            <a href="admin.html" class="btn btn-primary btn-block">
-                <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Data Pelanggan
-            </a>
+            <div class="avatar" id="userAvatar">A</div>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item active">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
-            Dashboard
-        </a>
-        <a href="admin.html" class="nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
-            Kelola Data
-        </a>
-        <button onclick="logout()" class="nav-item logout">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            Keluar
-        </button>
-    </nav>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-card animate-slide-up">
+            <div class="hero-title">Total Perangkat</div>
+            <div class="hero-value" id="totalData">0</div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalDiambil">0</div>
+                    <div class="hero-stat-label">✅ Selesai</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalBelum">0</div>
+                    <div class="hero-stat-label"> Pending</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <div class="quick-action" onclick="window.location.href='admin.html'">
+            <div class="quick-action-icon gradient-bg">➕</div>
+            <div class="quick-action-label">Tambah</div>
+        </div>
+        <div class="quick-action" onclick="filterByStatus('Sudah Diambil')">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✅</div>
+            <div class="quick-action-label">Selesai</div>
+        </div>
+        <div class="quick-action" onclick="filterByStatus('Belum Diambil')">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">⏳</div>
+            <div class="quick-action-label">Pending</div>
+        </div>
+        <div class="quick-action" onclick="logout()">
+            <div class="quick-action-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">🚪</div>
+            <div class="quick-action-label">Logout</div>
+        </div>
+    </div>
+
+    <!-- Wilayah Section -->
+    <div class="section-header">
+        <div class="section-title">📍 Wilayah</div>
+    </div>
+
+    <div id="wilayahGrid"></div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="window.location.href='dashboard.html'">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='admin.html'">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">Data</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='teknisi.html'">
+            <div class="nav-icon">👷</div>
+            <div class="nav-label">Teknisi</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">Logout</div>
+        </div>
+    </div>
 
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn || userLoggedIn.role !== 'admin') {
             window.location.href = 'login.html';
-        } else {
-            document.getElementById('userName').textContent = userLoggedIn.nama || userLoggedIn.username;
         }
-
+        
+        document.getElementById('userName').textContent = userLoggedIn.nama;
+        document.getElementById('userAvatar').textContent = userLoggedIn.nama.charAt(0).toUpperCase();
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        
         function logout() {
             localStorage.removeItem('userLoggedIn');
             window.location.href = 'login.html';
         }
-
+        
+        function filterByStatus(status) {
+            window.location.href = 'admin.html?status=' + encodeURIComponent(status);
+        }
+        
         async function loadDashboard() {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*');
             if (!pelanggan) return;
-
+            
             document.getElementById('totalData').textContent = pelanggan.length;
             document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
             document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status !== 'Sudah Diambil').length;
-
+            
             const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
             const wilayahGrid = document.getElementById('wilayahGrid');
-            wilayahGrid.innerHTML = '';
-
-            wilayahList.forEach(w => {
+            const gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+            ];
+            
+            wilayahList.forEach((w, index) => {
                 const dataW = pelanggan.filter(p => p.wilayah === w);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status !== 'Sudah Diambil').length;
-
+                
                 wilayahGrid.innerHTML += `
-                    <div class="card wilayah-card" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w)}'">
-                        <div class="wilayah-name">
-                            <span>${w}</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    <div class="modern-card animate-slide-up" onclick="window.location.href='admin.html?wilayah=${w}'" style="background: ${gradients[index]}; border: none; cursor: pointer;">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title" style="color: white;">${w}</div>
+                                <div class="card-subtitle" style="color: rgba(255,255,255,0.8);">${dataW.length} perangkat</div>
+                            </div>
+                            <div style="font-size: 24px;">›</div>
                         </div>
-                        <div class="seam"></div>
-                        <div class="wilayah-stats">
-                            <div class="wilayah-stat">
-                                <div class="wilayah-stat-value" style="color: var(--brass-400);">${dataW.length}</div>
-                                <div class="wilayah-stat-label">Total</div>
+                        <div style="display: flex; gap: 20px; margin-top: 16px;">
+                            <div>
+                                <div style="font-size: 20px; font-weight: 700; color: white;">${diambil}</div>
+                                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">Selesai</div>
                             </div>
-                            <div class="wilayah-stat">
-                                <div class="wilayah-stat-value" style="color: var(--emerald-400);">${diambil}</div>
-                                <div class="wilayah-stat-label">Diambil</div>
-                            </div>
-                            <div class="wilayah-stat">
-                                <div class="wilayah-stat-value" style="color: var(--amber-400);">${belum}</div>
-                                <div class="wilayah-stat-label">Belum</div>
+                            <div>
+                                <div style="font-size: 20px; font-weight: 700; color: white;">${belum}</div>
+                                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">Pending</div>
                             </div>
                         </div>
                     </div>
                 `;
             });
         }
-
+        
         loadDashboard();
     </script>
 </body>
