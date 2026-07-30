@@ -3,66 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tugas Penarikan</title>
+    <title>Tugas Teknisi</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: var(--spacing-xl);
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; padding: var(--spacing-xl); }
         .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: var(--spacing-2xl);
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid rgba(201, 169, 97, 0.3);
-            position: relative;
-        }
-        .modal-content::before {
-            content: ''; position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 1px dashed rgba(201, 169, 97, 0.3);
-            border-radius: 16px; pointer-events: none;
-        }
-        .modal-title {
-            font-family: var(--font-display);
-            font-size: 22px; font-weight: 700;
-            margin-bottom: var(--spacing-xl);
-            text-align: center;
-            color: var(--cream);
-            position: relative;
-        }
-        .modal-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-            position: relative;
-        }
-        .current-wilayah {
-            background: var(--bg-card);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 12px;
-            padding: var(--spacing-md) var(--spacing-lg);
-            margin: 0 var(--spacing-xl) var(--spacing-lg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: var(--font-mono);
-            font-size: 13px;
-        }
-        .current-wilayah strong { color: var(--gold); }
+        .modal-content { background: var(--bg-card); border-radius: 20px; padding: var(--spacing-2xl); width: 100%; max-width: 400px; border: 1px solid rgba(201, 169, 97, 0.3); position: relative; }
+        .modal-content::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px dashed rgba(201, 169, 97, 0.3); border-radius: 16px; pointer-events: none; }
+        .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-xl); text-align: center; color: var(--cream); position: relative; }
+        .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
+        
+        .filter-section { padding: 0 var(--spacing-xl) var(--spacing-lg); }
+        .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md); }
+        
+        .status-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
+        .status-chips::-webkit-scrollbar { display: none; }
+        .chip { padding: 10px 18px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .chip:active { transform: scale(0.95); }
+        .chip.active { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
     </style>
 </head>
 <body>
@@ -78,16 +38,16 @@
         </div>
     </div>
 
-    <div class="filter-chips" id="wilayahFilter">
-        <div class="chip active" onclick="filterByWilayah('all', this)">Semua</div>
-        <div class="chip" onclick="filterByWilayah('Sukamelang', this)">Sukamelang</div>
-        <div class="chip" onclick="filterByWilayah('Cibarola', this)">Cibarola</div>
-        <div class="chip" onclick="filterByWilayah('Panglejar', this)">Panglejar</div>
-        <div class="chip" onclick="filterByWilayah('Perum / Flamboyan', this)">Perum/Flamboyan</div>
+    <div class="filter-section">
+        <div class="filter-label">Pilih Wilayah</div>
     </div>
+    <div class="wilayah-grid" id="wilayahGrid"></div>
 
-    <div class="filter-chips">
-        <div class="chip active" onclick="filterByStatus('all', this)" id="chipStatusAll">Semua Status</div>
+    <div class="filter-section">
+        <div class="filter-label">Filter Status</div>
+    </div>
+    <div class="status-chips">
+        <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
         <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
         <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
     </div>
@@ -120,10 +80,6 @@
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item" onclick="window.location.href='dashboard.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <div class="nav-label">Dashboard</div>
-        </div>
         <div class="nav-item active">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <div class="nav-label">Teknisi</div>
@@ -146,17 +102,17 @@
         var dataLoaded = false;
         var allCustomers = [];
 
+        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>`;
+
         function initApp() {
             if (dataLoaded) return;
             dataLoaded = true;
+            loadWilayahGrid();
             loadCustomers();
             setupSearch();
         }
 
-        function logout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.href = 'login.html';
-        }
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
 
         function formatWA(nomor) {
             var clean = nomor.replace(/\D/g, '');
@@ -171,10 +127,41 @@
             setTimeout(function() { toast.className = 'toast'; }, 3000);
         }
 
+        function loadWilayahGrid() {
+            const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
+            const grid = document.getElementById('wilayahGrid');
+            grid.innerHTML = '';
+            
+            wilayahList.forEach(w => {
+                const count = allCustomers.filter(p => p.wilayah === w && p.status !== 'Sudah Diambil').length;
+                grid.innerHTML += `
+                    <div class="wilayah-card ${currentWilayah === w ? 'active' : ''}" onclick="filterByWilayah('${w}', this)" style="${currentWilayah === w ? 'border-color: var(--gold); background: rgba(201, 169, 97, 0.1);' : ''}">
+                        <div>
+                            <div class="wilayah-icon">${serverIcon}</div>
+                            <div class="wilayah-name">${w}</div>
+                            <div class="wilayah-count">${count} tugas pending</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Tambah tombol "Semua"
+            grid.innerHTML = `
+                <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); background: rgba(201, 169, 97, 0.1);' : ''}; grid-column: 1 / -1;">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+                        <div class="wilayah-icon" style="margin-bottom: 0;">${serverIcon}</div>
+                        <div>
+                            <div class="wilayah-name">Semua Wilayah</div>
+                            <div class="wilayah-count">${allCustomers.filter(p => p.status !== 'Sudah Diambil').length} total tugas pending</div>
+                        </div>
+                    </div>
+                </div>
+            ` + grid.innerHTML;
+        }
+
         function filterByWilayah(wilayah, element) {
             currentWilayah = wilayah;
-            document.querySelectorAll('#wilayahFilter .chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
+            loadWilayahGrid();
             renderCustomers();
         }
 
@@ -198,7 +185,7 @@
             }
             
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
                 return;
             }
             
@@ -208,6 +195,7 @@
                 var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 var waLink = formatWA(p.nomor_hp);
                 var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+                var perangkatBadge = p.perangkat ? `<span class="card-badge badge-info">${p.perangkat}</span>` : '';
                 
                 var actionButtons = '<div class="card-actions">';
                 actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
@@ -221,14 +209,14 @@
                 var cardHTML = '<div class="modern-card">';
                 cardHTML += '<div class="card-header">';
                 cardHTML += '<div><div class="card-title">' + p.nama_pelanggan + '</div>';
-                cardHTML += '<div class="card-subtitle mono-text">' + (p.wilayah || '-') + '</div></div>';
+                cardHTML += '<div class="card-subtitle mono-text">' + (p.wilayah || '-') + ' • ' + (p.perangkat || 'Router') + '</div></div>';
                 cardHTML += '<span class="card-badge ' + badgeClass + '">' + p.status + '</span>';
                 cardHTML += '</div>';
                 cardHTML += '<div class="card-info mono-text">📱 <a href="' + waLink + '" target="_blank">' + p.nomor_hp + '</a></div>';
                 
                 if (p.alamat) {
                     var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ' + alamatText + '</div>';
+                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ' + alamatText + '</div>';
                 }
                 cardHTML += actionButtons;
                 cardHTML += '</div>';
@@ -254,10 +242,7 @@
             var tanggal = document.getElementById('modalTanggal').value;
             var catatan = document.getElementById('modalCatatan').value;
             
-            if (!tanggal) {
-                showToast('Tanggal wajib diisi!', 'error');
-                return;
-            }
+            if (!tanggal) { showToast('Tanggal wajib diisi!', 'error'); return; }
             
             try {
                 var result = await supabaseClient.from('pelanggan').update({
@@ -271,9 +256,7 @@
                 showToast('Perangkat berhasil diambil!', 'success');
                 closeModal();
                 loadCustomers();
-            } catch (err) {
-                showToast('Error: ' + err.message, 'error');
-            }
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
         async function loadCustomers() {
@@ -287,9 +270,10 @@
                 var result = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
                 if (result.error) throw result.error;
                 allCustomers = result.data || [];
+                loadWilayahGrid();
                 renderCustomers();
             } catch (err) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Error</div><div class="empty-subtitle">' + err.message + '</div></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-title">Error</div><div class="empty-subtitle">' + err.message + '</div></div>';
             }
             isLoading = false;
         }
@@ -312,9 +296,7 @@
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
+        } else { initApp(); }
     </script>
 </body>
 </html>
