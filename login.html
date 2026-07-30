@@ -4,105 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Penarikan Perangkat</title>
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: #0F172A;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .login-container {
             min-height: 100vh;
-            font-family: system-ui, sans-serif;
-            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
         }
-        .card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 32px;
+            padding: 48px 40px;
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        h2 { text-align: center; margin-bottom: 24px; }
-        label { color: #94A3B8; font-size: 14px; display: block; margin-bottom: 4px; }
-        input {
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             color: white;
-            border-radius: 12px;
             font-size: 15px;
+            transition: all 0.3s ease;
         }
-        input:focus { outline: none; border-color: #2563EB; }
-        button {
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            background: #2563EB;
+            border-radius: 16px;
             color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
         }
-        button:hover { background: #1d4ed8; }
-        .error {
-            background: rgba(220, 38, 38, 0.2);
-            border: 1px solid #DC2626;
-            color: #FCA5A5;
-            padding: 12px;
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.6);
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 16px;
             border-radius: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
             font-size: 14px;
             display: none;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🔐 Login Aplikasi</h2>
-        <div id="errorMsg" class="error"></div>
-        <form id="loginForm">
-            <label>Username</label>
-            <input type="text" id="username" required placeholder="admin atau teknisi">
-            <label>Password</label>
-            <input type="password" id="password" required placeholder="••••••••">
-            <button type="submit">Masuk</button>
-        </form>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">🔐</div>
+                <h1 class="login-title">Selamat Datang</h1>
+                <p class="login-subtitle">Masuk ke akun Anda untuk melanjutkan</p>
+            </div>
+            
+            <div id="errorMsg" class="error-message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Masukkan username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Masukkan password" required>
+                </div>
+                
+                <button type="submit" class="btn-login">Masuk</button>
+            </form>
+        </div>
     </div>
+
     <script>
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
+            
             errorMsg.style.display = 'none';
+            
             try {
                 const { data: user, error } = await supabaseClient
                     .from('profiles')
                     .select('id, username, password_hash, nama, role')
                     .eq('username', username)
                     .single();
-                if (error || !user) throw new Error('Username tidak ditemukan');
-                if (user.password_hash !== password) throw new Error('Password salah');
+                
+                if (error || !user) {
+                    throw new Error('Username tidak ditemukan');
+                }
+                
+                if (user.password_hash !== password) {
+                    throw new Error('Password salah');
+                }
+                
                 localStorage.setItem('userLoggedIn', JSON.stringify({
                     id: user.id,
                     username: user.username,
                     nama: user.nama,
                     role: user.role
                 }));
+                
                 if (user.role === 'admin') {
                     window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'teknisi.html';
                 }
+                
             } catch (err) {
                 errorMsg.textContent = '❌ ' + err.message;
                 errorMsg.style.display = 'block';
