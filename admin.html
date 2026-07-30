@@ -9,13 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="config.js"></script>
-    <style>
-        .perangkat-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacing-sm); }
-        .perangkat-option { padding: var(--spacing-md); background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 600; }
-        .perangkat-option:active { transform: scale(0.95); }
-        .perangkat-option.selected { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
-        .perangkat-option svg { width: 24px; height: 24px; margin-bottom: 4px; stroke: currentColor; stroke-width: 2; fill: none; display: block; margin: 0 auto 4px; }
-    </style>
 </head>
 <body>
     <div id="toast" class="toast"></div>
@@ -173,10 +166,9 @@
                 document.getElementById('longitude').value = editData.longitude;
                 document.getElementById('perangkat').value = editData.perangkat || 'Router';
                 
-                // Update perangkat selector
                 document.querySelectorAll('.perangkat-option').forEach(el => {
                     el.classList.remove('selected');
-                    if (el.textContent.trim() === (editData.perangkat || 'Router')) {
+                    if (el.textContent.trim().replace(/\s+/g, '') === (editData.perangkat || 'Router').replace(/\s+/g, '')) {
                         el.classList.add('selected');
                     }
                 });
@@ -213,8 +205,11 @@
             }
             
             map = L.map('map-picker').setView([lat, lng], 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO', maxZoom: 19
+            
+            // CartoDB Voyager - BERWARNA & CANTIK
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap © CARTO',
+                maxZoom: 19
             }).addTo(map);
             
             marker = L.marker([lat, lng], { draggable: true }).addTo(map);
@@ -349,7 +344,7 @@
                             <span class="card-badge ${badgeClass}">${p.status}</span>
                         </div>
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
+                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
                         <div style="margin-top: var(--spacing-md); position: relative; display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
                             <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
