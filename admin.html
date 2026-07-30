@@ -1,0 +1,57 @@
+<!-- Di dalam body admin.html -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+<script>
+  // Saat halaman dimuat, inisialisasi picker
+  window.onload = () => {
+    if (document.getElementById('map-picker')) initMapPicker();
+  };
+</script>
+
+<!-- Form Input -->
+<div class="glass-card">
+  <h3>Tambah Data Pelanggan</h3>
+  <form id="formPelanggan" style="margin-top: 16px;">
+    <input type="text" id="nama" placeholder="Nama Pelanggan" required class="glass-card" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.2); color:white; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+    <input type="text" id="nomor_hp" placeholder="Nomor HP (08xx)" required class="glass-card" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.2); color:white; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+    
+    <label style="color: var(--text-muted); font-size: 14px;">Titik Lokasi (Klik pada Peta)</label>
+    <div id="map-picker"></div>
+    <input type="hidden" id="latitude">
+    <input type="hidden" id="longitude">
+    
+    <textarea id="alamat" placeholder="Alamat Lengkap (Otomatis terisi dari peta)" required class="glass-card" style="width:100%; padding:12px; margin-top:12px; margin-bottom:12px; background:rgba(0,0,0,0.2); color:white; border-radius:12px; border:1px solid rgba(255,255,255,0.1);"></textarea>
+    
+    <select id="wilayah" required class="glass-card" style="width:100%; padding:12px; margin-bottom:12px; background:rgba(0,0,0,0.2); color:white; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+      <option value="Sukamelang">Sukamelang</option>
+      <option value="Cibarola">Cibarola</option>
+      <option value="Panglejar">Panglejar</option>
+      <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Simpan Data</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { error } = await supabase.from('pelanggan').insert([{
+      nama_pelanggan: document.getElementById('nama').value,
+      nomor_hp: document.getElementById('nomor_hp').value,
+      alamat: document.getElementById('alamat').value,
+      latitude: document.getElementById('latitude').value,
+      longitude: document.getElementById('longitude').value,
+      wilayah: document.getElementById('wilayah').value,
+      status: 'Belum Diambil'
+    }]);
+
+    if (!error) {
+      Swal.fire('Berhasil', 'Data pelanggan ditambahkan', 'success');
+      e.target.reset();
+    } else {
+      Swal.fire('Error', error.message, 'error');
+    }
+  });
+</script>
