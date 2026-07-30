@@ -2,49 +2,156 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Tugas Penarikan</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xl);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(201, 169, 97, 0.3);
+            position: relative;
+        }
+        .modal-content::before {
+            content: ''; position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px dashed rgba(201, 169, 97, 0.3);
+            border-radius: 16px; pointer-events: none;
+        }
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 22px; font-weight: 700;
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            color: var(--cream);
+            position: relative;
+        }
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            position: relative;
+        }
+        .current-wilayah {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 12px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            margin: 0 var(--spacing-xl) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+        .current-wilayah strong { color: var(--gold); }
+    </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <div>
-            <div class="nav-eyebrow">Tugas Hari Ini</div>
-            <div class="nav-title">Teknisi</div>
-        </div>
-        <button onclick="logout()" class="btn btn-icon btn-ghost" aria-label="Keluar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-    </div>
+    <div id="toast" class="toast"></div>
 
-    <div class="chip-row" id="chipRow">
-        <button class="chip active" data-wilayah="">Semua</button>
-        <button class="chip" data-wilayah="Sukamelang">Sukamelang</button>
-        <button class="chip" data-wilayah="Cibarola">Cibarola</button>
-        <button class="chip" data-wilayah="Panglejar">Panglejar</button>
-        <button class="chip" data-wilayah="Perum / Flamboyan">Perum / Flamboyan</button>
-    </div>
-
-    <div class="search-wrap" style="padding-top: 0;">
-        <div class="search-field">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Cari nama atau HP…">
+    <div class="top-header">
+        <div class="header-content">
+            <div>
+                <div class="header-subtitle">Lapangan Hari Ini</div>
+                <div class="header-title">Tugas Teknisi</div>
+            </div>
+            <div class="header-icon">T</div>
         </div>
     </div>
 
-    <div style="padding: 0 24px 40px;" id="customerList">
-        <div class="skeleton" style="height: 180px; margin-bottom: 16px;"></div>
-        <div class="skeleton" style="height: 180px; margin-bottom: 16px;"></div>
+    <div class="filter-chips" id="wilayahFilter">
+        <div class="chip active" onclick="filterByWilayah('all', this)">Semua</div>
+        <div class="chip" onclick="filterByWilayah('Sukamelang', this)">Sukamelang</div>
+        <div class="chip" onclick="filterByWilayah('Cibarola', this)">Cibarola</div>
+        <div class="chip" onclick="filterByWilayah('Panglejar', this)">Panglejar</div>
+        <div class="chip" onclick="filterByWilayah('Perum / Flamboyan', this)">Perum/Flamboyan</div>
+    </div>
+
+    <div class="filter-chips">
+        <div class="chip active" onclick="filterByStatus('all', this)" id="chipStatusAll">Semua Status</div>
+        <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
+        <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Cari nama atau HP...">
+        </div>
+    </div>
+
+    <div id="customerList"></div>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">Konfirmasi Penyelesaian</div>
+            <div class="input-group">
+                <label class="input-label">Tanggal Penarikan</label>
+                <input type="date" id="modalTanggal" class="input-field input-mono">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Catatan (Opsional)</label>
+                <textarea id="modalCatatan" class="input-field" style="min-height: 80px;" placeholder="Tambahkan catatan..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModal()" class="btn btn-danger">Batal</button>
+                <button onclick="confirmComplete()" class="btn btn-success">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <div class="nav-label">Dashboard</div>
+        </div>
+        <div class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="nav-label">Teknisi</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <div class="nav-label">Keluar</div>
+        </div>
     </div>
 
     <script>
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn) { window.location.href = 'login.html'; }
-
+        
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var currentPelangganId = null;
+        var currentWilayah = 'all';
+        var currentStatus = 'all';
+        var isLoading = false;
+        var dataLoaded = false;
+        var allCustomers = [];
+
+        function initApp() {
+            if (dataLoaded) return;
+            dataLoaded = true;
+            loadCustomers();
+            setupSearch();
+        }
 
         function logout() {
             localStorage.removeItem('userLoggedIn');
@@ -52,127 +159,162 @@
         }
 
         function formatWA(nomor) {
-            var clean = (nomor || '').replace(/\D/g, '');
+            var clean = nomor.replace(/\D/g, '');
             if (clean.startsWith('0')) clean = '62' + clean.substring(1);
             return 'https://wa.me/' + clean;
         }
 
-        const ICON_WA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
-        const ICON_MAP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
-        const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        function showToast(message, type) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function() { toast.className = 'toast'; }, 3000);
+        }
 
-        let activeWilayah = '';
-        let allCustomers = [];
+        function filterByWilayah(wilayah, element) {
+            currentWilayah = wilayah;
+            document.querySelectorAll('#wilayahFilter .chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            renderCustomers();
+        }
 
-        async function completeTask(pelangganId) {
-            const { value: formValues } = await Swal.fire({
-                title: 'Konfirmasi Penyelesaian',
-                html: `
-                    <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
-                    <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Sudah Diambil',
-                cancelButtonText: 'Batal',
-                background: '#18171b',
-                color: '#f3efe7',
-                confirmButtonColor: '#c9a96e',
-                cancelButtonColor: '#2a2930',
-                preConfirm: () => ({
-                    tanggal: document.getElementById('swal-tanggal').value,
-                    catatan: document.getElementById('swal-catatan').value
-                })
-            });
-
-            if (formValues) {
-                const { error } = await supabaseClient.from('pelanggan').update({
-                    status: 'Sudah Diambil',
-                    tanggal_penarikan: formValues.tanggal,
-                    teknisi: userLoggedIn.nama,
-                    catatan: formValues.catatan
-                }).eq('id', pelangganId);
-
-                if (!error) {
-                    Swal.fire({ title: 'Berhasil', text: 'Perangkat telah diambil.', icon: 'success', background: '#18171b', color: '#f3efe7', confirmButtonColor: '#c9a96e' });
-                    loadCustomers();
-                } else {
-                    Swal.fire({ title: 'Error', text: error.message, icon: 'error', background: '#18171b', color: '#f3efe7', confirmButtonColor: '#c9a96e' });
-                }
-            }
+        function filterByStatus(status, element) {
+            currentStatus = status;
+            var parent = element.parentElement;
+            parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            renderCustomers();
         }
 
         function renderCustomers() {
-            const container = document.getElementById('customerList');
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-
-            let list = allCustomers;
-            if (activeWilayah) list = list.filter(p => p.wilayah === activeWilayah);
-            if (keyword) list = list.filter(p => (p.nama_pelanggan + p.nomor_hp + (p.wilayah || '')).toLowerCase().includes(keyword));
-
-            if (list.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="signet">${ICON_CHECK}</div>
-                        <div class="empty-title">Tidak ada tugas</div>
-                        <div>${activeWilayah ? 'Tidak ada pelanggan di wilayah ini.' : 'Data pelanggan akan muncul di sini.'}</div>
-                    </div>`;
+            var container = document.getElementById('customerList');
+            var filtered = allCustomers;
+            
+            if (currentWilayah !== 'all') {
+                filtered = filtered.filter(p => p.wilayah === currentWilayah);
+            }
+            if (currentStatus !== 'all') {
+                filtered = filtered.filter(p => p.status === currentStatus);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
                 return;
             }
-
+            
             container.innerHTML = '';
-
-            list.forEach(function (p) {
-                const isDone = p.status === 'Sudah Diambil';
-                const waLink = formatWA(p.nomor_hp);
-                const mapsLink = (p.latitude && p.longitude) ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : null;
-
-                const card = document.createElement('div');
-                card.className = `entry-card fade-in ${isDone ? 'done' : 'pending'}`;
-                card.innerHTML = `
-                    <div class="entry-header">
-                        <div class="entry-name">${p.nama_pelanggan}</div>
-                        <span class="status ${isDone ? 'done' : 'pending'}"><span class="status-dot"></span>${isDone ? 'Selesai' : 'Menunggu'}</span>
-                    </div>
-                    <div class="entry-meta">${ICON_WA}<a href="${waLink}" target="_blank" style="color:var(--ink-soft);">${p.nomor_hp}</a></div>
-                    <div class="entry-meta" style="margin-bottom:0;">${ICON_MAP}${p.wilayah || '-'}</div>
-                    <div class="entry-actions">
-                        <a href="${waLink}" target="_blank" class="btn btn-wa">${ICON_WA} WhatsApp</a>
-                        ${mapsLink ? `<a href="${mapsLink}" target="_blank" class="btn btn-map">${ICON_MAP} Peta</a>` : `<span class="btn btn-ghost" style="opacity:0.4;">${ICON_MAP} Tanpa Titik</span>`}
-                        ${!isDone ? `<button onclick="completeTask('${p.id}')" class="btn btn-success full">${ICON_CHECK} Tandai Selesai</button>` : ''}
-                    </div>
-                `;
-                container.appendChild(card);
+            
+            filtered.forEach(function(p) {
+                var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                var waLink = formatWA(p.nomor_hp);
+                var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+                
+                var actionButtons = '<div class="card-actions">';
+                actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
+                actionButtons += '<a href="' + mapsLink + '" target="_blank" class="btn btn-map">Maps</a>';
+                
+                if (p.status !== 'Sudah Diambil') {
+                    actionButtons += '<button onclick="openModal(\'' + p.id + '\')" class="btn btn-success btn-full">Selesai</button>';
+                }
+                actionButtons += '</div>';
+                
+                var cardHTML = '<div class="modern-card">';
+                cardHTML += '<div class="card-header">';
+                cardHTML += '<div><div class="card-title">' + p.nama_pelanggan + '</div>';
+                cardHTML += '<div class="card-subtitle mono-text">' + (p.wilayah || '-') + '</div></div>';
+                cardHTML += '<span class="card-badge ' + badgeClass + '">' + p.status + '</span>';
+                cardHTML += '</div>';
+                cardHTML += '<div class="card-info mono-text">📱 <a href="' + waLink + '" target="_blank">' + p.nomor_hp + '</a></div>';
+                
+                if (p.alamat) {
+                    var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
+                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ' + alamatText + '</div>';
+                }
+                cardHTML += actionButtons;
+                cardHTML += '</div>';
+                
+                container.innerHTML += cardHTML;
             });
         }
 
-        async function loadCustomers() {
-            const { data: pelanggan, error } = await supabaseClient
-                .from('pelanggan')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                document.getElementById('customerList').innerHTML = `<div class="entry-card pending">Error: ${error.message}</div>`;
-                return;
-            }
-
-            allCustomers = pelanggan || [];
-            renderCustomers();
+        function openModal(pelangganId) {
+            currentPelangganId = pelangganId;
+            document.getElementById('modalTanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalCatatan').value = '';
+            document.getElementById('modalOverlay').classList.add('active');
         }
 
-        document.getElementById('chipRow').addEventListener('click', (e) => {
-            const chip = e.target.closest('.chip');
-            if (!chip) return;
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            activeWilayah = chip.dataset.wilayah;
-            renderCustomers();
-        });
+        function closeModal() {
+            currentPelangganId = null;
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
 
-        document.getElementById('searchInput').addEventListener('input', renderCustomers);
+        async function confirmComplete() {
+            if (!currentPelangganId) return;
+            var tanggal = document.getElementById('modalTanggal').value;
+            var catatan = document.getElementById('modalCatatan').value;
+            
+            if (!tanggal) {
+                showToast('Tanggal wajib diisi!', 'error');
+                return;
+            }
+            
+            try {
+                var result = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil',
+                    tanggal_penarikan: tanggal,
+                    teknisi: 'Teknisi',
+                    catatan: catatan
+                }).eq('id', currentPelangganId);
+                
+                if (result.error) throw result.error;
+                showToast('Perangkat berhasil diambil!', 'success');
+                closeModal();
+                loadCustomers();
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
 
-        loadCustomers();
+        async function loadCustomers() {
+            if (isLoading) return;
+            isLoading = true;
+            
+            var container = document.getElementById('customerList');
+            container.innerHTML = '<div class="skeleton" style="height: 180px; margin: 0 var(--spacing-xl) var(--spacing-lg);"></div><div class="skeleton" style="height: 180px; margin: 0 var(--spacing-xl) var(--spacing-lg);"></div>';
+            
+            try {
+                var result = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
+                if (result.error) throw result.error;
+                allCustomers = result.data || [];
+                renderCustomers();
+            } catch (err) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Error</div><div class="empty-subtitle">' + err.message + '</div></div>';
+            }
+            isLoading = false;
+        }
+
+        function setupSearch() {
+            var searchInput = document.getElementById('searchInput');
+            var searchTimeout = null;
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                var keyword = e.target.value.toLowerCase();
+                searchTimeout = setTimeout(function() {
+                    var cards = document.querySelectorAll('.modern-card');
+                    cards.forEach(function(card) {
+                        var text = card.textContent.toLowerCase();
+                        card.style.display = text.includes(keyword) ? 'block' : 'none';
+                    });
+                }, 300);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
