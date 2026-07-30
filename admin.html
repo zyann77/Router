@@ -2,255 +2,216 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kelola Data — Penarikan Perangkat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kelola Data</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        .coord-preview {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 12px;
-            padding: 13px 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--hairline);
-            background: rgba(201, 169, 110, 0.05);
-            font-size: 13px;
-            color: var(--ink-soft);
-        }
-        .coord-preview svg { width: 15px; height: 15px; color: var(--brass); flex-shrink: 0; }
-        .coord-preview a { color: var(--brass-soft); font-weight: 600; margin-left: auto; white-space: nowrap; }
-        .entry-swatch { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <div class="nav-title">Kelola Data</div>
-        <a href="dashboard.html" class="btn btn-icon btn-ghost" aria-label="Kembali">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </a>
+    <div id="toast" class="toast"></div>
+
+    <div class="top-header">
+        <div class="header-content">
+            <div>
+                <div class="header-subtitle">Panel Administrasi</div>
+                <div class="header-title">Kelola Data</div>
+            </div>
+            <div class="header-icon" style="background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);">A</div>
+        </div>
     </div>
 
-    <h1 class="nav-large-title">Tambah Data</h1>
-    <p class="nav-sub">Titik lokasi menggantikan alamat tertulis — tempel tautan Google Maps untuk mengisi otomatis.</p>
+    <div class="section-header">
+        <div class="section-label">Daftar Pelanggan</div>
+        <div class="section-title">Data Lapangan</div>
+    </div>
 
-    <form id="formPelanggan">
-        <div class="form-section panel">
-            <div class="field">
-                <label class="field-label">Nama Pelanggan</label>
-                <input type="text" id="nama" class="field-input" placeholder="Nama lengkap" required>
+    <div class="search-container">
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchTable" placeholder="Cari pelanggan...">
+        </div>
+    </div>
+
+    <div id="tableContainer"></div>
+
+    <!-- FAB Button -->
+    <button class="fab" onclick="openBottomSheet()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <!-- Bottom Sheet -->
+    <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
+    <div id="bottomSheet" class="bottom-sheet">
+        <div class="bottom-sheet-handle"></div>
+        <div class="bottom-sheet-title">Tambah Data Baru</div>
+        
+        <form id="formPelanggan">
+            <div class="input-group">
+                <label class="input-label">Nama Pelanggan</label>
+                <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
             </div>
-
-            <div class="field">
-                <label class="field-label">Nomor HP / WhatsApp</label>
-                <input type="text" id="nomor_hp" class="field-input" placeholder="08xxxxxxxxxx" required>
+            
+            <div class="input-group">
+                <label class="input-label">Nomor HP</label>
+                <input type="text" id="nomor_hp" class="input-field input-mono" placeholder="08xxxxxxxxxx" required>
             </div>
-
-            <div class="field">
-                <label class="field-label">Wilayah</label>
-                <select id="wilayah" class="field-select" required>
-                    <option value="">Pilih wilayah</option>
+            
+            <div class="input-group">
+                <label class="input-label">Wilayah</label>
+                <select id="wilayah" class="input-field" required>
+                    <option value="">Pilih Wilayah</option>
                     <option value="Sukamelang">Sukamelang</option>
                     <option value="Cibarola">Cibarola</option>
                     <option value="Panglejar">Panglejar</option>
                     <option value="Perum / Flamboyan">Perum / Flamboyan</option>
                 </select>
             </div>
-
-            <div class="field">
-                <label class="field-label">Titik Lokasi</label>
-                <input type="text" id="mapsPaste" class="field-input" placeholder="Tempel tautan / koordinat Google Maps di sini">
-                <div class="field-hint">
-                    Buka Google Maps → tekan lama titik lokasi pelanggan → salin koordinat atau bagikan tautan → tempel di sini.
+            
+            <div class="input-group">
+                <label class="input-label">Alamat Lengkap</label>
+                <textarea id="alamat" class="input-field" style="min-height: 100px; resize: vertical;" placeholder="Masukkan alamat lengkap" required></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                <div class="input-group">
+                    <label class="input-label">Latitude</label>
+                    <input type="number" id="latitude" class="input-field input-mono" placeholder="-6.xxxx" step="any">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Longitude</label>
+                    <input type="number" id="longitude" class="input-field input-mono" placeholder="107.xxxx" step="any">
                 </div>
             </div>
-
-            <div class="field-row">
-                <div class="field">
-                    <label class="field-label">Latitude</label>
-                    <input type="number" id="latitude" class="field-input mono" step="any" placeholder="-6.xxxxxx" required>
-                </div>
-                <div class="field">
-                    <label class="field-label">Longitude</label>
-                    <input type="number" id="longitude" class="field-input mono" step="any" placeholder="107.xxxxxx" required>
-                </div>
-            </div>
-
-            <div id="coordPreview" class="coord-preview" style="display:none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>Titik lokasi siap</span>
-                <a id="coordPreviewLink" href="#" target="_blank">Lihat di Maps →</a>
-            </div>
-        </div>
-
-        <div class="sticky-bar" style="position: static; background: none; padding: 24px;">
-            <button type="submit" class="btn btn-brass btn-full btn-lg">Simpan Data</button>
-        </div>
-    </form>
-
-    <div class="section-title" style="padding-top: 6px;">Daftar Pelanggan</div>
-    <div class="search-wrap" style="padding-top: 0;">
-        <div class="search-field">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchTable" placeholder="Cari nama, HP, atau wilayah…">
-        </div>
+            
+            <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-lg);">
+                Simpan Data
+            </button>
+        </form>
     </div>
 
-    <div style="padding: 0 24px 40px;" id="tableBody"></div>
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <div class="nav-label">Dashboard</div>
+        </div>
+        <div class="nav-item active" onclick="window.location.href='admin.html'">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div class="nav-label">Kelola Data</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <div class="nav-label">Keluar</div>
+        </div>
+    </div>
 
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn || userLoggedIn.role !== 'admin') {
             window.location.href = 'login.html';
         }
-
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // ---- Parse coordinates pasted from Google Maps (link or raw "lat, lng") ----
-        function parseCoords(raw) {
-            if (!raw) return null;
-            const text = raw.trim();
-            let m = text.match(/@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/);
-            if (m) return { lat: m[1], lng: m[2] };
-            m = text.match(/[?&]q=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/);
-            if (m) return { lat: m[1], lng: m[2] };
-            m = text.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
-            if (m) return { lat: m[1], lng: m[2] };
-            return null;
+        
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.href = 'login.html';
         }
 
-        const latInput = document.getElementById('latitude');
-        const lngInput = document.getElementById('longitude');
-        const preview = document.getElementById('coordPreview');
-        const previewLink = document.getElementById('coordPreviewLink');
-
-        function updatePreview() {
-            const lat = latInput.value, lng = lngInput.value;
-            if (lat && lng) {
-                preview.style.display = 'flex';
-                previewLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
-            } else {
-                preview.style.display = 'none';
-            }
+        function showToast(message, type) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function() { toast.className = 'toast'; }, 3000);
         }
 
-        document.getElementById('mapsPaste').addEventListener('input', (e) => {
-            const coords = parseCoords(e.target.value);
-            if (coords) {
-                latInput.value = coords.lat;
-                lngInput.value = coords.lng;
-                updatePreview();
-            }
-        });
+        function openBottomSheet() {
+            document.getElementById('bottomSheetOverlay').classList.add('active');
+            document.getElementById('bottomSheet').classList.add('active');
+        }
 
-        latInput.addEventListener('input', updatePreview);
-        lngInput.addEventListener('input', updatePreview);
+        function closeBottomSheet() {
+            document.getElementById('bottomSheetOverlay').classList.remove('active');
+            document.getElementById('bottomSheet').classList.remove('active');
+        }
 
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
             const { error } = await supabaseClient.from('pelanggan').insert([{
                 nama_pelanggan: document.getElementById('nama').value,
                 nomor_hp: document.getElementById('nomor_hp').value,
-                latitude: latInput.value,
-                longitude: lngInput.value,
+                alamat: document.getElementById('alamat').value,
+                latitude: document.getElementById('latitude').value,
+                longitude: document.getElementById('longitude').value,
                 wilayah: document.getElementById('wilayah').value,
                 status: 'Belum Diambil'
             }]);
-
+            
             if (!error) {
-                Swal.fire({ title: 'Berhasil', text: 'Data disimpan', icon: 'success', background: '#18171b', color: '#f3efe7', confirmButtonColor: '#c9a96e' });
+                showToast('Data berhasil disimpan!', 'success');
                 e.target.reset();
-                preview.style.display = 'none';
+                closeBottomSheet();
                 loadTable();
             } else {
-                Swal.fire({ title: 'Error', text: error.message, icon: 'error', background: '#18171b', color: '#f3efe7', confirmButtonColor: '#c9a96e' });
+                showToast('Error: ' + error.message, 'error');
             }
         });
-
+        
         async function deleteData(id) {
-            const result = await Swal.fire({
-                title: 'Hapus data?',
-                text: 'Data tidak bisa dikembalikan.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, hapus',
-                cancelButtonText: 'Batal',
-                background: '#18171b',
-                color: '#f3efe7',
-                confirmButtonColor: '#9a4a4a',
-                cancelButtonColor: '#2a2930'
-            });
-
-            if (result.isConfirmed) {
-                const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
-                if (!error) {
-                    Swal.fire({ title: 'Terhapus', icon: 'success', background: '#18171b', color: '#f3efe7', confirmButtonColor: '#c9a96e' });
-                    loadTable();
-                }
+            if (!confirm('Yakin ingin menghapus data ini?')) return;
+            
+            const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
+            if (!error) {
+                showToast('Data dihapus!', 'success');
+                loadTable();
+            } else {
+                showToast('Error: ' + error.message, 'error');
             }
         }
-
+        
         async function loadTable() {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-            const container = document.getElementById('tableBody');
-            container.innerHTML = '';
-
+            const container = document.getElementById('tableContainer');
+            
             if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="signet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
-                        <div class="empty-title">Belum ada data</div>
-                        <div>Tambahkan pelanggan pertama di atas.</div>
-                    </div>`;
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
                 return;
             }
-
+            
+            container.innerHTML = '';
+            
             pelanggan.forEach(p => {
-                const isDone = p.status === 'Sudah Diambil';
-                const mapsLink = (p.latitude && p.longitude) ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : null;
-                const card = document.createElement('div');
-                card.className = `entry-card ${isDone ? 'done' : 'pending'}`;
-                card.innerHTML = `
-                    <div class="entry-swatch">
-                        <div>
-                            <div class="entry-name">${p.nama_pelanggan}</div>
-                            <div class="entry-meta" style="margin-top:6px;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                                ${p.nomor_hp}
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                container.innerHTML += `
+                    <div class="modern-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${p.nama_pelanggan}</div>
+                                <div class="card-subtitle mono-text">${p.wilayah}</div>
                             </div>
-                            <div class="entry-meta" style="margin-bottom:0;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                ${p.wilayah || '-'}
-                            </div>
+                            <span class="card-badge ${badgeClass}">${p.status}</span>
                         </div>
-                        <button onclick="deleteData('${p.id}')" class="btn btn-icon btn-danger" aria-label="Hapus">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
-                        </button>
-                    </div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px;">
-                        <span class="status ${isDone ? 'done' : 'pending'}"><span class="status-dot"></span>${p.status}</span>
-                        ${mapsLink ? `<a href="${mapsLink}" target="_blank" class="btn btn-map" style="padding:8px 16px; font-size:12px;">Lihat di Maps</a>` : ''}
+                        <div class="card-info mono-text">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                            ${p.nomor_hp}
+                        </div>
+                        <div style="margin-top: var(--spacing-md); position: relative;">
+                            <button onclick="deleteData('${p.id}')" class="btn btn-danger" style="padding: 10px 16px; font-size: 13px;">Hapus</button>
+                        </div>
                     </div>
                 `;
-                container.appendChild(card);
             });
         }
-
+        
         document.getElementById('searchTable').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
-            document.querySelectorAll('#tableBody .entry-card').forEach(card => {
-                card.style.display = card.textContent.toLowerCase().includes(keyword) ? '' : 'none';
+            const cards = document.querySelectorAll('#tableContainer .modern-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(keyword) ? 'block' : 'none';
             });
         });
-
-        // Pre-fill wilayah from ?wilayah= query param (from dashboard region tap)
-        const params = new URLSearchParams(window.location.search);
-        const wParam = params.get('wilayah');
-        if (wParam) document.getElementById('wilayah').value = wParam;
-
+        
         loadTable();
     </script>
 </body>
