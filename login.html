@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=login.html">
-    <title>Penarikan Perangkat - Redirecting...</title>
+    <title>Login - Penarikan Perangkat</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.js"></script>
     <style>
         body {
             background: #0F172A;
@@ -12,34 +16,103 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: system-ui, sans-serif;
+            padding: 16px;
         }
-        .loader {
-            text-align: center;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
         }
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: #2563EB;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            background: #2563EB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .btn-primary:hover { background: #1d4ed8; }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #2563EB;
+        }
+        label {
+            color: #94A3B8;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <div class="spinner"></div>
-        <p>Mengarahkan ke halaman login...</p>
-        <p style="font-size: 14px; opacity: 0.7;">
-            Jika tidak otomatis, <a href="login.html" style="color: #2563EB;">klik di sini</a>
-        </p>
+    <div class="glass-card">
+        <h2 style="text-align: center; margin-bottom: 24px;">🔐 Login Aplikasi</h2>
+        <form id="loginForm">
+            <div>
+                <label>Email</label>
+                <input type="email" id="email" class="input-field" required>
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" id="password" class="input-field" required>
+            </div>
+            <button type="submit" class="btn-primary">
+                ➡️ Masuk
+            </button>
+        </form>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                Swal.fire('Error', error.message, 'error');
+            } else {
+                // Ambil role user
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+                
+                if (profile?.role === 'admin') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'teknisi.html';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
