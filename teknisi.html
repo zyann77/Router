@@ -1,95 +1,238 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Pelanggan - Teknisi</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - Teknisi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: #0F172A; 
+            color: white; 
+            font-family: system-ui, sans-serif; 
+            padding: 16px;
+            min-height: 100vh;
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h2 { font-size: 20px; }
+        .card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 12px;
+        }
+        .btn { 
+            padding: 10px 16px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-danger { background: #DC2626; color: white; }
+        .btn-success { background: #16A34A; color: white; width: 100%; margin-top: 8px; }
+        .btn-whatsapp { background: #25D366; color: white; width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-map { background: #4285F4; color: white; width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .badge { 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-red { background: rgba(220,38,38,0.2); color: #FCA5A5; border: 1px solid #DC2626; }
+        .badge-green { background: rgba(22,163,74,0.2); color: #86EFAC; border: 1px solid #16A34A; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 16px; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: white; 
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        input:focus { outline: none; border-color: #2563EB; }
+        .customer-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .customer-info { font-size: 13px; color: #94A3B8; margin: 4px 0; }
+        .customer-info a { color: #25D366; text-decoration: none; }
+        .loading { text-align: center; padding: 40px; color: #94A3B8; }
+        .empty { text-align: center; padding: 40px; color: #94A3B8; }
+        @media (max-width: 600px) {
+            .header { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; }
+        }
+    </style>
 </head>
-<body class="fade-in">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <h2>📋 Tugas Penarikan</h2>
-    <button onclick="supabase.auth.signOut(); window.location.href='login.html'" class="btn btn-danger" style="width: auto; padding: 8px 16px;">
-      <span class="material-icons">logout</span>
-    </button>
-  </div>
+<body>
+    <div class="header">
+        <h2>📋 Tugas Penarikan</h2>
+        <button onclick="logout()" class="btn btn-danger" style="width: auto; padding: 8px 16px;">Logout</button>
+    </div>
+    
+    <input type="text" id="searchInput" placeholder="🔍 Cari Nama, HP, atau Wilayah...">
+    
+    <div id="customerList">
+        <div class="loading">Memuat data...</div>
+    </div>
 
-  <!-- Search & Filter -->
-  <input type="text" id="searchInput" placeholder="🔍 Cari Nama, HP, atau Wilayah..." class="glass-card" style="width: 100%; padding: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
-
-  <div id="customerList">
-    <!-- Skeleton Loading -->
-    <div class="glass-card skeleton" style="height: 100px; margin-bottom: 12px;"></div>
-    <div class="glass-card skeleton" style="height: 100px; margin-bottom: 12px;"></div>
-  </div>
-
-  <script src="assets/js/app.js"></script>
-  <script>
-    async function loadCustomers() {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: profile } = await supabase.from('profiles').select('nama').eq('id', user.id).single();
-      const teknisiNama = profile?.nama || 'Teknisi';
-
-      const { data: pelanggan } = await supabase.from('pelanggan').select('*').order('created_at', { ascending: false });
-      const container = document.getElementById('customerList');
-      container.innerHTML = '';
-
-      pelanggan.forEach(p => {
-        const badgeClass = p.status === 'Sudah Diambil' ? 'badge-green' : (p.status === 'Sedang Proses' ? 'badge-yellow' : 'badge-red');
-        const waLink = formatWA(p.nomor_hp);
-        const mapsLink = `https://www.google.com/maps?q=${p.latitude},${p.longitude}`;
+    <script>
+        // Cek login
+        const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
+        if (!userLoggedIn) { 
+            window.location.href = 'login.html'; 
+        }
         
-        let actionButtons = `
-          <a href="${waLink}" target="_blank" class="btn btn-whatsapp" style="margin-top: 8px; font-size: 14px; padding: 10px;">
-            <span class="material-icons" style="font-size: 18px;">whatsapp</span> WhatsApp
-          </a>
-          <a href="${mapsLink}" target="_blank" class="btn btn-map" style="margin-top: 8px; font-size: 14px; padding: 10px;">
-            <span class="material-icons" style="font-size: 18px;">map</span> Buka Maps
-          </a>
-        `;
-
-        if (p.status !== 'Sudah Diambil') {
-          actionButtons += `
-            <button onclick="completeTask('${p.id}', '${teknisiNama}')" class="btn btn-success" style="margin-top: 8px; font-size: 16px; padding: 14px; font-weight: bold;">
-              <span class="material-icons">check_circle</span> DONE / SELESAI
-            </button>
-          `;
+        // Inisialisasi Supabase
+        let supabaseClient;
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized');
+        } catch (e) {
+            console.error('Supabase init error:', e);
+            document.getElementById('customerList').innerHTML = 
+                '<div class="empty">❌ Error: Konfigurasi Supabase salah. Periksa config.js</div>';
         }
 
-        container.innerHTML += `
-          <div class="glass-card fade-in" style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-              <h3 style="font-size: 18px;">${p.nama_pelanggan}</h3>
-              <span class="badge ${badgeClass}">${p.status}</span>
-            </div>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 8px 0;">
-              <span class="material-icons" style="font-size: 16px; vertical-align: middle;">phone</span> 
-              <a href="${waLink}" target="_blank" style="color: #25D366; text-decoration: none;">${p.nomor_hp}</a>
-            </p>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 12px;">
-              <span class="material-icons" style="font-size: 16px; vertical-align: middle;">location_on</span> ${p.wilayah} - ${p.alamat.substring(0, 50)}...
-            </p>
-            ${actionButtons}
-          </div>
-        `;
-      });
+        function logout() { 
+            localStorage.removeItem('userLoggedIn'); 
+            window.location.href = 'login.html'; 
+        }
 
-      // Realtime Search
-      document.getElementById('searchInput').addEventListener('input', (e) => {
-        const keyword = e.target.value.toLowerCase();
-        const filtered = pelanggan.filter(p => 
-          p.nama_pelanggan.toLowerCase().includes(keyword) || 
-          p.nomor_hp.includes(keyword) || 
-          p.wilayah.toLowerCase().includes(keyword)
-        );
-        // Re-render logic (disederhanakan untuk demo, idealnya debounce + DOM update)
-      });
-    }
-    loadCustomers();
-  </script>
+        function formatWA(nomor) {
+            let clean = nomor.replace(/\D/g, '');
+            if (clean.startsWith('0')) clean = '62' + clean.substring(1);
+            return `https://wa.me/${clean}`;
+        }
+
+        async function completeTask(pelangganId) {
+            const { value: formValues } = await Swal.fire({
+                title: 'Konfirmasi Penyelesaian',
+                html: `
+                    <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
+                    <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '✅ YA, Sudah Diambil',
+                cancelButtonText: 'Batal',
+                preConfirm: () => ({
+                    tanggal: document.getElementById('swal-tanggal').value,
+                    catatan: document.getElementById('swal-catatan').value
+                })
+            });
+            
+            if (formValues) {
+                const { error } = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil',
+                    tanggal_penarikan: formValues.tanggal,
+                    teknisi: userLoggedIn.nama,
+                    catatan: formValues.catatan
+                }).eq('id', pelangganId);
+                
+                if (!error) {
+                    Swal.fire('Berhasil!', 'Perangkat telah diambil.', 'success');
+                    loadCustomers();
+                } else {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
+        }
+
+        async function loadCustomers() {
+            try {
+                const { data: pelanggan, error } = await supabaseClient
+                    .from('pelanggan')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const container = document.getElementById('customerList');
+                
+                if (!pelanggan || pelanggan.length === 0) {
+                    container.innerHTML = '<div class="empty">📭 Belum ada data pelanggan</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                pelanggan.forEach(p => {
+                    const badgeClass = p.status === 'Sudah Diambil' ? 'badge-green' : 'badge-red';
+                    const waLink = formatWA(p.nomor_hp);
+                    const mapsLink = `https://www.google.com/maps?q=${p.latitude},${p.longitude}`;
+                    
+                    let actionButtons = `
+                        <a href="${waLink}" target="_blank" class="btn btn-whatsapp">
+                            <span>📱</span> WhatsApp
+                        </a>
+                        <a href="${mapsLink}" target="_blank" class="btn btn-map">
+                            <span>🗺️</span> Buka Maps
+                        </a>
+                    `;
+                    
+                    if (p.status !== 'Sudah Diambil') {
+                        actionButtons += `
+                            <button onclick="completeTask('${p.id}')" class="btn btn-success">
+                                ✅ DONE / SELESAI
+                            </button>
+                        `;
+                    }
+                    
+                    const cardHTML = `
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <div class="customer-name">${p.nama_pelanggan}</div>
+                                <span class="badge ${badgeClass}">${p.status}</span>
+                            </div>
+                            <div class="customer-info">
+                                📞 <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
+                            </div>
+                            <div class="customer-info">
+                                📍 ${p.wilayah || '-'}
+                            </div>
+                            ${p.alamat ? `<div class="customer-info" style="font-size:12px; margin-top:4px;">${p.alamat.substring(0, 60)}${p.alamat.length > 60 ? '...' : ''}</div>` : ''}
+                            ${actionButtons}
+                        </div>
+                    `;
+                    
+                    container.innerHTML += cardHTML;
+                });
+                
+            } catch (err) {
+                console.error('Error loading customers:', err);
+                document.getElementById('customerList').innerHTML = 
+                    `<div class="empty">❌ Error: ${err.message}</div>`;
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#customerList .card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(keyword) ? 'block' : 'none';
+            });
+        });
+
+        // Load data saat halaman dibuka
+        loadCustomers();
+    </script>
 </body>
 </html>
