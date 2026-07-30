@@ -99,8 +99,14 @@
             setTimeout(() => { toast.className = 'toast'; }, 3000);
         }
         
-        // SVG Icon Server/Router
         const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>`;
+        
+        const wilayahConfig = [
+            { name: 'Sukamelang', class: 'wilayah-sukamelang' },
+            { name: 'Cibarola', class: 'wilayah-cibarola' },
+            { name: 'Panglejar', class: 'wilayah-panglejar' },
+            { name: 'Perum / Flamboyan', class: 'wilayah-perum' }
+        ];
         
         async function loadDashboard() {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*');
@@ -111,20 +117,19 @@
             document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
             document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status !== 'Sudah Diambil').length;
             
-            const wilayahList = ['Sukamelang', 'Cibarola', 'Panglejar', 'Perum / Flamboyan'];
             const wilayahGrid = document.getElementById('wilayahGrid');
             wilayahGrid.innerHTML = '';
             
-            wilayahList.forEach(w => {
-                const dataW = pelanggan.filter(p => p.wilayah === w);
+            wilayahConfig.forEach((w) => {
+                const dataW = pelanggan.filter(p => p.wilayah === w.name);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status !== 'Sudah Diambil').length;
                 
                 wilayahGrid.innerHTML += `
-                    <div class="wilayah-card" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w)}'">
+                    <div class="wilayah-card ${w.class}" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w.name)}'">
                         <div>
                             <div class="wilayah-icon">${serverIcon}</div>
-                            <div class="wilayah-name">${w}</div>
+                            <div class="wilayah-name">${w.name}</div>
                             <div class="wilayah-count">${dataW.length} perangkat</div>
                         </div>
                         <div class="wilayah-stats">
