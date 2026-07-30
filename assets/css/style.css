@@ -1,0 +1,64 @@
+:root {
+  --primary: #2563EB;
+  --success: #16A34A;
+  --danger: #DC2626;
+  --warning: #F59E0B;
+  --bg: #0F172A;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
+
+/* Glassmorphism Card */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card:active { transform: scale(0.98); }
+
+/* Buttons */
+.btn {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-weight: 600; font-size: 16px; cursor: pointer;
+  transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-whatsapp { background: #25D366; color: white; }
+.btn-map { background: #4285F4; color: white; }
+
+/* Badges */
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-red { background: rgba(220, 38, 38, 0.2); color: #FCA5A5; border: 1px solid var(--danger); }
+.badge-yellow { background: rgba(245, 158, 11, 0.2); color: #FCD34D; border: 1px solid var(--warning); }
+.badge-green { background: rgba(22, 163, 74, 0.2); color: #86EFAC; border: 1px solid var(--success); }
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Animations */
+.fade-in { animation: fadeIn 0.4s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Map Container */
+#map-picker { height: 300px; width: 100%; border-radius: 16px; margin-top: 10px; }
+
+/* Responsive Mobile First */
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
