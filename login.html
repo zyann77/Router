@@ -2,85 +2,218 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Masuk — Penarikan Perangkat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Login</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <style>
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--spacing-3xl) var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(201, 169, 97, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+        
+        .login-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-3xl);
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-xl);
+            box-shadow: 0 12px 32px rgba(201, 169, 97, 0.3);
+        }
+        
+        .login-logo svg {
+            width: 40px;
+            height: 40px;
+            stroke: var(--leather-dark);
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--cream);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .login-subtitle {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        
+        .login-form {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: var(--spacing-2xl);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            position: relative;
+        }
+        
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px dashed rgba(201, 169, 97, 0.25);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+        
+        .error-banner {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: var(--spacing-2xl);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--cream-dark);
+            opacity: 0.5;
+            letter-spacing: 0.1em;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
+    <div class="login-screen">
+        <div class="login-bg"></div>
+        <div class="login-content">
             <div class="login-header">
-                <div class="signet lg">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+                <div class="login-logo">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
-                <h1 class="login-title">Selamat Datang</h1>
-                <p class="login-subtitle">Masuk untuk melanjutkan sesi kerja Anda</p>
+                <h1 class="login-title">Penarikan Perangkat</h1>
+                <div class="login-subtitle">Sistem Manajemen Teknisi</div>
             </div>
-
+            
             <div id="errorMsg" class="error-banner"></div>
-
-            <form id="loginForm">
-                <div class="field">
-                    <label class="field-label">Username</label>
-                    <input type="text" id="username" class="field-input" placeholder="Masukkan username" autocomplete="username" required>
+            
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <label class="input-label">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" required>
                 </div>
-
-                <div class="field" style="margin-bottom: 30px;">
-                    <label class="field-label">Kata Sandi</label>
-                    <input type="password" id="password" class="field-input" placeholder="Masukkan kata sandi" autocomplete="current-password" required>
+                
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
-
-                <button type="submit" class="btn btn-brass btn-full btn-lg">Masuk</button>
+                
+                <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-lg);">
+                    Masuk
+                </button>
             </form>
+            
+            <div class="login-footer">
+                v1.0 • FOLIO DINAS
+            </div>
         </div>
     </div>
 
     <script>
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+        
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-
+            
             errorMsg.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Memeriksa…';
-
+            
             try {
                 const { data: user, error } = await supabaseClient
                     .from('profiles')
                     .select('id, username, password_hash, nama, role')
                     .eq('username', username)
                     .single();
-
+                
                 if (error || !user) {
                     throw new Error('Username tidak ditemukan');
                 }
-
+                
                 if (user.password_hash !== password) {
-                    throw new Error('Kata sandi salah');
+                    throw new Error('Password salah');
                 }
-
+                
                 localStorage.setItem('userLoggedIn', JSON.stringify({
                     id: user.id,
                     username: user.username,
                     nama: user.nama,
                     role: user.role
                 }));
-
-                window.location.href = user.role === 'admin' ? 'dashboard.html' : 'teknisi.html';
-
+                
+                if (user.role === 'admin') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'teknisi.html';
+                }
+                
             } catch (err) {
                 errorMsg.textContent = err.message;
                 errorMsg.style.display = 'block';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Masuk';
             }
         });
     </script>
