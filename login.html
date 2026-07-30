@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Penarikan Perangkat</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,8 +51,7 @@
             background: #2563EB;
             color: white;
         }
-        button:hover:not(:disabled) { background: #1d4ed8; }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button:hover { background: #1d4ed8; }
         .error {
             background: rgba(220, 38, 38, 0.2);
             border: 1px solid #DC2626;
@@ -63,109 +62,71 @@
             font-size: 14px;
             display: none;
         }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>🔐 Login Aplikasi</h2>
         <div id="errorMsg" class="error"></div>
-        <div id="loadingMsg" style="display:none; text-align:center; margin-bottom:16px; color:#94A3B8;">
-            <span class="loading"></span> Memproses...
-        </div>
         <form id="loginForm">
-            <label>Email</label>
-            <input type="email" id="email" required placeholder="admin@test.com">
+            <label>Username</label>
+            <input type="text" id="username" required placeholder="admin atau teknisi">
             
             <label>Password</label>
             <input type="password" id="password" required placeholder="••••••••">
             
-            <button type="submit" id="btnLogin">Masuk</button>
+            <button type="submit">Masuk</button>
         </form>
     </div>
 
     <script>
-        // Cek apakah Supabase sudah terload
-        if (typeof supabase === 'undefined') {
-            document.getElementById('errorMsg').innerHTML = '❌ <b>Config Error:</b> Supabase tidak terload. Periksa file config.js!<br><br><small>Pastikan SUPABASE_URL dan SUPABASE_ANON_KEY sudah benar.</small>';
-            document.getElementById('errorMsg').style.display = 'block';
-            document.getElementById('btnLogin').disabled = true;
-        } else {
-            // Inisialisasi Supabase
-            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
-            console.log('Supabase loaded:', SUPABASE_URL);
-        }
+        // Inisialisasi Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const btn = document.getElementById('btnLogin');
-            const errorMsg = document.getElementById('errorMsg');
-            const loadingMsg = document.getElementById('loadingMsg');
-            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
             
-            // Reset error
             errorMsg.style.display = 'none';
-            errorMsg.textContent = '';
-            
-            // Cek Supabase
-            if (typeof supabaseClient === 'undefined') {
-                errorMsg.innerHTML = '❌ Supabase tidak terinisialisasi. Periksa config.js!';
-                errorMsg.style.display = 'block';
-                return;
-            }
-            
-            // Loading state
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> Memproses...';
-            loadingMsg.style.display = 'block';
             
             try {
-                console.log('Login attempt:', email);
-                
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ 
-                    email, 
-                    password 
-                });
-                
-                if (error) {
-                    console.error('Login error:', error);
-                    throw error;
-                }
-                
-                console.log('Login success:', data);
-                
-                // Ambil role user dari profiles
-                const { data: profile, error: profileError } = await supabaseClient
+                // Cari user berdasarkan username
+                const { data: user, error } = await supabaseClient
                     .from('profiles')
-                    .select('role, nama')
-                    .eq('id', data.user.id)
+                    .select('id, username, password_hash, nama, role')
+                    .eq('username', username)
                     .single();
                 
-                if (profileError) {
-                    console.error('Profile error:', profileError);
-                    throw new Error('Gagal mengambil data profile: ' + profileError.message);
+                if (error || !user) {
+                    throw new Error('Username tidak ditemukan');
                 }
                 
-                console.log('Profile:', profile);
+                // Cek password (sederhana, tanpa hash)
+                if (user.password_hash !== password) {
+                    throw new Error('Password salah');
+                }
+                
+                // Simpan session di localStorage
+                localStorage.setItem('userLoggedIn', JSON.stringify({
+                    id: user.id,
+                    username: user.username,
+                    nama: user.nama,
+                    role: user.role
+                }));
                 
                 // Redirect sesuai role
-                if (profile?.role === 'admin') {
+                if (user.role === 'admin') {
                     window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'teknisi.html';
                 }
                 
             } catch (err) {
-                console.error('Error:', err);
-                errorMsg.innerHTML = '❌ <b>Login Gagal:</b><br>' + err.message;
+                errorMsg.textContent = '❌ ' + err.message;
                 errorMsg.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = 'Masuk';
-                loadingMsg.style.display = 'none';
             }
         });
     </script>
