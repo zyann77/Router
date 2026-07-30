@@ -92,7 +92,9 @@
 
     <script>
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn) { window.location.href = 'login.html'; }
+if (!userLoggedIn || userLoggedIn.role !== 'teknisi') { 
+    window.location.href = 'login.html'; 
+}
         
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         var currentPelangganId = null;
