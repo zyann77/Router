@@ -4,138 +4,403 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tugas Penarikan</title>
-    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.js"></script>
     <style>
-        .customer-card {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-xl);
-            margin: var(--spacing-lg) var(--spacing-xl);
-            transition: transform 0.2s ease;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        .customer-card:active {
-            transform: scale(0.98);
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 80px;
         }
-        
-        .customer-header {
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 24px 24px;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
-            align-items: start;
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .customer-name {
-            font-size: 20px;
-            font-weight: 600;
-            flex: 1;
-            margin-right: var(--spacing-md);
-        }
-        
-        .customer-detail {
-            display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
-            color: var(--text-secondary);
-            font-size: 15px;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: 16px;
         }
-        
-        .customer-detail a {
-            color: var(--ios-blue);
-            text-decoration: none;
+
+        .greeting {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
         }
-        
-        .action-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
+
+        .user-name {
+            font-size: 22px;
+            font-weight: 700;
         }
-        
-        .action-btn {
-            padding: var(--spacing-md);
-            border-radius: var(--radius-lg);
-            border: none;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--spacing-sm);
-            min-height: 44px;
+            font-size: 20px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
         }
-        
-        .action-btn:active {
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Search */
+        .search-container {
+            padding: 16px 24px;
+        }
+
+        .search-box {
+            background: #16161f;
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 15px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #6b6b7b;
+        }
+
+        /* Cards */
+        .customer-card {
+            background: #16161f;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 0 24px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .customer-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .customer-location {
+            font-size: 13px;
+            color: #a0a0b0;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .card-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #a0a0b0;
+            margin-bottom: 8px;
+        }
+
+        .card-info a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .card-address {
+            font-size: 13px;
+            color: #a0a0b0;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn:active {
             transform: scale(0.96);
         }
-        
-        .action-btn-wa {
-            background: var(--ios-green);
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
         }
-        
-        .action-btn-map {
-            background: var(--ios-blue);
+
+        .btn-map {
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
             color: white;
         }
-        
-        .action-btn-done {
+
+        .btn-done {
             grid-column: 1 / -1;
-            background: var(--ios-green);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: var(--spacing-lg);
-            font-size: 17px;
+            padding: 14px;
+            font-size: 15px;
         }
-        
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(22, 22, 31, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            transform: scale(0.9);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #6b6b7b;
+            font-weight: 600;
+        }
+
+        .nav-item.active .nav-label {
+            color: #667eea;
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 64px var(--spacing-xl);
-            color: var(--text-secondary);
+            padding: 60px 24px;
+            color: #6b6b7b;
         }
-        
+
         .empty-icon {
             font-size: 64px;
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: 16px;
             opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #a0a0b0;
+            margin-bottom: 8px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b6b7b;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <div class="nav-title">Tugas Penarikan</div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <div class="greeting">Halo Teknisi 👷</div>
+                <div class="user-name" id="userName">Loading...</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
     </div>
-    
-    <div class="ios-search">
-        <span class="ios-search-icon">🔍</span>
-        <input type="text" id="searchInput" class="ios-search-input" placeholder="Cari nama, HP, atau wilayah">
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-box">
+            <span></span>
+            <input type="text" id="searchInput" placeholder="Cari nama, HP, atau wilayah...">
+        </div>
     </div>
-    
+
+    <!-- Customer List -->
     <div id="customerList">
-        <div class="skeleton" style="height: 200px; margin: var(--spacing-lg) var(--spacing-xl);"></div>
-        <div class="skeleton" style="height: 200px; margin: var(--spacing-lg) var(--spacing-xl);"></div>
+        <div class="loading">
+            <div class="spinner"></div>
+            <div>Memuat data...</div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='admin.html'">
+            <div class="nav-icon"></div>
+            <div class="nav-label">Data</div>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">👷</div>
+            <div class="nav-label">Teknisi</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">Logout</div>
+        </div>
     </div>
 
     <script>
+        // Cek login
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn) { window.location.href = 'login.html'; }
-        
-        var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+        if (!userLoggedIn) {
+            window.location.href = 'login.html';
+        }
+
+        // Set user name
+        document.getElementById('userName').textContent = userLoggedIn.nama;
+
+        // Init Supabase
+        var supabaseClient;
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            document.getElementById('customerList').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Error Konfigurasi</div><div>Periksa file config.js</div></div>';
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.href = 'login.html';
+        }
+
+        // Format WhatsApp
         function formatWA(nomor) {
             var clean = nomor.replace(/\D/g, '');
             if (clean.startsWith('0')) clean = '62' + clean.substring(1);
             return 'https://wa.me/' + clean;
         }
-        
+
+        // Complete Task
         async function completeTask(pelangganId) {
             const { value: formValues } = await Swal.fire({
-                title: 'Konfirmasi',
+                title: 'Konfirmasi Penyelesaian',
                 html: `
                     <input id="swal-tanggal" class="swal2-input" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%; margin-bottom:10px;">
                     <textarea id="swal-catatan" class="swal2-textarea" placeholder="Catatan (opsional)" style="width:100%; min-height:80px;"></textarea>
@@ -149,7 +414,7 @@
                     catatan: document.getElementById('swal-catatan').value
                 })
             });
-            
+
             if (formValues) {
                 const { error } = await supabaseClient.from('pelanggan').update({
                     status: 'Sudah Diambil',
@@ -157,79 +422,84 @@
                     teknisi: userLoggedIn.nama,
                     catatan: formValues.catatan
                 }).eq('id', pelangganId);
-                
+
                 if (!error) {
-                    Swal.fire('Berhasil!', 'Perangkat telah diambil.', 'success');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Perangkat telah diambil',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                     loadCustomers();
                 } else {
                     Swal.fire('Error', error.message, 'error');
                 }
             }
         }
-        
+
+        // Load Customers
         async function loadCustomers() {
-            const { data: pelanggan, error } = await supabaseClient
-                .from('pelanggan')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                document.getElementById('customerList').innerHTML = '<div class="empty-state">Error: ' + error.message + '</div>';
-                return;
-            }
-            
-            const container = document.getElementById('customerList');
-            
-            if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <div>Belum ada data pelanggan</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            pelanggan.forEach(function(p) {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'ios-badge-success' : 'ios-badge-warning';
-                const waLink = formatWA(p.nomor_hp);
-                const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
-                
-                let actionButtons = `
-                    <div class="action-grid">
-                        <a href="${waLink}" target="_blank" class="action-btn action-btn-wa">📱 WhatsApp</a>
-                        <a href="${mapsLink}" target="_blank" class="action-btn action-btn-map">🗺️ Maps</a>
-                `;
-                
-                if (p.status !== 'Sudah Diambil') {
-                    actionButtons += `
-                        <button onclick="completeTask('${p.id}')" class="action-btn action-btn-done">✅ DONE / SELESAI</button>
-                    `;
+            try {
+                const { data: pelanggan, error } = await supabaseClient
+                    .from('pelanggan')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('customerList');
+
+                if (!pelanggan || pelanggan.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Belum ada data</div><div>Hubungi admin untuk menambah data pelanggan</div></div>';
+                    return;
                 }
-                
-                actionButtons += '</div>';
-                
-                container.innerHTML += `
-                    <div class="customer-card slide-up">
-                        <div class="customer-header">
-                            <div class="customer-name">${p.nama_pelanggan}</div>
-                            <span class="ios-badge ${badgeClass}">${p.status}</span>
+
+                container.innerHTML = '';
+
+                pelanggan.forEach(function(p, index) {
+                    const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                    const waLink = formatWA(p.nomor_hp);
+                    const mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+
+                    let actionButtons = `
+                        <div class="action-buttons">
+                            <a href="${waLink}" target="_blank" class="btn btn-whatsapp">📱 WhatsApp</a>
+                            <a href="${mapsLink}" target="_blank" class="btn btn-map">🗺️ Maps</a>
+                    `;
+
+                    if (p.status !== 'Sudah Diambil') {
+                        actionButtons += `
+                            <button onclick="completeTask('${p.id}')" class="btn btn-done">✅ DONE / SELESAI</button>
+                        `;
+                    }
+
+                    actionButtons += '</div>';
+
+                    container.innerHTML += `
+                        <div class="customer-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="card-header">
+                                <div>
+                                    <div class="customer-name">${p.nama_pelanggan}</div>
+                                    <div class="customer-location">📍 ${p.wilayah || '-'}</div>
+                                </div>
+                                <span class="badge ${badgeClass}">${p.status}</span>
+                            </div>
+                            <div class="card-info">
+                                📱 <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
+                            </div>
+                            ${p.alamat ? `<div class="card-address">📍 ${p.alamat}</div>` : ''}
+                            ${actionButtons}
                         </div>
-                        <div class="customer-detail">
-                            📱 <a href="${waLink}" target="_blank">${p.nomor_hp}</a>
-                        </div>
-                        <div class="customer-detail">
-                            📍 ${p.wilayah || '-'}
-                        </div>
-                        ${p.alamat ? `<div class="customer-detail" style="font-size:13px; margin-top:8px; line-height:1.4;">${p.alamat.substring(0, 80)}${p.alamat.length > 80 ? '...' : ''}</div>` : ''}
-                        ${actionButtons}
-                    </div>
-                `;
-            });
+                    `;
+                });
+
+            } catch (err) {
+                document.getElementById('customerList').innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Error</div><div>' + err.message + '</div></div>';
+            }
         }
-        
+
+        // Search
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const keyword = e.target.value.toLowerCase();
             const cards = document.querySelectorAll('.customer-card');
@@ -238,7 +508,8 @@
                 card.style.display = text.includes(keyword) ? 'block' : 'none';
             });
         });
-        
+
+        // Load data
         loadCustomers();
     </script>
 </body>
