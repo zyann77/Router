@@ -74,7 +74,7 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 }
 .hero-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-sm); position: relative; }
 .hero-value { font-family: var(--font-display); font-size: 48px; font-weight: 900; color: var(--cream); margin-bottom: var(--spacing-lg); position: relative; }
-.hero-stats { display: flex; gap: var(--spacing-2xl); position: relative; }
+.hero-stats { display: flex; gap: var(--spacing-lg); position: relative; flex-wrap: wrap; }
 .hero-stat-value { font-family: var(--font-mono); font-size: 20px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
 .hero-stat-label { font-size: 12px; color: var(--cream-dark); opacity: 0.7; }
 
@@ -138,7 +138,7 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 .search-box input::placeholder { color: var(--cream-dark); opacity: 0.4; }
 .search-icon { width: 20px; height: 20px; stroke: var(--gold); stroke-width: 2; fill: none; }
 
-/* WILAYAH GRID - COMPACT & MEWAH */
+/* WILAYAH GRID */
 .wilayah-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -163,91 +163,23 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 }
 
 .wilayah-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
 }
 
-.wilayah-card::after {
-  content: '';
-  position: absolute;
-  top: -50%; right: -50%;
-  width: 100%; height: 100%;
-  background: radial-gradient(circle, rgba(201, 169, 97, 0.1) 0%, transparent 70%);
-  pointer-events: none;
-}
+.wilayah-card:active { transform: scale(0.95); box-shadow: 0 8px 24px rgba(201, 169, 97, 0.3); }
 
-.wilayah-card:active {
-  transform: scale(0.95);
-  box-shadow: 0 8px 24px rgba(201, 169, 97, 0.3);
-}
+.wilayah-card.wilayah-sukamelang { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: rgba(102, 126, 234, 0.5); }
+.wilayah-card.wilayah-cibarola { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-color: rgba(240, 147, 251, 0.5); }
+.wilayah-card.wilayah-panglejar { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-color: rgba(79, 172, 254, 0.5); }
+.wilayah-card.wilayah-perum { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-color: rgba(67, 233, 123, 0.5); }
 
-.wilayah-card.wilayah-sukamelang {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: rgba(102, 126, 234, 0.5);
-}
-
-.wilayah-card.wilayah-cibarola {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  border-color: rgba(240, 147, 251, 0.5);
-}
-
-.wilayah-card.wilayah-panglejar {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border-color: rgba(79, 172, 254, 0.5);
-}
-
-.wilayah-card.wilayah-perum {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  border-color: rgba(67, 233, 123, 0.5);
-}
-
-.wilayah-icon {
-  margin-bottom: var(--spacing-sm);
-  position: relative;
-  z-index: 1;
-}
-
-.wilayah-icon svg {
-  width: 32px;
-  height: 32px;
-  stroke: white;
-  stroke-width: 1.5;
-  fill: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.wilayah-name {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 2px;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.wilayah-count {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.9);
-  position: relative;
-  z-index: 1;
-}
-
-.wilayah-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--spacing-md);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
+.wilayah-icon { margin-bottom: var(--spacing-sm); position: relative; z-index: 1; }
+.wilayah-icon svg { width: 32px; height: 32px; stroke: white; stroke-width: 1.5; fill: none; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); }
+.wilayah-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+.wilayah-count { font-family: var(--font-mono); font-size: 10px; color: rgba(255, 255, 255, 0.9); position: relative; z-index: 1; }
+.wilayah-stats { display: flex; justify-content: space-between; margin-top: var(--spacing-md); padding-top: var(--spacing-sm); border-top: 1px solid rgba(255, 255, 255, 0.2); position: relative; z-index: 1; }
 .wilayah-stat { text-align: center; flex: 1; }
 .wilayah-stat-value { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
 .wilayah-stat-label { font-size: 9px; color: rgba(255, 255, 255, 0.8); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -278,12 +210,8 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 .card-badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-.badge-info {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60A5FA;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
 .badge-info { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-berlangganan { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
 .card-info { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 14px; color: var(--cream-dark); margin-bottom: var(--spacing-sm); position: relative; }
 .card-info a { color: var(--gold); text-decoration: none; font-weight: 600; }
 .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-lg); position: relative; }
@@ -394,6 +322,30 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 .chip { padding: 10px 18px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .chip:active { transform: scale(0.95); }
 .chip.active { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
+
+/* COORD INPUTS */
+.coord-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-md); }
+.coord-input-wrapper { position: relative; }
+.coord-input-wrapper .input-label { margin-bottom: 4px; }
+.coord-input {
+  width: 100%; padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(201, 169, 97, 0.2);
+  border-radius: 12px; color: var(--gold);
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  transition: all 0.2s;
+}
+.coord-input:focus { outline: none; border-color: var(--gold); background: var(--bg-card); }
+.coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
+.coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
+.optional-badge { display: inline-block; font-size: 10px; color: var(--cream-dark); opacity: 0.6; font-weight: 400; margin-left: 8px; font-family: var(--font-mono); }
+
+/* BULAN CHIPS */
+.bulan-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
+.bulan-chips::-webkit-scrollbar { display: none; }
+.chip-bulan { padding: 10px 16px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; min-width: 70px; text-align: center; }
+.chip-bulan:active { transform: scale(0.95); }
+.chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
 
 @media (max-width: 380px) { .hero-value { font-size: 40px; } .section-title { font-size: 20px; } }
 ::-webkit-scrollbar { width: 0; height: 0; }
