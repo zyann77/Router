@@ -3,21 +3,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
-  --gold: #C9A961;
-  --gold-light: #E5C97A;
-  --gold-dark: #A08340;
-  --leather: #2C1810;
-  --leather-light: #3D2418;
-  --leather-dark: #1A0F0A;
-  --cream: #F5F1E8;
-  --cream-dark: #E8E0D0;
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --info: #3B82F6;
-  --bg-primary: #0A0A0F;
-  --bg-secondary: #16161F;
-  --bg-card: #1F1F2E;
+  --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340;
+  --leather: #2C1810; --leather-light: #3D2418; --leather-dark: #1A0F0A;
+  --cream: #F5F1E8; --cream-dark: #E8E0D0;
+  --success: #10B981; --warning: #F59E0B; --danger: #EF4444; --info: #3B82F6;
+  --bg-primary: #0A0A0F; --bg-secondary: #16161F; --bg-card: #1F1F2E;
   --font-display: 'Fraunces', Georgia, serif;
   --font-ui: 'Manrope', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
@@ -211,7 +201,6 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 .badge-info { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.3); }
-.badge-berlangganan { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
 .card-info { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 14px; color: var(--cream-dark); margin-bottom: var(--spacing-sm); position: relative; }
 .card-info a { color: var(--gold); text-decoration: none; font-weight: 600; }
 .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-lg); position: relative; }
