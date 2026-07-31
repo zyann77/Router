@@ -15,7 +15,7 @@
     <div class="top-header">
         <div class="header-content">
             <div>
-                <div class="header-subtitle">RnB</div>
+                <div class="header-subtitle">Panel Administrasi</div>
                 <div class="header-title">Dashboard</div>
             </div>
             <div class="header-icon">A</div>
@@ -24,7 +24,7 @@
 
     <div class="section-header">
         <div class="section-label">Pilih Wilayah</div>
-        <div class="section-title">Input Data</div>
+        <div class="section-title">Area Operasi</div>
     </div>
 
     <div class="wilayah-grid" id="wilayahGrid"></div>
@@ -39,19 +39,21 @@
             <div class="hero-label">Total Perangkat</div>
             <div class="hero-value" id="totalData">0</div>
             <div class="hero-stats">
-    <div class="hero-stat">
-        <div class="hero-stat-value" id="totalDiambil">0</div>
-        <div class="hero-stat-label">Sudah Diambil</div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalDiambil">0</div>
+                    <div class="hero-stat-label">Sudah Diambil</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalBelum">0</div>
+                    <div class="hero-stat-label">Belum Diambil</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalBerlangganan" style="color: #60A5FA;">0</div>
+                    <div class="hero-stat-label">Berlangganan</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="hero-stat">
-        <div class="hero-stat-value" id="totalBelum">0</div>
-        <div class="hero-stat-label">Belum Diambil</div>
-    </div>
-    <div class="hero-stat">
-        <div class="hero-stat-value" id="totalBerlangganan" style="color: #60A5FA;">0</div>
-        <div class="hero-stat-label">Berlangganan</div>
-    </div>
-</div>
 
     <div class="section-header">
         <div class="section-label">Aksi Cepat</div>
@@ -116,11 +118,9 @@
             
             allData = pelanggan;
             document.getElementById('totalData').textContent = pelanggan.length;
-document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
-document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status === 'Belum Diambil').length;
-
-// Tambah statistik berlangganan
-const totalBerlangganan = pelanggan.filter(p => p.status === 'Lanjut Berlangganan').length;
+            document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
+            document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status === 'Belum Diambil').length;
+            document.getElementById('totalBerlangganan').textContent = pelanggan.filter(p => p.status === 'Lanjut Berlangganan').length;
             
             const wilayahGrid = document.getElementById('wilayahGrid');
             wilayahGrid.innerHTML = '';
@@ -128,7 +128,7 @@ const totalBerlangganan = pelanggan.filter(p => p.status === 'Lanjut Berlanggana
             wilayahConfig.forEach((w) => {
                 const dataW = pelanggan.filter(p => p.wilayah === w.name);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
-                const belum = dataW.filter(p => p.status !== 'Sudah Diambil').length;
+                const belum = dataW.filter(p => p.status === 'Belum Diambil').length;
                 
                 wilayahGrid.innerHTML += `
                     <div class="wilayah-card ${w.class}" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w.name)}'">
