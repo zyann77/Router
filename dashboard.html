@@ -114,8 +114,11 @@
             
             allData = pelanggan;
             document.getElementById('totalData').textContent = pelanggan.length;
-            document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
-            document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status !== 'Sudah Diambil').length;
+document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
+document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status === 'Belum Diambil').length;
+
+// Tambah statistik berlangganan
+const totalBerlangganan = pelanggan.filter(p => p.status === 'Lanjut Berlangganan').length;
             
             const wilayahGrid = document.getElementById('wilayahGrid');
             wilayahGrid.innerHTML = '';
