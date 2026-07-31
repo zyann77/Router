@@ -23,6 +23,37 @@
         .chip { padding: 10px 18px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .chip:active { transform: scale(0.95); }
         .chip.active { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
+        
+        /* BULAN CHIPS - Scroll horizontal */
+        .bulan-chips {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: 0 var(--spacing-xl) var(--spacing-lg);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .bulan-chips::-webkit-scrollbar { display: none; }
+        .chip-bulan {
+            padding: 10px 16px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            color: var(--cream-dark);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            min-width: 70px;
+            text-align: center;
+        }
+        .chip-bulan:active { transform: scale(0.95); }
+        .chip-bulan.active {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--leather-dark);
+            border-color: var(--gold);
+            box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -31,8 +62,8 @@
     <div class="top-header">
         <div class="header-content">
             <div>
-                <div class="header-subtitle">Data</div>
-                <div class="header-title">Tarikan Perangkat isolir</div>
+                <div class="header-subtitle">Lapangan Hari Ini</div>
+                <div class="header-title">Tugas Teknisi</div>
             </div>
             <div class="header-icon">T</div>
         </div>
@@ -51,6 +82,11 @@
         <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
         <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
     </div>
+
+    <div class="filter-section">
+        <div class="filter-label">Filter Bulan Penarikan</div>
+    </div>
+    <div class="bulan-chips" id="bulanChips"></div>
 
     <div class="search-container">
         <div class="search-box">
@@ -92,14 +128,13 @@
 
     <script>
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-if (!userLoggedIn || userLoggedIn.role !== 'teknisi') { 
-    window.location.href = 'login.html'; 
-}
+        if (!userLoggedIn) { window.location.href = 'login.html'; }
         
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         var currentPelangganId = null;
         var currentWilayah = 'all';
         var currentStatus = 'all';
+        var currentBulan = 'all';
         var isLoading = false;
         var dataLoaded = false;
         var allCustomers = [];
@@ -112,6 +147,8 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
             { name: 'Panglejar', class: 'wilayah-panglejar' },
             { name: 'Perum / Flamboyan', class: 'wilayah-perum' }
         ];
+
+        const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         function initApp() {
             if (dataLoaded) return;
@@ -135,11 +172,39 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
             setTimeout(function() { toast.className = 'toast'; }, 3000);
         }
 
+        // === RENDER FILTER BULAN ===
+        function renderBulanChips() {
+            const container = document.getElementById('bulanChips');
+            container.innerHTML = '';
+            
+            // Chip "Semua"
+            container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
+            
+            // Chip bulan yang ada datanya (dari tanggal_penarikan)
+            const bulanTersedia = new Set();
+            allCustomers.forEach(p => {
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) {
+                        bulanTersedia.add(d.getMonth());
+                    }
+                }
+            });
+            
+            // Tambahkan bulan saat ini
+            bulanTersedia.add(new Date().getMonth());
+            
+            // Render chip bulan (urut dari Jan ke Des)
+            const sortedBulan = Array.from(bulanTersedia).sort((a, b) => a - b);
+            sortedBulan.forEach(m => {
+                container.innerHTML += `<div class="chip-bulan ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]}</div>`;
+            });
+        }
+
         function loadWilayahGrid() {
             const grid = document.getElementById('wilayahGrid');
             grid.innerHTML = '';
             
-            // Tombol Semua Wilayah
             const allPending = allCustomers.filter(p => p.status !== 'Sudah Diambil').length;
             grid.innerHTML += `
                 <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); box-shadow: 0 0 20px rgba(201, 169, 97, 0.4);' : ''}; grid-column: 1 / -1;">
@@ -153,7 +218,6 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
                 </div>
             `;
             
-            // 4 Wilayah dengan warna
             wilayahConfig.forEach((w) => {
                 const count = allCustomers.filter(p => p.wilayah === w.name && p.status !== 'Sudah Diambil').length;
                 grid.innerHTML += `
@@ -182,6 +246,23 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
             renderCustomers();
         }
 
+        function filterByBulan(bulan, element) {
+            currentBulan = bulan;
+            var parent = element.parentElement;
+            parent.querySelectorAll('.chip-bulan').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            renderCustomers();
+        }
+
+        // === FILTER BERDASARKAN BULAN ===
+        function filterByBulanPenarikan(pelanggan, bulan) {
+            if (bulan === 'all') return true;
+            if (!pelanggan.tanggal_penarikan) return false;
+            const d = new Date(pelanggan.tanggal_penarikan);
+            if (isNaN(d)) return false;
+            return String(d.getMonth()) === bulan;
+        }
+
         function renderCustomers() {
             var container = document.getElementById('customerList');
             var filtered = allCustomers;
@@ -192,18 +273,39 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
             if (currentStatus !== 'all') {
                 filtered = filtered.filter(p => p.status === currentStatus);
             }
+            if (currentBulan !== 'all') {
+                filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
+            }
+            
+            // Tampilkan info filter aktif
+            let filterInfo = '';
+            if (currentBulan !== 'all') {
+                filterInfo = `<div style="padding: 0 var(--spacing-xl) var(--spacing-md); font-family: var(--font-mono); font-size: 12px; color: var(--gold);">📅 Menampilkan data bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> (${filtered.length} data)</div>`;
+            }
             
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
+                container.innerHTML = filterInfo + '<div class="empty-state"><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
                 return;
             }
             
-            container.innerHTML = '';
+            container.innerHTML = filterInfo;
             
             filtered.forEach(function(p) {
                 var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 var waLink = formatWA(p.nomor_hp);
                 var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
+                
+                // Tampilkan tanggal penarikan jika ada
+                var tanggalInfo = '';
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) {
+                        const tgl = d.getDate();
+                        const bln = namaBulan[d.getMonth()];
+                        const thn = d.getFullYear();
+                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ Diambil: ${tgl} ${bln} ${thn}</div>`;
+                    }
+                }
                 
                 var actionButtons = '<div class="card-actions">';
                 actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
@@ -221,6 +323,7 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
                 cardHTML += '<span class="card-badge ' + badgeClass + '">' + p.status + '</span>';
                 cardHTML += '</div>';
                 cardHTML += '<div class="card-info mono-text">📱 <a href="' + waLink + '" target="_blank">' + p.nomor_hp + '</a></div>';
+                cardHTML += tanggalInfo;
                 
                 if (p.alamat) {
                     var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
@@ -279,6 +382,7 @@ if (!userLoggedIn || userLoggedIn.role !== 'teknisi') {
                 if (result.error) throw result.error;
                 allCustomers = result.data || [];
                 loadWilayahGrid();
+                renderBulanChips();
                 renderCustomers();
             } catch (err) {
                 container.innerHTML = '<div class="empty-state"><div class="empty-title">Error</div><div class="empty-subtitle">' + err.message + '</div></div>';
