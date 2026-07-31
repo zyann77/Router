@@ -34,6 +34,16 @@
         .coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
         .coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
         
+        .optional-badge {
+            display: inline-block;
+            font-size: 10px;
+            color: var(--cream-dark);
+            opacity: 0.6;
+            font-weight: 400;
+            margin-left: 8px;
+            font-family: var(--font-mono);
+        }
+        
         /* BULAN CHIPS */
         .bulan-chips {
             display: flex;
@@ -114,17 +124,17 @@
             <input type="hidden" id="editId">
             
             <div class="input-group">
-                <label class="input-label">Nama Pelanggan</label>
+                <label class="input-label">Nama Pelanggan <span style="color: var(--danger);">*</span></label>
                 <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
             </div>
             
             <div class="input-group">
-                <label class="input-label">Nomor HP</label>
+                <label class="input-label">Nomor HP <span style="color: var(--danger);">*</span></label>
                 <input type="text" id="nomor_hp" class="input-field input-mono" placeholder="08xxxxxxxxxx" required>
             </div>
             
             <div class="input-group">
-                <label class="input-label">Wilayah</label>
+                <label class="input-label">Wilayah <span style="color: var(--danger);">*</span></label>
                 <select id="wilayah" class="input-field" required>
                     <option value="">Pilih Wilayah</option>
                     <option value="Sukamelang">Sukamelang</option>
@@ -153,13 +163,20 @@
                 <input type="hidden" id="perangkat" value="Router">
             </div>
             
+            <!-- ALAMAT LENGKAP -->
             <div class="input-group">
-                <label class="input-label">Pilih Lokasi di Peta</label>
+                <label class="input-label">Alamat Lengkap <span class="optional-badge">(Opsional)</span></label>
+                <textarea id="alamat" class="input-field" style="min-height: 80px; resize: vertical;" placeholder="Contoh: Jl. Merdeka No. 10, RT 02/RW 05, Kec. Cibiru"></textarea>
+            </div>
+            
+            <!-- KOORDINAT -->
+            <div class="input-group">
+                <label class="input-label">Titik Koordinat <span class="optional-badge">(Opsional)</span></label>
                 <div class="map-container">
                     <div id="map-picker"></div>
                 </div>
                 
-                <div class="coord-divider">📍 Atau isi koordinat manual</div>
+                <div class="coord-divider"> Atau isi koordinat manual</div>
                 <div class="coord-inputs">
                     <div class="coord-input-wrapper">
                         <label class="input-label">Latitude</label>
@@ -279,6 +296,7 @@
                 document.getElementById('nama').value = editData.nama_pelanggan;
                 document.getElementById('nomor_hp').value = editData.nomor_hp;
                 document.getElementById('wilayah').value = editData.wilayah;
+                document.getElementById('alamat').value = editData.alamat || '';
                 document.getElementById('perangkat').value = editData.perangkat || 'Router';
                 
                 document.querySelectorAll('.perangkat-option').forEach(el => {
@@ -396,19 +414,26 @@
             );
         }
 
+        // === SUBMIT FORM ===
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editId').value;
+            const alamat = document.getElementById('alamat').value.trim();
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
             
-            if (isNaN(lat) || isNaN(lng)) { showToast('Koordinat tidak valid!', 'error'); return; }
+            // Validasi: minimal harus ada alamat ATAU koordinat
+            if (!alamat && (isNaN(lat) || isNaN(lng))) {
+                showToast('Isi alamat atau titik koordinat!', 'error');
+                return;
+            }
             
             const data = {
                 nama_pelanggan: document.getElementById('nama').value,
                 nomor_hp: document.getElementById('nomor_hp').value,
-                alamat: `Lat: ${lat}, Lng: ${lng}`,
-                latitude: lat, longitude: lng,
+                alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
+                latitude: isNaN(lat) ? null : lat,
+                longitude: isNaN(lng) ? null : lng,
                 wilayah: document.getElementById('wilayah').value,
                 perangkat: document.getElementById('perangkat').value
             };
@@ -450,7 +475,6 @@
             allDataForBulan = pelanggan || [];
             renderBulanChips();
             
-            // Filter by bulan
             let filtered = allDataForBulan;
             if (currentBulan !== 'all') {
                 filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
@@ -458,7 +482,6 @@
             
             const container = document.getElementById('tableContainer');
             
-            // Info filter
             let filterInfo = '';
             if (currentBulan !== 'all') {
                 filterInfo = `<div style="padding: var(--spacing-md) var(--spacing-xl); font-family: var(--font-mono); font-size: 12px; color: var(--gold); background: rgba(201, 169, 97, 0.1); border-radius: 12px; margin: 0 var(--spacing-xl) var(--spacing-lg);">📅 Bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> • ${filtered.length} data penarikan</div>`;
@@ -483,6 +506,13 @@
                     }
                 }
                 
+                // Tampilkan alamat jika ada
+                let alamatInfo = '';
+                if (p.alamat) {
+                    const alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
+                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ${alamatText}</div>`;
+                }
+                
                 container.innerHTML += `
                     <div class="modern-card">
                         <div class="card-header">
@@ -493,8 +523,9 @@
                             <span class="card-badge ${badgeClass}">${p.status}</span>
                         </div>
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
+                        ${alamatInfo}
                         ${tanggalInfo}
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
+                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
                         <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
                             <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
