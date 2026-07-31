@@ -500,12 +500,14 @@
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
                 
                 let tanggalInfo = '';
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) {
-                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
-                    }
-                }
+if (p.tanggal_penarikan) {
+    const d = new Date(p.tanggal_penarikan);
+    if (!isNaN(d)) {
+        const icon = p.status === 'Lanjut Berlangganan' ? '🔄' : '✅';
+        const color = p.status === 'Lanjut Berlangganan' ? '#60A5FA' : 'var(--success)';
+        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: ${color};">${icon} ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
+    }
+}
                 
                 // Tampilkan alamat jika ada
                 let alamatInfo = '';
