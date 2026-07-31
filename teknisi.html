@@ -14,6 +14,7 @@
         .modal-content::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px dashed rgba(201, 169, 97, 0.3); border-radius: 16px; pointer-events: none; }
         .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-xl); text-align: center; color: var(--cream); position: relative; }
         .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
+        .modal-buttons-full { display: grid; grid-template-columns: 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
         
         .filter-section { padding: 0 var(--spacing-xl) var(--spacing-sm); }
         .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md); }
@@ -24,35 +25,17 @@
         .chip:active { transform: scale(0.95); }
         .chip.active { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
         
-        /* BULAN CHIPS - Scroll horizontal */
-        .bulan-chips {
-            display: flex;
-            gap: var(--spacing-sm);
-            padding: 0 var(--spacing-xl) var(--spacing-lg);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
+        .bulan-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
         .bulan-chips::-webkit-scrollbar { display: none; }
-        .chip-bulan {
-            padding: 10px 16px;
-            border-radius: 20px;
-            background: var(--bg-secondary);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            color: var(--cream-dark);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            min-width: 70px;
-            text-align: center;
-        }
+        .chip-bulan { padding: 10px 16px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; min-width: 70px; text-align: center; }
         .chip-bulan:active { transform: scale(0.95); }
-        .chip-bulan.active {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: var(--leather-dark);
-            border-color: var(--gold);
-            box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
+        .chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+        
+        /* BADGE BERLANGGANAN */
+        .badge-berlangganan {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
     </style>
 </head>
@@ -81,6 +64,7 @@
         <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
         <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
         <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
+        <div class="chip" onclick="filterByStatus('Lanjut Berlangganan', this)">Berlangganan</div>
     </div>
 
     <div class="filter-section">
@@ -97,6 +81,7 @@
 
     <div id="customerList"></div>
 
+    <!-- MODAL SELESAI (DIAMBIL) -->
     <div id="modalOverlay" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-title">Konfirmasi Penyelesaian</div>
@@ -111,6 +96,28 @@
             <div class="modal-buttons">
                 <button onclick="closeModal()" class="btn btn-danger">Batal</button>
                 <button onclick="confirmComplete()" class="btn btn-success">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BERLANGGANAN -->
+    <div id="modalBerlangganan" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">Lanjut Berlangganan</div>
+            <p style="text-align: center; color: var(--cream-dark); margin-bottom: var(--spacing-xl); font-size: 14px;">
+                Pelanggan memutuskan untuk <b style="color: #60A5FA;">tetap berlangganan</b> dan tidak jadi menarik perangkat.
+            </p>
+            <div class="input-group">
+                <label class="input-label">Tanggal</label>
+                <input type="date" id="modalTanggalBerlangganan" class="input-field input-mono">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Catatan (Opsional)</label>
+                <textarea id="modalCatatanBerlangganan" class="input-field" style="min-height: 80px;" placeholder="Contoh: Pelanggan ingin lanjut paket..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModalBerlangganan()" class="btn btn-danger">Batal</button>
+                <button onclick="confirmBerlangganan()" class="btn btn-primary">Lanjut Berlangganan</button>
             </div>
         </div>
     </div>
@@ -172,29 +179,20 @@
             setTimeout(function() { toast.className = 'toast'; }, 3000);
         }
 
-        // === RENDER FILTER BULAN ===
         function renderBulanChips() {
             const container = document.getElementById('bulanChips');
             container.innerHTML = '';
-            
-            // Chip "Semua"
             container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
             
-            // Chip bulan yang ada datanya (dari tanggal_penarikan)
             const bulanTersedia = new Set();
             allCustomers.forEach(p => {
                 if (p.tanggal_penarikan) {
                     const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) {
-                        bulanTersedia.add(d.getMonth());
-                    }
+                    if (!isNaN(d)) bulanTersedia.add(d.getMonth());
                 }
             });
-            
-            // Tambahkan bulan saat ini
             bulanTersedia.add(new Date().getMonth());
             
-            // Render chip bulan (urut dari Jan ke Des)
             const sortedBulan = Array.from(bulanTersedia).sort((a, b) => a - b);
             sortedBulan.forEach(m => {
                 container.innerHTML += `<div class="chip-bulan ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]}</div>`;
@@ -205,7 +203,7 @@
             const grid = document.getElementById('wilayahGrid');
             grid.innerHTML = '';
             
-            const allPending = allCustomers.filter(p => p.status !== 'Sudah Diambil').length;
+            const allPending = allCustomers.filter(p => p.status === 'Belum Diambil').length;
             grid.innerHTML += `
                 <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); box-shadow: 0 0 20px rgba(201, 169, 97, 0.4);' : ''}; grid-column: 1 / -1;">
                     <div style="display: flex; align-items: center; gap: var(--spacing-md);">
@@ -219,7 +217,7 @@
             `;
             
             wilayahConfig.forEach((w) => {
-                const count = allCustomers.filter(p => p.wilayah === w.name && p.status !== 'Sudah Diambil').length;
+                const count = allCustomers.filter(p => p.wilayah === w.name && p.status === 'Belum Diambil').length;
                 grid.innerHTML += `
                     <div class="wilayah-card ${w.class}" onclick="filterByWilayah('${w.name}', this)" style="${currentWilayah === w.name ? 'box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transform: scale(1.02);' : ''}">
                         <div>
@@ -254,7 +252,6 @@
             renderCustomers();
         }
 
-        // === FILTER BERDASARKAN BULAN ===
         function filterByBulanPenarikan(pelanggan, bulan) {
             if (bulan === 'all') return true;
             if (!pelanggan.tanggal_penarikan) return false;
@@ -267,17 +264,10 @@
             var container = document.getElementById('customerList');
             var filtered = allCustomers;
             
-            if (currentWilayah !== 'all') {
-                filtered = filtered.filter(p => p.wilayah === currentWilayah);
-            }
-            if (currentStatus !== 'all') {
-                filtered = filtered.filter(p => p.status === currentStatus);
-            }
-            if (currentBulan !== 'all') {
-                filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
-            }
+            if (currentWilayah !== 'all') filtered = filtered.filter(p => p.wilayah === currentWilayah);
+            if (currentStatus !== 'all') filtered = filtered.filter(p => p.status === currentStatus);
+            if (currentBulan !== 'all') filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
             
-            // Tampilkan info filter aktif
             let filterInfo = '';
             if (currentBulan !== 'all') {
                 filterInfo = `<div style="padding: 0 var(--spacing-xl) var(--spacing-md); font-family: var(--font-mono); font-size: 12px; color: var(--gold);">📅 Menampilkan data bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> (${filtered.length} data)</div>`;
@@ -291,11 +281,13 @@
             container.innerHTML = filterInfo;
             
             filtered.forEach(function(p) {
-                var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                var badgeClass = 'badge-warning';
+                if (p.status === 'Sudah Diambil') badgeClass = 'badge-success';
+                else if (p.status === 'Lanjut Berlangganan') badgeClass = 'badge-berlangganan';
+                
                 var waLink = formatWA(p.nomor_hp);
                 var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
                 
-                // Tampilkan tanggal penarikan jika ada
                 var tanggalInfo = '';
                 if (p.tanggal_penarikan) {
                     const d = new Date(p.tanggal_penarikan);
@@ -303,7 +295,8 @@
                         const tgl = d.getDate();
                         const bln = namaBulan[d.getMonth()];
                         const thn = d.getFullYear();
-                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ Diambil: ${tgl} ${bln} ${thn}</div>`;
+                        const icon = p.status === 'Lanjut Berlangganan' ? '' : '✅';
+                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: ${p.status === 'Lanjut Berlangganan' ? '#60A5FA' : 'var(--success)'};">${icon} ${p.status === 'Lanjut Berlangganan' ? 'Berlangganan' : 'Diambil'}: ${tgl} ${bln} ${thn}</div>`;
                     }
                 }
                 
@@ -311,8 +304,9 @@
                 actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
                 actionButtons += '<a href="' + mapsLink + '" target="_blank" class="btn btn-map">Maps</a>';
                 
-                if (p.status !== 'Sudah Diambil') {
-                    actionButtons += '<button onclick="openModal(\'' + p.id + '\')" class="btn btn-success btn-full">Selesai</button>';
+                if (p.status === 'Belum Diambil') {
+                    actionButtons += '<button onclick="openModal(\'' + p.id + '\')" class="btn btn-success btn-full">✅ Diambil</button>';
+                    actionButtons += '<button onclick="openModalBerlangganan(\'' + p.id + '\')" class="btn btn-primary btn-full" style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);">🔄 Lanjut Berlangganan</button>';
                 }
                 actionButtons += '</div>';
                 
@@ -336,6 +330,7 @@
             });
         }
 
+        // === MODAL SELESAI (DIAMBIL) ===
         function openModal(pelangganId) {
             currentPelangganId = pelangganId;
             document.getElementById('modalTanggal').value = new Date().toISOString().split('T')[0];
@@ -366,6 +361,41 @@
                 if (result.error) throw result.error;
                 showToast('Perangkat berhasil diambil!', 'success');
                 closeModal();
+                loadCustomers();
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        }
+
+        // === MODAL BERLANGGANAN ===
+        function openModalBerlangganan(pelangganId) {
+            currentPelangganId = pelangganId;
+            document.getElementById('modalTanggalBerlangganan').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalCatatanBerlangganan').value = '';
+            document.getElementById('modalBerlangganan').classList.add('active');
+        }
+
+        function closeModalBerlangganan() {
+            currentPelangganId = null;
+            document.getElementById('modalBerlangganan').classList.remove('active');
+        }
+
+        async function confirmBerlangganan() {
+            if (!currentPelangganId) return;
+            var tanggal = document.getElementById('modalTanggalBerlangganan').value;
+            var catatan = document.getElementById('modalCatatanBerlangganan').value;
+            
+            if (!tanggal) { showToast('Tanggal wajib diisi!', 'error'); return; }
+            
+            try {
+                var result = await supabaseClient.from('pelanggan').update({
+                    status: 'Lanjut Berlangganan',
+                    tanggal_penarikan: tanggal,
+                    teknisi: 'Teknisi',
+                    catatan: catatan
+                }).eq('id', currentPelangganId);
+                
+                if (result.error) throw result.error;
+                showToast('Pelanggan lanjut berlangganan!', 'success');
+                closeModalBerlangganan();
                 loadCustomers();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
