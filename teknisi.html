@@ -13,8 +13,8 @@
         .modal-content { background: var(--bg-card); border-radius: 20px; padding: var(--spacing-2xl); width: 100%; max-width: 400px; border: 1px solid rgba(201, 169, 97, 0.3); position: relative; }
         .modal-content::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px dashed rgba(201, 169, 97, 0.3); border-radius: 16px; pointer-events: none; }
         .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-xl); text-align: center; color: var(--cream); position: relative; }
+        .modal-subtitle { text-align: center; color: var(--cream-dark); margin-bottom: var(--spacing-xl); font-size: 14px; line-height: 1.5; }
         .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
-        .modal-buttons-full { display: grid; grid-template-columns: 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
         
         .filter-section { padding: 0 var(--spacing-xl) var(--spacing-sm); }
         .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md); }
@@ -31,11 +31,13 @@
         .chip-bulan:active { transform: scale(0.95); }
         .chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
         
-        /* BADGE BERLANGGANAN */
-        .badge-berlangganan {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60A5FA;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+        .warning-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+            font-size: 32px;
         }
     </style>
 </head>
@@ -64,7 +66,6 @@
         <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
         <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
         <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
-        <div class="chip" onclick="filterByStatus('Lanjut Berlangganan', this)">Berlangganan</div>
     </div>
 
     <div class="filter-section">
@@ -100,24 +101,22 @@
         </div>
     </div>
 
-    <!-- MODAL BERLANGGANAN -->
+    <!-- MODAL LANJUT BERLANGGANAN (HAPUS DATA) -->
     <div id="modalBerlangganan" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-title">Lanjut Berlangganan</div>
-            <p style="text-align: center; color: var(--cream-dark); margin-bottom: var(--spacing-xl); font-size: 14px;">
-                Pelanggan memutuskan untuk <b style="color: #60A5FA;">tetap berlangganan</b> dan tidak jadi menarik perangkat.
+            <div class="warning-icon">⚠️</div>
+            <div class="modal-title">Lanjut Berlangganan?</div>
+            <p class="modal-subtitle">
+                Pelanggan memutuskan untuk <b style="color: var(--gold);">tetap berlangganan</b>.<br><br>
+                Data ini akan <b style="color: var(--danger);">dihapus dari daftar isolir</b> karena tidak jadi ditarik.
             </p>
-            <div class="input-group">
-                <label class="input-label">Tanggal</label>
-                <input type="date" id="modalTanggalBerlangganan" class="input-field input-mono">
-            </div>
             <div class="input-group">
                 <label class="input-label">Catatan (Opsional)</label>
                 <textarea id="modalCatatanBerlangganan" class="input-field" style="min-height: 80px;" placeholder="Contoh: Pelanggan ingin lanjut paket..."></textarea>
             </div>
             <div class="modal-buttons">
                 <button onclick="closeModalBerlangganan()" class="btn btn-danger">Batal</button>
-                <button onclick="confirmBerlangganan()" class="btn btn-primary">Lanjut Berlangganan</button>
+                <button onclick="confirmBerlangganan()" class="btn btn-primary">Ya, Hapus Data</button>
             </div>
         </div>
     </div>
@@ -281,9 +280,7 @@
             container.innerHTML = filterInfo;
             
             filtered.forEach(function(p) {
-                var badgeClass = 'badge-warning';
-                if (p.status === 'Sudah Diambil') badgeClass = 'badge-success';
-                else if (p.status === 'Lanjut Berlangganan') badgeClass = 'badge-berlangganan';
+                var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 
                 var waLink = formatWA(p.nomor_hp);
                 var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
@@ -295,8 +292,7 @@
                         const tgl = d.getDate();
                         const bln = namaBulan[d.getMonth()];
                         const thn = d.getFullYear();
-                        const icon = p.status === 'Lanjut Berlangganan' ? '' : '✅';
-                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: ${p.status === 'Lanjut Berlangganan' ? '#60A5FA' : 'var(--success)'};">${icon} ${p.status === 'Lanjut Berlangganan' ? 'Berlangganan' : 'Diambil'}: ${tgl} ${bln} ${thn}</div>`;
+                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ Diambil: ${tgl} ${bln} ${thn}</div>`;
                     }
                 }
                 
@@ -306,7 +302,7 @@
                 
                 if (p.status === 'Belum Diambil') {
                     actionButtons += '<button onclick="openModal(\'' + p.id + '\')" class="btn btn-success btn-full">✅ Diambil</button>';
-                    actionButtons += '<button onclick="openModalBerlangganan(\'' + p.id + '\')" class="btn btn-primary btn-full" style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);">🔄 Lanjut Berlangganan</button>';
+                    actionButtons += '<button onclick="openModalBerlangganan(\'' + p.id + '\')" class="btn btn-primary btn-full">🔄 Lanjut Berlangganan</button>';
                 }
                 actionButtons += '</div>';
                 
@@ -321,7 +317,7 @@
                 
                 if (p.alamat) {
                     var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ' + alamatText + '</div>';
+                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ' + alamatText + '</div>';
                 }
                 cardHTML += actionButtons;
                 cardHTML += '</div>';
@@ -365,10 +361,9 @@
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
-        // === MODAL BERLANGGANAN ===
+        // === MODAL LANJUT BERLANGGANAN (HAPUS DATA) ===
         function openModalBerlangganan(pelangganId) {
             currentPelangganId = pelangganId;
-            document.getElementById('modalTanggalBerlangganan').value = new Date().toISOString().split('T')[0];
             document.getElementById('modalCatatanBerlangganan').value = '';
             document.getElementById('modalBerlangganan').classList.add('active');
         }
@@ -380,21 +375,13 @@
 
         async function confirmBerlangganan() {
             if (!currentPelangganId) return;
-            var tanggal = document.getElementById('modalTanggalBerlangganan').value;
-            var catatan = document.getElementById('modalCatatanBerlangganan').value;
-            
-            if (!tanggal) { showToast('Tanggal wajib diisi!', 'error'); return; }
             
             try {
-                var result = await supabaseClient.from('pelanggan').update({
-                    status: 'Lanjut Berlangganan',
-                    tanggal_penarikan: tanggal,
-                    teknisi: 'Teknisi',
-                    catatan: catatan
-                }).eq('id', currentPelangganId);
+                // HAPUS DATA DARI DATABASE
+                var result = await supabaseClient.from('pelanggan').delete().eq('id', currentPelangganId);
                 
                 if (result.error) throw result.error;
-                showToast('Pelanggan lanjut berlangganan!', 'success');
+                showToast('Data dihapus! Pelanggan lanjut berlangganan.', 'success');
                 closeModalBerlangganan();
                 loadCustomers();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
