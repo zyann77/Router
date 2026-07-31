@@ -495,7 +495,8 @@
             container.innerHTML = filterInfo;
             
             filtered.forEach(p => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 
+                   p.status === 'Lanjut Berlangganan' ? 'badge-berlangganan' : 'badge-warning';
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
                 
                 let tanggalInfo = '';
