@@ -9,72 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="config.js"></script>
-    <style>
-        .coord-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-md);
-        }
-        .coord-input-wrapper { position: relative; }
-        .coord-input-wrapper .input-label { margin-bottom: 4px; }
-        .coord-input {
-            width: 100%;
-            padding: 12px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 12px;
-            color: var(--gold);
-            font-family: var(--font-mono);
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .coord-input:focus { outline: none; border-color: var(--gold); background: var(--bg-card); }
-        .coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
-        .coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
-        
-        .optional-badge {
-            display: inline-block;
-            font-size: 10px;
-            color: var(--cream-dark);
-            opacity: 0.6;
-            font-weight: 400;
-            margin-left: 8px;
-            font-family: var(--font-mono);
-        }
-        
-        /* BULAN CHIPS */
-        .bulan-chips {
-            display: flex;
-            gap: var(--spacing-sm);
-            padding: 0 var(--spacing-xl) var(--spacing-lg);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .bulan-chips::-webkit-scrollbar { display: none; }
-        .chip-bulan {
-            padding: 10px 16px;
-            border-radius: 20px;
-            background: var(--bg-secondary);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            color: var(--cream-dark);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            min-width: 70px;
-            text-align: center;
-        }
-        .chip-bulan:active { transform: scale(0.95); }
-        .chip-bulan.active {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: var(--leather-dark);
-            border-color: var(--gold);
-            box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
-        }
-    </style>
 </head>
 <body>
     <div id="toast" class="toast"></div>
@@ -166,7 +100,7 @@
             <!-- ALAMAT LENGKAP -->
             <div class="input-group">
                 <label class="input-label">Alamat Lengkap <span class="optional-badge">(Opsional)</span></label>
-                <textarea id="alamat" class="input-field" style="min-height: 80px; resize: vertical;" placeholder="Contoh: Jl. Merdeka No. 10, RT 02/RW 05, Kec. Cibiru"></textarea>
+                <textarea id="alamat" class="input-field" style="min-height: 80px; resize: vertical;" placeholder="Contoh: Jl. Merdeka No. 10, RT 02/RW 05"></textarea>
             </div>
             
             <!-- KOORDINAT -->
@@ -224,7 +158,6 @@
         let currentWilayahFilter = null;
         let currentBulan = 'all';
         let allDataForBulan = [];
-        let isUpdatingFromMap = false;
 
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
@@ -243,11 +176,9 @@
             document.getElementById('perangkat').value = value;
         }
 
-        // === RENDER FILTER BULAN ===
         function renderBulanChips() {
             const container = document.getElementById('bulanChips');
             container.innerHTML = '';
-            
             container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
             
             const bulanTersedia = new Set();
@@ -342,17 +273,13 @@
             updateCoordDisplay(lat, lng);
             
             map.on('click', function(e) {
-                isUpdatingFromMap = true;
                 marker.setLatLng(e.latlng);
                 updateCoordDisplay(e.latlng.lat, e.latlng.lng);
-                isUpdatingFromMap = false;
             });
             
             marker.on('dragend', function(e) {
-                isUpdatingFromMap = true;
                 const pos = marker.getLatLng();
                 updateCoordDisplay(pos.lat, pos.lng);
-                isUpdatingFromMap = false;
             });
         }
 
@@ -414,7 +341,6 @@
             );
         }
 
-        // === SUBMIT FORM ===
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editId').value;
@@ -422,7 +348,6 @@
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
             
-            // Validasi: minimal harus ada alamat ATAU koordinat
             if (!alamat && (isNaN(lat) || isNaN(lng))) {
                 showToast('Isi alamat atau titik koordinat!', 'error');
                 return;
@@ -484,7 +409,7 @@
             
             let filterInfo = '';
             if (currentBulan !== 'all') {
-                filterInfo = `<div style="padding: var(--spacing-md) var(--spacing-xl); font-family: var(--font-mono); font-size: 12px; color: var(--gold); background: rgba(201, 169, 97, 0.1); border-radius: 12px; margin: 0 var(--spacing-xl) var(--spacing-lg);">📅 Bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> • ${filtered.length} data penarikan</div>`;
+                filterInfo = `<div style="padding: var(--spacing-md) var(--spacing-xl); font-family: var(--font-mono); font-size: 12px; color: var(--gold); background: rgba(201, 169, 97, 0.1); border-radius: 12px; margin: 0 var(--spacing-xl) var(--spacing-lg);"> Bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> • ${filtered.length} data penarikan</div>`;
             }
             
             if (!filtered || filtered.length === 0) {
@@ -495,25 +420,26 @@
             container.innerHTML = filterInfo;
             
             filtered.forEach(p => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 
-                   p.status === 'Lanjut Berlangganan' ? 'badge-berlangganan' : 'badge-warning';
+                let badgeClass = 'badge-warning';
+                if (p.status === 'Sudah Diambil') badgeClass = 'badge-success';
+                else if (p.status === 'Lanjut Berlangganan') badgeClass = 'badge-berlangganan';
+                
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
                 
                 let tanggalInfo = '';
-if (p.tanggal_penarikan) {
-    const d = new Date(p.tanggal_penarikan);
-    if (!isNaN(d)) {
-        const icon = p.status === 'Lanjut Berlangganan' ? '🔄' : '✅';
-        const color = p.status === 'Lanjut Berlangganan' ? '#60A5FA' : 'var(--success)';
-        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: ${color};">${icon} ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
-    }
-}
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) {
+                        const icon = p.status === 'Lanjut Berlangganan' ? '🔄' : '✅';
+                        const color = p.status === 'Lanjut Berlangganan' ? '#60A5FA' : 'var(--success)';
+                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: ${color};">${icon} ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
+                    }
+                }
                 
-                // Tampilkan alamat jika ada
                 let alamatInfo = '';
                 if (p.alamat) {
                     const alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ${alamatText}</div>`;
+                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ${alamatText}</div>`;
                 }
                 
                 container.innerHTML += `
@@ -528,7 +454,7 @@ if (p.tanggal_penarikan) {
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
                         ${alamatInfo}
                         ${tanggalInfo}
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
+                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
                         <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
                             <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
