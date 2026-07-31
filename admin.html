@@ -9,6 +9,93 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="config.js"></script>
+    <style>
+        .coord-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-md); }
+        .coord-input-wrapper { position: relative; }
+        .coord-input-wrapper .input-label { margin-bottom: 4px; }
+        .coord-input {
+            width: 100%; padding: 12px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 12px; color: var(--gold);
+            font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .coord-input:focus { outline: none; border-color: var(--gold); background: var(--bg-card); }
+        .coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
+        .coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
+        .optional-badge { display: inline-block; font-size: 10px; color: var(--cream-dark); opacity: 0.6; font-weight: 400; margin-left: 8px; font-family: var(--font-mono); }
+        
+        .bulan-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
+        .bulan-chips::-webkit-scrollbar { display: none; }
+        .chip-bulan { padding: 10px 16px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; min-width: 70px; text-align: center; }
+        .chip-bulan:active { transform: scale(0.95); }
+        .chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+        
+        /* MODAL DUPLIKAT */
+        .duplicate-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 3000; justify-content: center; align-items: center; padding: var(--spacing-xl); }
+        .duplicate-modal-overlay.active { display: flex; }
+        .duplicate-modal {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        .duplicate-modal::before {
+            content: ''; position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px dashed rgba(239, 68, 68, 0.3);
+            border-radius: 16px; pointer-events: none;
+        }
+        .duplicate-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+            font-size: 32px;
+        }
+        .duplicate-title {
+            font-family: var(--font-display);
+            font-size: 22px; font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            text-align: center; color: var(--cream);
+        }
+        .duplicate-warning {
+            text-align: center;
+            color: var(--cream-dark);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--spacing-xl);
+        }
+        .duplicate-info {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .duplicate-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .duplicate-info-item:last-child { border-bottom: none; }
+        .duplicate-info-label { color: var(--cream-dark); font-family: var(--font-mono); font-size: 12px; }
+        .duplicate-info-value { color: var(--cream); font-weight: 600; }
+        .duplicate-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
     <div id="toast" class="toast"></div>
@@ -131,6 +218,23 @@
         </form>
     </div>
 
+    <!-- MODAL KONFIRMASI DUPLIKAT -->
+    <div id="duplicateModal" class="duplicate-modal-overlay">
+        <div class="duplicate-modal">
+            <div class="duplicate-icon">⚠️</div>
+            <div class="duplicate-title">Data Duplikat Terdeteksi!</div>
+            <p class="duplicate-warning">
+                Sudah ada pelanggan dengan <b>Nama</b> dan <b>Nomor HP</b> yang sama di database.<br><br>
+                Yakin ingin tetap menambahkan data ini?
+            </p>
+            <div class="duplicate-info" id="duplicateInfo"></div>
+            <div class="duplicate-buttons">
+                <button onclick="cancelDuplicate()" class="btn btn-danger">Batal</button>
+                <button onclick="forceInsert()" class="btn btn-primary">Ya, Tetap Input</button>
+            </div>
+        </div>
+    </div>
+
     <div class="bottom-nav">
         <div class="nav-item" onclick="window.location.href='dashboard.html'">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -155,6 +259,7 @@
         let currentWilayahFilter = null;
         let currentBulan = 'all';
         let allDataForBulan = [];
+        let pendingData = null; // Simpan data yang pending duplikat
 
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
@@ -338,44 +443,157 @@
             );
         }
 
+        // === CEK DUPLIKAT SEBELUM INSERT ===
+        async function checkDuplicate(nama, nomorHp, excludeId = null) {
+            // Normalisasi nomor HP (hapus spasi, tanda hubung, dll)
+            const cleanHp = nomorHp.replace(/\D/g, '');
+            
+            let query = supabaseClient
+                .from('pelanggan')
+                .select('id, nama_pelanggan, nomor_hp, wilayah, status')
+                .eq('nama_pelanggan', nama)
+                .eq('nomor_hp', nomorHp);
+            
+            const { data, error } = await query;
+            
+            if (error || !data || data.length === 0) return null;
+            
+            // Jika edit mode, abaikan data yang sedang diedit
+            if (excludeId) {
+                const filtered = data.filter(p => p.id !== excludeId);
+                return filtered.length > 0 ? filtered[0] : null;
+            }
+            
+            return data[0];
+        }
+
+        // === SUBMIT FORM ===
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const editId = document.getElementById('editId').value;
+            const nama = document.getElementById('nama').value.trim();
+            const nomorHp = document.getElementById('nomor_hp').value.trim();
             const alamat = document.getElementById('alamat').value.trim();
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
+            
+            // Validasi dasar
+            if (!nama || !nomorHp) {
+                showToast('Nama dan Nomor HP wajib diisi!', 'error');
+                return;
+            }
             
             if (!alamat && (isNaN(lat) || isNaN(lng))) {
                 showToast('Isi alamat atau titik koordinat!', 'error');
                 return;
             }
             
-            const data = {
-                nama_pelanggan: document.getElementById('nama').value,
-                nomor_hp: document.getElementById('nomor_hp').value,
-                alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
-                latitude: isNaN(lat) ? null : lat,
-                longitude: isNaN(lng) ? null : lng,
-                wilayah: document.getElementById('wilayah').value,
-                perangkat: document.getElementById('perangkat').value
-            };
-            
-            let error;
+            // Jika EDIT, langsung update (tidak perlu cek duplikat)
             if (editId) {
-                const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
-                error = result.error;
-            } else {
-                data.status = 'Belum Diambil';
-                const result = await supabaseClient.from('pelanggan').insert([data]);
-                error = result.error;
+                const data = {
+                    nama_pelanggan: nama,
+                    nomor_hp: nomorHp,
+                    alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
+                    latitude: isNaN(lat) ? null : lat,
+                    longitude: isNaN(lng) ? null : lng,
+                    wilayah: document.getElementById('wilayah').value,
+                    perangkat: document.getElementById('perangkat').value
+                };
+                
+                const { error } = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
+                
+                if (!error) {
+                    showToast('Data berhasil diupdate!', 'success');
+                    closeBottomSheet();
+                    loadTable();
+                } else {
+                    showToast('Error: ' + error.message, 'error');
+                }
+                return;
             }
             
+            // Jika TAMBAH BARU, cek duplikat dulu
+            const duplicate = await checkDuplicate(nama, nomorHp);
+            
+            if (duplicate) {
+                // Tampilkan modal duplikat
+                pendingData = {
+                    nama_pelanggan: nama,
+                    nomor_hp: nomorHp,
+                    alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
+                    latitude: isNaN(lat) ? null : lat,
+                    longitude: isNaN(lng) ? null : lng,
+                    wilayah: document.getElementById('wilayah').value,
+                    perangkat: document.getElementById('perangkat').value,
+                    status: 'Belum Diambil'
+                };
+                
+                // Tampilkan info data duplikat
+                document.getElementById('duplicateInfo').innerHTML = `
+                    <div class="duplicate-info-item">
+                        <span class="duplicate-info-label">Nama</span>
+                        <span class="duplicate-info-value">${duplicate.nama_pelanggan}</span>
+                    </div>
+                    <div class="duplicate-info-item">
+                        <span class="duplicate-info-label">Nomor HP</span>
+                        <span class="duplicate-info-value">${duplicate.nomor_hp}</span>
+                    </div>
+                    <div class="duplicate-info-item">
+                        <span class="duplicate-info-label">Wilayah</span>
+                        <span class="duplicate-info-value">${duplicate.wilayah || '-'}</span>
+                    </div>
+                    <div class="duplicate-info-item">
+                        <span class="duplicate-info-label">Status</span>
+                        <span class="duplicate-info-value">${duplicate.status}</span>
+                    </div>
+                `;
+                
+                document.getElementById('duplicateModal').classList.add('active');
+                return;
+            }
+            
+            // Tidak ada duplikat, langsung insert
+            await doInsert();
+        });
+
+        // === BATAL DUPLIKAT ===
+        function cancelDuplicate() {
+            pendingData = null;
+            document.getElementById('duplicateModal').classList.remove('active');
+            showToast('Input dibatalkan', 'error');
+        }
+
+        // === FORCE INSERT (TETAP INPUT MESKI DUPLIKAT) ===
+        async function forceInsert() {
+            if (!pendingData) return;
+            
+            document.getElementById('duplicateModal').classList.remove('active');
+            await doInsert();
+            pendingData = null;
+        }
+
+        // === LAKUKAN INSERT ===
+        async function doInsert() {
+            const { error } = await supabaseClient.from('pelanggan').insert([pendingData || {
+                nama_pelanggan: document.getElementById('nama').value,
+                nomor_hp: document.getElementById('nomor_hp').value,
+                alamat: document.getElementById('alamat').value.trim() || (isNaN(parseFloat(document.getElementById('latitude').value)) || isNaN(parseFloat(document.getElementById('longitude').value)) ? '' : `Lat: ${parseFloat(document.getElementById('latitude').value)}, Lng: ${parseFloat(document.getElementById('longitude').value)}`),
+                latitude: isNaN(parseFloat(document.getElementById('latitude').value)) ? null : parseFloat(document.getElementById('latitude').value),
+                longitude: isNaN(parseFloat(document.getElementById('longitude').value)) ? null : parseFloat(document.getElementById('longitude').value),
+                wilayah: document.getElementById('wilayah').value,
+                perangkat: document.getElementById('perangkat').value,
+                status: 'Belum Diambil'
+            }]);
+            
             if (!error) {
-                showToast(editId ? 'Data berhasil diupdate!' : 'Data berhasil disimpan!', 'success');
+                showToast('Data berhasil disimpan!', 'success');
                 closeBottomSheet();
                 loadTable();
-            } else { showToast('Error: ' + error.message, 'error'); }
-        });
+            } else {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
         
         async function deleteData(id) {
             if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -431,7 +649,7 @@
                 let alamatInfo = '';
                 if (p.alamat) {
                     const alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ${alamatText}</div>`;
+                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ${alamatText}</div>`;
                 }
                 
                 container.innerHTML += `
@@ -446,10 +664,10 @@
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
                         ${alamatInfo}
                         ${tanggalInfo}
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
+                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
                         <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
-                            <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">️ Edit</button>
+                            <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
                             <button onclick="deleteData('${p.id}')" class="btn btn-danger btn-small">Hapus</button>
                         </div>
                     </div>
