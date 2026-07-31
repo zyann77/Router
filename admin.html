@@ -16,12 +16,8 @@
             gap: var(--spacing-md);
             margin-top: var(--spacing-md);
         }
-        .coord-input-wrapper {
-            position: relative;
-        }
-        .coord-input-wrapper .input-label {
-            margin-bottom: 4px;
-        }
+        .coord-input-wrapper { position: relative; }
+        .coord-input-wrapper .input-label { margin-bottom: 4px; }
         .coord-input {
             width: 100%;
             padding: 12px 14px;
@@ -34,23 +30,39 @@
             font-weight: 600;
             transition: all 0.2s;
         }
-        .coord-input:focus {
-            outline: none;
-            border-color: var(--gold);
-            background: var(--bg-card);
+        .coord-input:focus { outline: none; border-color: var(--gold); background: var(--bg-card); }
+        .coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
+        .coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
+        
+        /* BULAN CHIPS */
+        .bulan-chips {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: 0 var(--spacing-xl) var(--spacing-lg);
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        .coord-input::placeholder {
+        .bulan-chips::-webkit-scrollbar { display: none; }
+        .chip-bulan {
+            padding: 10px 16px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(201, 169, 97, 0.2);
             color: var(--cream-dark);
-            opacity: 0.4;
-            font-weight: 400;
-        }
-        .coord-divider {
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            min-width: 70px;
             text-align: center;
-            color: var(--gold);
-            font-size: 11px;
-            font-family: var(--font-mono);
-            margin: var(--spacing-sm) 0;
-            opacity: 0.7;
+        }
+        .chip-bulan:active { transform: scale(0.95); }
+        .chip-bulan.active {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--leather-dark);
+            border-color: var(--gold);
+            box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
         }
     </style>
 </head>
@@ -80,6 +92,12 @@
             <input type="text" id="searchTable" placeholder="Cari pelanggan...">
         </div>
     </div>
+
+    <!-- FILTER BULAN -->
+    <div class="filter-section" style="padding: 0 var(--spacing-xl) var(--spacing-sm);">
+        <div class="filter-label" style="font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md);">Filter Bulan Penarikan</div>
+    </div>
+    <div class="bulan-chips" id="bulanChips"></div>
 
     <div id="tableContainer"></div>
 
@@ -141,16 +159,15 @@
                     <div id="map-picker"></div>
                 </div>
                 
-                <!-- INPUT KOORDINAT MANUAL -->
                 <div class="coord-divider">📍 Atau isi koordinat manual</div>
                 <div class="coord-inputs">
                     <div class="coord-input-wrapper">
                         <label class="input-label">Latitude</label>
-                        <input type="text" id="latitude" class="coord-input" placeholder="-6.xxxxxx" step="any">
+                        <input type="text" id="latitude" class="coord-input" placeholder="-6.xxxxxx">
                     </div>
                     <div class="coord-input-wrapper">
                         <label class="input-label">Longitude</label>
-                        <input type="text" id="longitude" class="coord-input" placeholder="107.xxxxxx" step="any">
+                        <input type="text" id="longitude" class="coord-input" placeholder="107.xxxxxx">
                     </div>
                 </div>
                 
@@ -188,8 +205,11 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let map, marker;
         let currentWilayahFilter = null;
+        let currentBulan = 'all';
+        let allDataForBulan = [];
         let isUpdatingFromMap = false;
-        let isUpdatingFromInput = false;
+
+        const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
 
@@ -204,6 +224,49 @@
             document.querySelectorAll('.perangkat-option').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             document.getElementById('perangkat').value = value;
+        }
+
+        // === RENDER FILTER BULAN ===
+        function renderBulanChips() {
+            const container = document.getElementById('bulanChips');
+            container.innerHTML = '';
+            
+            container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
+            
+            const bulanTersedia = new Set();
+            allDataForBulan.forEach(p => {
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) bulanTersedia.add(d.getMonth());
+                }
+            });
+            bulanTersedia.add(new Date().getMonth());
+            
+            const sortedBulan = Array.from(bulanTersedia).sort((a, b) => a - b);
+            sortedBulan.forEach(m => {
+                const count = allDataForBulan.filter(p => {
+                    if (!p.tanggal_penarikan) return false;
+                    const d = new Date(p.tanggal_penarikan);
+                    return !isNaN(d) && d.getMonth() === m;
+                }).length;
+                container.innerHTML += `<div class="chip-bulan ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`;
+            });
+        }
+
+        function filterByBulan(bulan, element) {
+            currentBulan = bulan;
+            var parent = element.parentElement;
+            parent.querySelectorAll('.chip-bulan').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            loadTable();
+        }
+
+        function filterByBulanPenarikan(pelanggan, bulan) {
+            if (bulan === 'all') return true;
+            if (!pelanggan.tanggal_penarikan) return false;
+            const d = new Date(pelanggan.tanggal_penarikan);
+            if (isNaN(d)) return false;
+            return String(d.getMonth()) === bulan;
         }
 
         function openBottomSheet(editData = null) {
@@ -225,17 +288,13 @@
                     if (text === val) el.classList.add('selected');
                 });
                 
-                setTimeout(() => {
-                    initMap(editData.latitude, editData.longitude);
-                }, 300);
+                setTimeout(() => { initMap(editData.latitude, editData.longitude); }, 300);
             } else {
                 document.getElementById('formTitle').textContent = 'Tambah Data Baru';
                 document.getElementById('formPelanggan').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('perangkat').value = 'Router';
-                document.querySelectorAll('.perangkat-option').forEach((el, i) => {
-                    el.classList.toggle('selected', i === 0);
-                });
+                document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); });
                 setTimeout(initMap, 300);
             }
         }
@@ -257,16 +316,13 @@
             }
             
             map = L.map('map-picker').setView([lat, lng], 13);
-            
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO',
-                maxZoom: 19
+                attribution: '© OpenStreetMap © CARTO', maxZoom: 19
             }).addTo(map);
             
             marker = L.marker([lat, lng], { draggable: true }).addTo(map);
             updateCoordDisplay(lat, lng);
             
-            // Saat klik peta → update marker & input
             map.on('click', function(e) {
                 isUpdatingFromMap = true;
                 marker.setLatLng(e.latlng);
@@ -274,7 +330,6 @@
                 isUpdatingFromMap = false;
             });
             
-            // Saat drag marker → update input
             marker.on('dragend', function(e) {
                 isUpdatingFromMap = true;
                 const pos = marker.getLatLng();
@@ -284,80 +339,51 @@
         }
 
         function updateCoordDisplay(lat, lng) {
-            const latInput = document.getElementById('latitude');
-            const lngInput = document.getElementById('longitude');
-            
-            latInput.value = lat.toFixed(6);
-            lngInput.value = lng.toFixed(6);
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
         }
 
-        // === EVENT LISTENER: Input manual koordinat → update peta ===
         document.getElementById('latitude').addEventListener('input', function(e) {
             const lat = parseFloat(e.target.value);
             const lng = parseFloat(document.getElementById('longitude').value);
-            
             if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                isUpdatingFromInput = true;
                 marker.setLatLng([lat, lng]);
                 map.setView([lat, lng], 15);
-                isUpdatingFromInput = false;
             }
         });
 
         document.getElementById('longitude').addEventListener('input', function(e) {
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(e.target.value);
-            
             if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                isUpdatingFromInput = true;
                 marker.setLatLng([lat, lng]);
                 map.setView([lat, lng], 15);
-                isUpdatingFromInput = false;
             }
         });
 
-        // Juga support saat paste
-        document.getElementById('latitude').addEventListener('paste', function(e) {
-            setTimeout(() => {
-                const lat = parseFloat(e.target.value);
-                const lng = parseFloat(document.getElementById('longitude').value);
-                if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng], 15);
-                }
-            }, 100);
-        });
-
-        document.getElementById('longitude').addEventListener('paste', function(e) {
-            setTimeout(() => {
-                const lat = parseFloat(document.getElementById('latitude').value);
-                const lng = parseFloat(e.target.value);
-                if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng], 15);
-                }
-            }, 100);
+        ['latitude', 'longitude'].forEach(id => {
+            document.getElementById(id).addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    const lat = parseFloat(document.getElementById('latitude').value);
+                    const lng = parseFloat(document.getElementById('longitude').value);
+                    if (!isNaN(lat) && !isNaN(lng) && map && marker) {
+                        marker.setLatLng([lat, lng]);
+                        map.setView([lat, lng], 15);
+                    }
+                }, 100);
+            });
         });
 
         function useMyGPS() {
-            if (!navigator.geolocation) {
-                showToast('GPS tidak didukung di browser ini', 'error');
-                return;
-            }
-            
+            if (!navigator.geolocation) { showToast('GPS tidak didukung', 'error'); return; }
             showToast('Mencari lokasi GPS...', 'success');
-            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
-                    if (map && marker) {
-                        marker.setLatLng([lat, lng]);
-                        map.setView([lat, lng], 16);
-                    }
+                    if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); }
                     updateCoordDisplay(lat, lng);
-                    showToast('Lokasi GPS berhasil diambil!', 'success');
+                    showToast('Lokasi GPS berhasil!', 'success');
                 },
                 (error) => {
                     let msg = 'Gagal mengambil GPS';
@@ -372,22 +398,17 @@
 
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const editId = document.getElementById('editId').value;
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
             
-            if (isNaN(lat) || isNaN(lng)) {
-                showToast('Koordinat tidak valid! Isi latitude & longitude.', 'error');
-                return;
-            }
+            if (isNaN(lat) || isNaN(lng)) { showToast('Koordinat tidak valid!', 'error'); return; }
             
             const data = {
                 nama_pelanggan: document.getElementById('nama').value,
                 nomor_hp: document.getElementById('nomor_hp').value,
                 alamat: `Lat: ${lat}, Lng: ${lng}`,
-                latitude: lat,
-                longitude: lng,
+                latitude: lat, longitude: lng,
                 wilayah: document.getElementById('wilayah').value,
                 perangkat: document.getElementById('perangkat').value
             };
@@ -406,9 +427,7 @@
                 showToast(editId ? 'Data berhasil diupdate!' : 'Data berhasil disimpan!', 'success');
                 closeBottomSheet();
                 loadTable();
-            } else {
-                showToast('Error: ' + error.message, 'error');
-            }
+            } else { showToast('Error: ' + error.message, 'error'); }
         });
         
         async function deleteData(id) {
@@ -420,9 +439,7 @@
 
         async function editData(id) {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
-            if (pelanggan) {
-                openBottomSheet(pelanggan);
-            }
+            if (pelanggan) openBottomSheet(pelanggan);
         }
         
         async function loadTable() {
@@ -430,18 +447,41 @@
             if (currentWilayahFilter) query = query.eq('wilayah', currentWilayahFilter);
             
             const { data: pelanggan } = await query;
+            allDataForBulan = pelanggan || [];
+            renderBulanChips();
+            
+            // Filter by bulan
+            let filtered = allDataForBulan;
+            if (currentBulan !== 'all') {
+                filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
+            }
+            
             const container = document.getElementById('tableContainer');
             
-            if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
+            // Info filter
+            let filterInfo = '';
+            if (currentBulan !== 'all') {
+                filterInfo = `<div style="padding: var(--spacing-md) var(--spacing-xl); font-family: var(--font-mono); font-size: 12px; color: var(--gold); background: rgba(201, 169, 97, 0.1); border-radius: 12px; margin: 0 var(--spacing-xl) var(--spacing-lg);">📅 Bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> • ${filtered.length} data penarikan</div>`;
+            }
+            
+            if (!filtered || filtered.length === 0) {
+                container.innerHTML = filterInfo + '<div class="empty-state"><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
                 return;
             }
             
-            container.innerHTML = '';
+            container.innerHTML = filterInfo;
             
-            pelanggan.forEach(p => {
+            filtered.forEach(p => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
+                
+                let tanggalInfo = '';
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) {
+                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
+                    }
+                }
                 
                 container.innerHTML += `
                     <div class="modern-card">
@@ -453,8 +493,9 @@
                             <span class="card-badge ${badgeClass}">${p.status}</span>
                         </div>
                         <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;"> ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
-                        <div style="margin-top: var(--spacing-md); position: relative; display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                        ${tanggalInfo}
+                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
+                        <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
                             <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
                             <button onclick="deleteData('${p.id}')" class="btn btn-danger btn-small">Hapus</button>
