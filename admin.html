@@ -1,389 +1,545 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kelola Data</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="config.js"></script>
-</head>
-<body>
-    <div id="toast" class="toast"></div>
-
-    <div class="top-header">
-        <div class="header-content">
-            <div>
-                <div class="header-subtitle">RnB Network - Pelanggan isolir</div>
-                <div class="header-title">Kelola Data</div>
-            </div>
-            <div class="header-icon">A</div>
-        </div>
-    </div>
-
-    <div id="wilayahBanner" style="display: none;"></div>
-
+<!-- MAIN CONTENT -->
+<main>
+    <!-- SECTION: DAFTAR PELANGGAN -->
     <div class="section-header">
-        <div class="section-label">Daftar Pelanggan</div>
-        <div class="section-title">Data Lapangan</div>
+        <div class="section-label">Kelola Data</div>
+        <div class="section-title">Daftar Pelanggan</div>
     </div>
 
+    <!-- SEARCH -->
     <div class="search-container">
         <div class="search-box">
-            <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchTable" placeholder="Cari pelanggan...">
+            <svg class="search-icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Cari nama pelanggan...">
         </div>
     </div>
 
-    <div id="tableContainer"></div>
+    <!-- FILTER CHIPS -->
+    <div class="filter-chips">
+        <div class="chip active" data-filter="all">Semua</div>
+        <div class="chip" data-filter="router">Router</div>
+        <div class="chip" data-filter="stb">STB</div>
+        <div class="chip" data-filter="both">Router+STB</div>
+    </div>
 
-    <button class="fab" onclick="openBottomSheet()">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <!-- DATA LIST -->
+    <div id="dataList"></div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">Belum Ada Data</div>
+        <div class="empty-subtitle">Tambahkan data pelanggan baru</div>
+    </div>
+
+    <!-- FAB BUTTON -->
+    <button class="fab" id="fabAdd">
+        <svg viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
     </button>
+</main>
 
-    <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
-    <div id="bottomSheet" class="bottom-sheet">
-        <div class="bottom-sheet-handle"></div>
-        <div class="bottom-sheet-title" id="formTitle">Tambah Data Baru</div>
-        
-        <form id="formPelanggan">
-            <input type="hidden" id="editId">
-            
-            <div class="input-group">
-                <label class="input-label">Nama Pelanggan</label>
-                <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Nomor HP</label>
-                <input type="text" id="nomor_hp" class="input-field input-mono" placeholder="08xxxxxxxxxx" required>
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Wilayah</label>
-                <select id="wilayah" class="input-field" required>
-                    <option value="">Pilih Wilayah</option>
-                    <option value="Sukamelang">Sukamelang</option>
-                    <option value="Cibarola">Cibarola</option>
-                    <option value="Panglejar">Panglejar</option>
-                    <option value="Perum / Flamboyan">Perum / Flamboyan</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Jenis Perangkat</label>
-                <div class="perangkat-selector">
-                    <div class="perangkat-option selected" onclick="selectPerangkat('Router', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-                        Router
-                    </div>
-                    <div class="perangkat-option" onclick="selectPerangkat('STB', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><line x1="16" y1="10" x2="18" y2="10"/><line x1="16" y1="14" x2="18" y2="14"/></svg>
-                        STB
-                    </div>
-                    <div class="perangkat-option" onclick="selectPerangkat('Router + STB', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="18" width="20" height="4" rx="1"/></svg>
-                        Router+STB
-                    </div>
+<!-- BOTTOM SHEET: TAMBAH DATA -->
+<div class="bottom-sheet-overlay" id="addOverlay"></div>
+<div class="bottom-sheet" id="addSheet">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-title">Tambah Data Baru</div>
+
+    <form id="addForm">
+        <!-- NAMA PELANGGAN -->
+        <div class="input-group">
+            <label class="input-label">Nama Pelanggan</label>
+            <input type="text" class="input-field" id="inputNama" placeholder="Masukkan nama pelanggan" required>
+        </div>
+
+        <!-- NOMOR HP -->
+        <div class="input-group">
+            <label class="input-label">Nomor HP</label>
+            <input type="tel" class="input-field" id="inputHp" placeholder="08xxxxxxxxxx" required>
+        </div>
+
+        <!-- WILAYAH -->
+        <div class="input-group">
+            <label class="input-label">Wilayah</label>
+            <select class="input-field" id="inputWilayah" required>
+                <option value="">Pilih Wilayah</option>
+                <option value="Sukamelang">Sukamelang</option>
+                <option value="Cibarola">Cibarola</option>
+                <option value="Panglejar">Panglejar</option>
+                <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+            </select>
+        </div>
+
+        <!-- JENIS PERANGKAT -->
+        <div class="input-group">
+            <label class="input-label">Jenis Perangkat</label>
+            <div class="perangkat-selector">
+                <div class="perangkat-option" data-value="Router">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="14" width="20" height="8" rx="2"></rect>
+                        <circle cx="6" cy="18" r="1"></circle>
+                        <circle cx="10" cy="18" r="1"></circle>
+                        <path d="M6 14V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6"></path>
+                    </svg>
+                    Router
                 </div>
-                <input type="hidden" id="perangkat" value="Router">
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Pilih Lokasi di Peta</label>
-                <div class="map-container">
-                    <div id="map-picker"></div>
+                <div class="perangkat-option" data-value="STB">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="7" width="20" height="15" rx="2"></rect>
+                        <circle cx="12" cy="14" r="3"></circle>
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    STB
                 </div>
-                <div class="coord-display">
-                    <div>Lat: <span id="displayLat">-</span></div>
-                    <div>Lng: <span id="displayLng">-</span></div>
+                <div class="perangkat-option" data-value="Router+STB">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="14" width="9" height="8" rx="1"></rect>
+                        <rect x="13" y="14" width="9" height="8" rx="1"></rect>
+                        <path d="M6 14V8a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6"></path>
+                        <path d="M17 14V8a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6"></path>
+                    </svg>
+                    Router+STB
                 </div>
-                <button type="button" class="btn btn-outline gps-btn" onclick="useMyGPS()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-                    Gunakan GPS Saya
-                </button>
-                <input type="hidden" id="latitude">
-                <input type="hidden" id="longitude">
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-lg);">
-                Simpan Data
+            <input type="hidden" id="inputPerangkat" required>
+        </div>
+
+        <!-- LOKASI PETA -->
+        <div class="input-group">
+            <label class="input-label">Pilih Lokasi di Peta</label>
+            <div class="map-container">
+                <div id="map-picker"></div>
+            </div>
+            <div class="coord-display">
+                <div>
+                    <span>Lat:</span>
+                    <input type="text" id="inputLat" class="coord-input" placeholder="-6.xxxxx" style="background: transparent; border: none; color: var(--cream); font-family: var(--font-mono); font-size: 13px; width: 100px; outline: none;">
+                </div>
+                <div>
+                    <span>Lng:</span>
+                    <input type="text" id="inputLng" class="coord-input" placeholder="107.xxxxx" style="background: transparent; border: none; color: var(--cream); font-family: var(--font-mono); font-size: 13px; width: 100px; outline: none;">
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline btn-full gps-btn" id="btnGps">
+                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none;">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+                </svg>
+                Gunakan GPS Saya
             </button>
-        </form>
-    </div>
+        </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="window.location.href='dashboard.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <div class="nav-label">Dashboard</div>
-        </div>
-        <div class="nav-item active">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            <div class="nav-label">Kelola Data</div>
-        </div>
-        <div class="nav-item" onclick="logout()">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <div class="nav-label">Keluar</div>
-        </div>
-    </div>
+        <!-- SUBMIT -->
+        <button type="submit" class="btn btn-primary btn-full btn-large">
+            Simpan Data
+        </button>
+    </form>
+</div>
 
-    <script>
-        const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'login.html'; }
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <div class="nav-item" data-page="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <div class="nav-label">Dashboard</div>
+    </div>
+    <div class="nav-item active" data-page="admin">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <div class="nav-label">Kelola Data</div>
+    </div>
+    <div class="nav-item" data-page="logout">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <div class="nav-label">Keluar</div>
+    </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // DATA STORAGE
+    let dataList = JSON.parse(localStorage.getItem('rnb_data') || '[]');
+    let selectedPerangkat = '';
+    let map, marker;
+    let currentLat = null;
+    let currentLng = null;
+
+    // TOAST
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // BOTTOM SHEET
+    const fabAdd = document.getElementById('fabAdd');
+    const addOverlay = document.getElementById('addOverlay');
+    const addSheet = document.getElementById('addSheet');
+
+    fabAdd.addEventListener('click', () => {
+        addOverlay.classList.add('active');
+        addSheet.classList.add('active');
+        initMap();
+    });
+
+    addOverlay.addEventListener('click', () => {
+        addOverlay.classList.remove('active');
+        addSheet.classList.remove('active');
+    });
+
+    // PERANGKAT SELECTOR
+    document.querySelectorAll('.perangkat-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected'));
+            option.classList.add('selected');
+            selectedPerangkat = option.dataset.value;
+            document.getElementById('inputPerangkat').value = selectedPerangkat;
+        });
+    });
+
+    // MAP INITIALIZATION
+    function initMap() {
+        if (map) return;
         
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let map, marker;
-        let currentWilayahFilter = null;
+        map = L.map('map-picker').setView([-6.9175, 107.6191], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        map.on('click', (e) => {
+            setMarker(e.latlng.lat, e.latlng.lng);
+        });
 
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+
+    function setMarker(lat, lng) {
+        currentLat = lat;
+        currentLng = lng;
+        
+        document.getElementById('inputLat').value = lat.toFixed(6);
+        document.getElementById('inputLng').value = lng.toFixed(6);
+
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        } else {
+            marker = L.marker([lat, lng]).addTo(map);
         }
+        map.setView([lat, lng], 16);
+    }
 
-        function selectPerangkat(value, element) {
-            document.querySelectorAll('.perangkat-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            document.getElementById('perangkat').value = value;
-        }
+    // COORDINATE INPUT HANDLERS
+    const inputLat = document.getElementById('inputLat');
+    const inputLng = document.getElementById('inputLng');
 
-        function openBottomSheet(editData = null) {
-            document.getElementById('bottomSheetOverlay').classList.add('active');
-            document.getElementById('bottomSheet').classList.add('active');
+    // Handle paste for Lat input
+    inputLat.addEventListener('paste', (e) => {
+        setTimeout(() => {
+            let value = inputLat.value.trim();
             
-            if (editData) {
-                document.getElementById('formTitle').textContent = 'Edit Data Pelanggan';
-                document.getElementById('editId').value = editData.id;
-                document.getElementById('nama').value = editData.nama_pelanggan;
-                document.getElementById('nomor_hp').value = editData.nomor_hp;
-                document.getElementById('wilayah').value = editData.wilayah;
-                document.getElementById('latitude').value = editData.latitude;
-                document.getElementById('longitude').value = editData.longitude;
-                document.getElementById('perangkat').value = editData.perangkat || 'Router';
-                
-                document.querySelectorAll('.perangkat-option').forEach(el => {
-                    el.classList.remove('selected');
-                    if (el.textContent.trim().replace(/\s+/g, '') === (editData.perangkat || 'Router').replace(/\s+/g, '')) {
-                        el.classList.add('selected');
-                    }
-                });
-                
-                setTimeout(() => {
-                    initMap(editData.latitude, editData.longitude);
-                }, 300);
-            } else {
-                document.getElementById('formTitle').textContent = 'Tambah Data Baru';
-                document.getElementById('formPelanggan').reset();
-                document.getElementById('editId').value = '';
-                document.getElementById('perangkat').value = 'Router';
-                document.querySelectorAll('.perangkat-option').forEach((el, i) => {
-                    el.classList.toggle('selected', i === 0);
-                });
-                setTimeout(initMap, 300);
-            }
-        }
-
-        function closeBottomSheet() {
-            document.getElementById('bottomSheetOverlay').classList.remove('active');
-            document.getElementById('bottomSheet').classList.remove('active');
-        }
-
-        function initMap(lat = -6.9175, lng = 107.6191) {
-            if (map) {
-                map.invalidateSize();
-                if (lat && lng) {
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng], 15);
-                    updateCoordDisplay(lat, lng);
-                }
-                return;
-            }
-            
-            map = L.map('map-picker').setView([lat, lng], 13);
-            
-            // CartoDB Voyager - BERWARNA & CANTIK
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO',
-                maxZoom: 19
-            }).addTo(map);
-            
-            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-            updateCoordDisplay(lat, lng);
-            
-            map.on('click', function(e) {
-                marker.setLatLng(e.latlng);
-                updateCoordDisplay(e.latlng.lat, e.latlng.lng);
-            });
-            
-            marker.on('dragend', function(e) {
-                const pos = marker.getLatLng();
-                updateCoordDisplay(pos.lat, pos.lng);
-            });
-        }
-
-        function updateCoordDisplay(lat, lng) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            document.getElementById('displayLat').textContent = lat.toFixed(6);
-            document.getElementById('displayLng').textContent = lng.toFixed(6);
-        }
-
-        function useMyGPS() {
-            if (!navigator.geolocation) {
-                showToast('GPS tidak didukung di browser ini', 'error');
-                return;
-            }
-            
-            showToast('Mencari lokasi GPS...', 'success');
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+            // Check if pasted value contains both lat and lng (e.g., "-6.917500, 107.619100")
+            if (value.includes(',')) {
+                const parts = value.split(',').map(p => p.trim());
+                if (parts.length >= 2) {
+                    const lat = parseFloat(parts[0]);
+                    const lng = parseFloat(parts[1]);
                     
-                    if (map && marker) {
-                        marker.setLatLng([lat, lng]);
-                        map.setView([lat, lng], 16);
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        inputLat.value = lat.toFixed(6);
+                        inputLng.value = lng.toFixed(6);
+                        setMarker(lat, lng);
+                        showToast('Koordinat berhasil diinput', 'success');
                     }
-                    updateCoordDisplay(lat, lng);
-                    showToast('Lokasi GPS berhasil diambil!', 'success');
-                },
-                (error) => {
-                    let msg = 'Gagal mengambil GPS';
-                    if (error.code === 1) msg = 'Izin GPS ditolak';
-                    else if (error.code === 2) msg = 'GPS tidak tersedia';
-                    else if (error.code === 3) msg = 'Timeout GPS';
-                    showToast(msg, 'error');
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
+                }
+            } else {
+                // Only lat was pasted
+                const lat = parseFloat(value);
+                if (!isNaN(lat)) {
+                    currentLat = lat;
+                    if (currentLng) {
+                        setMarker(lat, currentLng);
+                    }
+                }
+            }
+        }, 10);
+    });
+
+    // Handle paste for Lng input
+    inputLng.addEventListener('paste', (e) => {
+        setTimeout(() => {
+            let value = inputLng.value.trim();
+            
+            // Check if pasted value contains both lat and lng
+            if (value.includes(',')) {
+                const parts = value.split(',').map(p => p.trim());
+                if (parts.length >= 2) {
+                    const lat = parseFloat(parts[0]);
+                    const lng = parseFloat(parts[1]);
+                    
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        inputLat.value = lat.toFixed(6);
+                        inputLng.value = lng.toFixed(6);
+                        setMarker(lat, lng);
+                        showToast('Koordinat berhasil diinput', 'success');
+                    }
+                }
+            } else {
+                // Only lng was pasted
+                const lng = parseFloat(value);
+                if (!isNaN(lng)) {
+                    currentLng = lng;
+                    if (currentLat) {
+                        setMarker(currentLat, lng);
+                    }
+                }
+            }
+        }, 10);
+    });
+
+    // Handle manual input change
+    inputLat.addEventListener('change', () => {
+        const lat = parseFloat(inputLat.value);
+        if (!isNaN(lat) && currentLng) {
+            setMarker(lat, currentLng);
+        }
+    });
+
+    inputLng.addEventListener('change', () => {
+        const lng = parseFloat(inputLng.value);
+        if (!isNaN(lng) && currentLat) {
+            setMarker(currentLat, lng);
+        }
+    });
+
+    // GPS BUTTON
+    document.getElementById('btnGps').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            showToast('GPS tidak tersedia', 'error');
+            return;
         }
 
-        document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const editId = document.getElementById('editId').value;
-            const lat = document.getElementById('latitude').value;
-            const lng = document.getElementById('longitude').value;
-            
-            if (!lat || !lng) { showToast('Pilih lokasi di peta atau gunakan GPS!', 'error'); return; }
-            
-            const data = {
-                nama_pelanggan: document.getElementById('nama').value,
-                nomor_hp: document.getElementById('nomor_hp').value,
-                alamat: `Lat: ${lat}, Lng: ${lng}`,
-                latitude: parseFloat(lat),
-                longitude: parseFloat(lng),
-                wilayah: document.getElementById('wilayah').value,
-                perangkat: document.getElementById('perangkat').value
-            };
-            
-            let error;
-            if (editId) {
-                const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
-                error = result.error;
-            } else {
-                data.status = 'Belum Diambil';
-                const result = await supabaseClient.from('pelanggan').insert([data]);
-                error = result.error;
+        showToast('Mencari lokasi...', 'success');
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setMarker(position.coords.latitude, position.coords.longitude);
+                showToast('Lokasi berhasil didapat', 'success');
+            },
+            (error) => {
+                showToast('Gagal mendapatkan lokasi', 'error');
             }
+        );
+    });
+
+    // FORM SUBMIT
+    document.getElementById('addForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const nama = document.getElementById('inputNama').value.trim();
+        const hp = document.getElementById('inputHp').value.trim();
+        const wilayah = document.getElementById('inputWilayah').value;
+        const perangkat = document.getElementById('inputPerangkat').value;
+        const lat = document.getElementById('inputLat').value;
+        const lng = document.getElementById('inputLng').value;
+
+        if (!nama || !hp || !wilayah || !perangkat) {
+            showToast('Lengkapi semua data', 'error');
+            return;
+        }
+
+        if (!lat || !lng) {
+            showToast('Isi koordinat lokasi', 'error');
+            return;
+        }
+
+        const newData = {
+            id: Date.now(),
+            nama,
+            hp,
+            wilayah,
+            perangkat,
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+            tanggal: new Date().toISOString(),
+            status: 'belum'
+        };
+
+        dataList.push(newData);
+        localStorage.setItem('rnb_data', JSON.stringify(dataList));
+
+        showToast('Data berhasil disimpan', 'success');
+        
+        // Reset form
+        document.getElementById('addForm').reset();
+        document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected'));
+        document.getElementById('inputPerangkat').value = '';
+        document.getElementById('inputLat').value = '';
+        document.getElementById('inputLng').value = '';
+        if (marker) {
+            marker.remove();
+            marker = null;
+        }
+        currentLat = null;
+        currentLng = null;
+
+        // Close sheet
+        addOverlay.classList.remove('active');
+        addSheet.classList.remove('active');
+
+        renderData();
+    });
+
+    // RENDER DATA
+    function renderData() {
+        const dataListEl = document.getElementById('dataList');
+        const emptyState = document.getElementById('emptyState');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const activeFilter = document.querySelector('.chip.active').dataset.filter;
+
+        let filtered = dataList.filter(item => {
+            const matchSearch = item.nama.toLowerCase().includes(searchTerm);
+            let matchFilter = true;
             
-            if (!error) {
-                showToast(editId ? 'Data berhasil diupdate!' : 'Data berhasil disimpan!', 'success');
-                closeBottomSheet();
-                loadTable();
-            } else {
-                showToast('Error: ' + error.message, 'error');
-            }
+            if (activeFilter === 'router') matchFilter = item.perangkat === 'Router';
+            else if (activeFilter === 'stb') matchFilter = item.perangkat === 'STB';
+            else if (activeFilter === 'both') matchFilter = item.perangkat === 'Router+STB';
+
+            return matchSearch && matchFilter;
         });
-        
-        async function deleteData(id) {
-            if (!confirm('Yakin ingin menghapus data ini?')) return;
-            const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
-            if (!error) { showToast('Data dihapus!', 'success'); loadTable(); }
-            else { showToast('Error: ' + error.message, 'error'); }
+
+        if (filtered.length === 0) {
+            dataListEl.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
         }
 
-        async function editData(id) {
-            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
-            if (pelanggan) {
-                openBottomSheet(pelanggan);
-            }
-        }
-        
-        async function loadTable() {
-            let query = supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-            if (currentWilayahFilter) query = query.eq('wilayah', currentWilayahFilter);
+        emptyState.style.display = 'none';
+        dataListEl.innerHTML = filtered.map(item => {
+            const wilayahClass = item.wilayah.toLowerCase().replace(/ /g, '').replace('/', '');
+            const tanggal = new Date(item.tanggal).toLocaleDateString('id-ID');
             
-            const { data: pelanggan } = await query;
-            const container = document.getElementById('tableContainer');
-            
-            if (!pelanggan || pelanggan.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            pelanggan.forEach(p => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
-                const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
-                
-                container.innerHTML += `
-                    <div class="modern-card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">${p.nama_pelanggan}</div>
-                                <div class="card-subtitle mono-text">${p.wilayah} • ${p.perangkat || 'Router'}</div>
-                            </div>
-                            <span class="card-badge ${badgeClass}">${p.status}</span>
+            return `
+                <div class="modern-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${item.nama}</div>
+                            <div class="card-subtitle">${item.wilayah} • ${tanggal}</div>
                         </div>
-                        <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
-                        <div style="margin-top: var(--spacing-md); position: relative; display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
-                            ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
-                            <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
-                            <button onclick="deleteData('${p.id}')" class="btn btn-danger btn-small">Hapus</button>
+                        <div class="card-badge badge-${item.status === 'selesai' ? 'success' : 'warning'}">
+                            ${item.status === 'selesai' ? 'Selesai' : 'Belum'}
                         </div>
                     </div>
-                `;
-            });
-        }
-        
-        document.getElementById('searchTable').addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('#tableContainer .modern-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(keyword) ? 'block' : 'none';
-            });
-        });
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const wilayahParam = urlParams.get('wilayah');
-        if (wilayahParam) {
-            currentWilayahFilter = wilayahParam;
-            const banner = document.getElementById('wilayahBanner');
-            banner.style.display = 'block';
-            banner.innerHTML = `
-                <div class="wilayah-banner" style="flex: 1;">
-                    <div>
-                        <div class="wilayah-banner-label">Wilayah Aktif</div>
-                        <div class="wilayah-banner-name">${wilayahParam}</div>
+                    <div class="card-info">
+                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: var(--gold); stroke-width: 2; fill: none;">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <a href="tel:${item.hp}">${item.hp}</a>
                     </div>
-                    <button class="wilayah-banner-btn" onclick="clearWilayahFilter()">✕ Reset</button>
+                    <div class="card-info">
+                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: var(--gold); stroke-width: 2; fill: none;">
+                            <rect x="2" y="14" width="20" height="8" rx="2"></rect>
+                            <circle cx="6" cy="18" r="1"></circle>
+                            <circle cx="10" cy="18" r="1"></circle>
+                        </svg>
+                        ${item.perangkat}
+                    </div>
+                    <div class="card-info">
+                        <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: var(--gold); stroke-width: 2; fill: none;">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <a href="https://maps.google.com/?q=${item.lat},${item.lng}" target="_blank">
+                            ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}
+                        </a>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-whatsapp btn-small" onclick="openWhatsApp('${item.hp}', '${item.nama}')">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none;">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            WhatsApp
+                        </button>
+                        <button class="btn btn-map btn-small" onclick="openMap(${item.lat}, ${item.lng})">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none;">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Peta
+                        </button>
+                        <button class="btn btn-danger btn-small btn-full" onclick="deleteData(${item.id})">
+                            Hapus Data
+                        </button>
+                    </div>
                 </div>
             `;
-        }
+        }).join('');
+    }
 
-        function clearWilayahFilter() { window.location.href = 'admin.html'; }
-        
-        loadTable();
-    </script>
-</body>
-</html>
+    // HELPER FUNCTIONS
+    function openWhatsApp(hp, nama) {
+        const message = encodeURIComponent(`Halo ${nama}, kami dari RnB Network...`);
+        window.open(`https://wa.me/${hp}?text=${message}`, '_blank');
+    }
+
+    function openMap(lat, lng) {
+        window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
+    }
+
+    function deleteData(id) {
+        if (confirm('Hapus data ini?')) {
+            dataList = dataList.filter(item => item.id !== id);
+            localStorage.setItem('rnb_data', JSON.stringify(dataList));
+            showToast('Data berhasil dihapus', 'success');
+            renderData();
+        }
+    }
+
+    // SEARCH
+    document.getElementById('searchInput').addEventListener('input', renderData);
+
+    // FILTER CHIPS
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            renderData();
+        });
+    });
+
+    // NAVIGATION
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const page = item.dataset.page;
+            if (page === 'dashboard') window.location.href = 'dashboard.html';
+            else if (page === 'logout') {
+                if (confirm('Keluar dari aplikasi?')) {
+                    localStorage.removeItem('rnb_logged_in');
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+    });
+
+    // INIT
+    renderData();
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
