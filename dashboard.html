@@ -47,10 +47,6 @@
                     <div class="hero-stat-value" id="totalBelum">0</div>
                     <div class="hero-stat-label">Belum Diambil</div>
                 </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalBerlangganan" style="color: #60A5FA;">0</div>
-                    <div class="hero-stat-label">Berlangganan</div>
-                </div>
             </div>
         </div>
     </div>
@@ -120,7 +116,6 @@
             document.getElementById('totalData').textContent = pelanggan.length;
             document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
             document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status === 'Belum Diambil').length;
-            document.getElementById('totalBerlangganan').textContent = pelanggan.filter(p => p.status === 'Lanjut Berlangganan').length;
             
             const wilayahGrid = document.getElementById('wilayahGrid');
             wilayahGrid.innerHTML = '';
