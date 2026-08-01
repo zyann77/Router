@@ -125,6 +125,7 @@
             padding: var(--spacing-2xl);
             border: 1px solid rgba(201, 169, 97, 0.15);
             margin-bottom: var(--spacing-xl);
+            position: relative;
         }
 
         .login-form-wrapper::before {
@@ -153,6 +154,7 @@
 
         .password-input-wrapper {
             position: relative;
+            z-index: 1;
         }
 
         .password-toggle-btn {
@@ -223,7 +225,7 @@
         </div>
 
         <!-- Teknisi Access Options -->
-        <div class="section-label" style="margin-bottom: var(--spacing-lg);">Akses Teknisi</div>
+        <div class="section-label" style="margin-bottom: var(--spacing-lg); margin-top: var(--spacing-xl);">Akses Teknisi</div>
         
         <div class="login-options">
             <!-- Penarikan Perangkat -->
@@ -257,7 +259,7 @@
         </div>
 
         <!-- Admin Login Form -->
-        <div class="login-form-wrapper" style="position: relative;" id="loginCard">
+        <div class="login-form-wrapper" id="loginCard">
             <div class="card-header" style="margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">
                 <div>
                     <div class="card-title">Login Admin</div>
