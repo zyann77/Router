@@ -1,228 +1,275 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Login — RnB Network</title>
-<link rel="stylesheet" href="style.css" />
-<style>
-  /* Spesifik untuk halaman login agar lebih terpusat dan elegan */
-  .login-wrap {
-    padding: var(--spacing-xl);
-    padding-bottom: calc(var(--spacing-3xl) + var(--safe-bottom));
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-  }
-  .action-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-  @media (min-width: 480px) {
-    .action-grid { grid-template-columns: 1fr 1fr; }
-  }
-  .action-card {
-    background: var(--bg-card);
-    border: 1px solid rgba(201, 169, 97, 0.2);
-    border-radius: 16px;
-    padding: var(--spacing-xl);
-    text-decoration: none;
-    color: var(--cream);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--spacing-md);
-  }
-  .action-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .action-card:active { transform: scale(0.97); background: var(--bg-secondary); }
-  .action-card:hover::before { opacity: 1; }
-  
-  .action-icon {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: rgba(201, 169, 97, 0.1);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: var(--spacing-sm);
-  }
-  .action-icon svg { width: 28px; height: 28px; stroke: var(--gold); stroke-width: 2; fill: none; }
-  
-  .action-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--cream); }
-  .action-desc { font-size: 13px; color: var(--cream-dark); opacity: 0.8; line-height: 1.4; }
-
-  .divider {
-    display: flex; align-items: center; gap: var(--spacing-md);
-    color: var(--cream-dark); opacity: 0.5; font-size: 12px; font-family: var(--font-mono);
-    margin: var(--spacing-md) 0;
-  }
-  .divider::before, .divider::after {
-    content: ''; flex: 1; height: 1px; background: rgba(201, 169, 97, 0.2);
-  }
-
-  .footer-brand {
-    text-align: center; margin-top: auto; padding-top: var(--spacing-2xl);
-    font-family: var(--font-display); font-size: 14px; color: var(--gold); opacity: 0.6;
-    letter-spacing: 0.1em;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RnB Network</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        .login-options {
+            display: grid;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+        .option-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            text-decoration: none;
+            color: var(--cream);
+            transition: all 0.3s;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .option-card:hover::before {
+            transform: scaleX(1);
+        }
+        .option-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.2);
+        }
+        .option-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(201, 169, 97, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+        }
+        .option-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--gold);
+            stroke-width: 2;
+            fill: none;
+        }
+        .option-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            color: var(--cream);
+        }
+        .option-desc {
+            font-size: 13px;
+            color: var(--cream-dark);
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: var(--spacing-2xl) 0;
+            color: var(--cream-dark);
+            opacity: 0.5;
+            font-size: 12px;
+            font-family: var(--font-mono);
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(201, 169, 97, 0.2);
+        }
+        .divider span {
+            padding: 0 var(--spacing-md);
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: var(--spacing-3xl);
+            font-family: var(--font-display);
+            font-size: 14px;
+            color: var(--gold);
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-content">
+            <div>
+                <div class="header-title">RnB Network</div>
+                <div class="header-subtitle">Portal Teknisi & Admin</div>
+            </div>
+            <div class="header-icon">R</div>
+        </div>
+    </header>
 
-<!-- TOP HEADER -->
-<header class="top-header">
-  <div class="header-content">
-    <div>
-      <div class="header-title">RnB Network</div>
-      <div class="header-subtitle">Portal Teknisi & Admin</div>
+    <div class="login-container">
+        <!-- Welcome Section -->
+        <div class="hero-card" style="margin-bottom: var(--spacing-2xl);">
+            <div class="hero-label">Selamat Datang</div>
+            <div class="hero-value" style="font-size: 32px;">Silakan Pilih Akses</div>
+            <div style="font-size: 14px; color: var(--cream-dark); opacity: 0.8;">
+                Pilih mode masuk sesuai dengan tugas Anda hari ini.
+            </div>
+        </div>
+
+        <!-- Teknisi Options -->
+        <div style="margin-bottom: var(--spacing-lg);">
+            <div class="section-label">Akses Teknisi</div>
+        </div>
+
+        <div class="login-options">
+            <!-- Penarikan Perangkat -->
+            <a href="teknisi.html" class="option-card">
+                <div class="option-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </div>
+                <div class="option-title">Penarikan Perangkat</div>
+                <div class="option-desc">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
+            </a>
+
+            <!-- Pengecekan Redaman -->
+            <a href="https://bot-production-ee35.up.railway.app/" target="_blank" class="option-card">
+                <div class="option-icon">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                </div>
+                <div class="option-title">Pengecekan Redaman</div>
+                <div class="option-desc">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
+            </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>ATAU LOGIN SEBAGAI ADMIN</span>
+        </div>
+
+        <!-- Admin Login Form -->
+        <div class="modern-card">
+            <div class="card-header" style="margin-bottom: var(--spacing-xl);">
+                <div>
+                    <div class="card-title">Login Admin</div>
+                    <div class="card-subtitle">Masukkan kredensial Anda</div>
+                </div>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label class="input-label" for="username">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required>
+                        <button type="button" class="password-toggle" id="togglePassword">
+                            <svg viewBox="0 0 24 24" id="eyeIcon">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-large">
+                    Masuk
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-text">
+            Iyann RnB &copy; 2026
+        </div>
     </div>
-    <div class="header-icon">R</div>
-  </div>
-</header>
 
-<div class="login-wrap">
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
-  <!-- HERO WELCOME -->
-  <div class="hero-card">
-    <div class="hero-label">Selamat Datang</div>
-    <div class="hero-value" style="font-size: 32px;">Silakan Pilih Akses</div>
-    <div style="font-size: 14px; color: var(--cream-dark); opacity: 0.8; position: relative;">
-      Pilih mode masuk sesuai dengan tugas Anda hari ini.
-    </div>
-  </div>
+    <script>
+        // Toggle Password Visibility
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
 
-  <!-- AKSI TEKNISI -->
-  <div class="section-label" style="padding: 0 var(--spacing-xs);">Akses Teknisi</div>
-  
-  <div class="action-grid">
-    <!-- 1. Penarikan Perangkat -->
-    <a href="teknisi.html" class="action-card">
-      <div class="action-icon">
-        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>
-      </div>
-      <div class="action-title">Penarikan Perangkat</div>
-      <div class="action-desc">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
-    </a>
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            
+            // Change icon
+            if (isPassword) {
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        });
 
-    <!-- 2. Pengecekan Redaman -->
-    <a href="https://bot-production-ee35.up.railway.app/" target="_blank" rel="noopener noreferrer" class="action-card">
-      <div class="action-icon">
-        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      </div>
-      <div class="action-title">Pengecekan Redaman</div>
-      <div class="action-desc">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
-    </a>
-  </div>
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
 
-  <!-- DIVIDER -->
-  <div class="divider">ATAU LOGIN SEBAGAI ADMIN</div>
+            // Simple validation (replace with your actual auth logic)
+            if (username === 'admin' && password === 'admin') {
+                showToast('Login berhasil! Mengalihkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+            } else {
+                showToast('Username atau password salah!', 'error');
+                
+                // Shake animation
+                const form = document.querySelector('.modern-card');
+                form.style.animation = 'shake 0.4s ease';
+                setTimeout(() => {
+                    form.style.animation = '';
+                }, 400);
+            }
+        });
 
-  <!-- FORM LOGIN ADMIN -->
-  <form id="loginForm" class="modern-card" autocomplete="off" style="margin: 0;">
-    <div class="card-header" style="margin-bottom: var(--spacing-lg);">
-      <div>
-        <div class="card-title">Login Admin</div>
-        <div class="card-subtitle">Masukkan kredensial Anda</div>
-      </div>
-    </div>
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
-    <div class="input-group">
-      <label class="input-label" for="username">Username</label>
-      <input type="text" id="username" class="input-field" placeholder="Masukkan username" required />
-    </div>
-
-    <div class="input-group">
-      <label class="input-label" for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required />
-        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
-          <svg viewBox="0 0 24 24" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-md);">
-      Masuk
-    </button>
-  </form>
-
-  <!-- FOOTER -->
-  <div class="footer-brand">
-    Iyann RnB &copy; 2026
-  </div>
-
-</div>
-
-<!-- TOAST NOTIFICATION -->
-<div class="toast" id="toast"></div>
-
-<script>
-  /* =========================================================
-     LOGIN.JS — Interaksi Halaman Login
-     ========================================================= */
-
-  // Toggle Password Visibility
-  const toggleBtn = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
-
-  toggleBtn.addEventListener('click', () => {
-    const isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-    
-    // Ganti ikon mata
-    eyeIcon.innerHTML = isPassword 
-      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  });
-
-  // Mock Admin Login Handler
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value.trim();
-
-    // Ganti logika ini dengan validasi backend / localStorage sesuai kebutuhan Anda
-    if (user === 'admin' && pass === 'admin123') {
-      showToast('Login berhasil! Mengalihkan...', 'success');
-      setTimeout(() => {
-        window.location.href = 'admin.html';
-      }, 1000);
-    } else {
-      showToast('Username atau password salah!', 'error');
-      // Animasi getar pada form
-      const form = document.getElementById('loginForm');
-      form.style.animation = 'shake 0.4s ease';
-      setTimeout(() => form.style.animation = '', 400);
-    }
-  });
-
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast show ${type}`;
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-</script>
-
-<style>
-  /* Animasi getar untuk login gagal */
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-8px); }
-    40%, 80% { transform: translateX(8px); }
-  }
-</style>
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-8px); }
+                40%, 80% { transform: translateX(8px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
