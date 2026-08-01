@@ -2,111 +2,300 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Login - RnB Network</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .login-container {
-            max-width: 480px;
-            margin: 0 auto;
+        /* LOGIN PAGE SPECIFIC STYLES */
+        .login-wrapper {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
             padding: var(--spacing-xl);
+            padding-bottom: calc(var(--spacing-3xl) + var(--safe-bottom));
         }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-3xl);
+            padding-top: var(--spacing-xl);
+        }
+
+        .login-welcome {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.9;
+        }
+
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--cream-dark);
+            opacity: 0.8;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-lg);
+            padding: 0 var(--spacing-xs);
+        }
+
         .login-options {
             display: grid;
             gap: var(--spacing-lg);
             margin-bottom: var(--spacing-2xl);
         }
-        .option-card {
-            background: var(--bg-card);
+
+        .login-option-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
             border: 1px solid rgba(201, 169, 97, 0.2);
             border-radius: 16px;
             padding: var(--spacing-xl);
             text-decoration: none;
             color: var(--cream);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: block;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
-        .option-card::before {
+
+        .login-option-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
             transform: scaleX(0);
-            transition: transform 0.3s;
+            transform-origin: left;
+            transition: transform 0.3s ease;
         }
-        .option-card:hover::before {
+
+        .login-option-card:hover::before,
+        .login-option-card:active::before {
             transform: scaleX(1);
         }
-        .option-card:hover {
+
+        .login-option-card:hover {
             border-color: var(--gold);
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(201, 169, 97, 0.2);
         }
-        .option-icon {
-            width: 48px;
-            height: 48px;
+
+        .login-option-card:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .option-icon-wrapper {
+            width: 56px;
+            height: 56px;
             background: rgba(201, 169, 97, 0.1);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid rgba(201, 169, 97, 0.2);
         }
-        .option-icon svg {
-            width: 24px;
-            height: 24px;
+
+        .option-icon-wrapper svg {
+            width: 28px;
+            height: 28px;
             stroke: var(--gold);
             stroke-width: 2;
             fill: none;
         }
+
         .option-title {
             font-family: var(--font-display);
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: var(--spacing-sm);
             color: var(--cream);
+            margin-bottom: var(--spacing-sm);
         }
-        .option-desc {
+
+        .option-description {
             font-size: 13px;
             color: var(--cream-dark);
             opacity: 0.8;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .divider {
+
+        .login-divider {
             display: flex;
             align-items: center;
             margin: var(--spacing-2xl) 0;
             color: var(--cream-dark);
             opacity: 0.5;
-            font-size: 12px;
+            font-size: 11px;
             font-family: var(--font-mono);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
-        .divider::before,
-        .divider::after {
+
+        .login-divider::before,
+        .login-divider::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: rgba(201, 169, 97, 0.2);
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 97, 0.3), transparent);
         }
-        .divider span {
-            padding: 0 var(--spacing-md);
+
+        .login-divider span {
+            padding: 0 var(--spacing-lg);
         }
-        .footer-text {
+
+        .login-form-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: var(--spacing-2xl);
+            border: 1px solid rgba(201, 169, 97, 0.15);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-form-container::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 1px dashed rgba(201, 169, 97, 0.25);
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .login-form-header {
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-form-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .login-form-subtitle {
+            font-size: 13px;
+            color: var(--cream-dark);
+            opacity: 0.8;
+        }
+
+        .login-footer {
             text-align: center;
-            margin-top: var(--spacing-3xl);
+            margin-top: auto;
+            padding-top: var(--spacing-2xl);
             font-family: var(--font-display);
             font-size: 14px;
             color: var(--gold);
             opacity: 0.6;
+            letter-spacing: 0.1em;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .password-toggle-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--gold);
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .password-toggle-btn:hover svg {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-title {
+                font-size: 28px;
+            }
+
+            .login-form-container {
+                padding: var(--spacing-xl);
+            }
+
+            .login-option-card {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-option-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .login-option-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .login-option-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .login-form-container {
+            animation: fadeIn 0.5s ease 0.3s forwards;
+            opacity: 0;
         }
     </style>
 </head>
 <body>
+
     <!-- Top Header -->
     <header class="top-header">
         <div class="header-content">
@@ -118,25 +307,23 @@
         </div>
     </header>
 
-    <div class="login-container">
+    <!-- Main Content -->
+    <div class="login-wrapper">
+        
         <!-- Welcome Section -->
-        <div class="hero-card" style="margin-bottom: var(--spacing-2xl);">
-            <div class="hero-label">Selamat Datang</div>
-            <div class="hero-value" style="font-size: 32px;">Silakan Pilih Akses</div>
-            <div style="font-size: 14px; color: var(--cream-dark); opacity: 0.8;">
-                Pilih mode masuk sesuai dengan tugas Anda hari ini.
-            </div>
+        <div class="login-header">
+            <div class="login-welcome">Selamat Datang</div>
+            <h1 class="login-title">Silakan Pilih Akses</h1>
+            <p class="login-subtitle">Pilih mode masuk sesuai dengan tugas Anda hari ini.</p>
         </div>
 
-        <!-- Teknisi Options -->
-        <div style="margin-bottom: var(--spacing-lg);">
-            <div class="section-label">Akses Teknisi</div>
-        </div>
-
+        <!-- Teknisi Access Options -->
+        <div class="login-section-label">Akses Teknisi</div>
+        
         <div class="login-options">
             <!-- Penarikan Perangkat -->
-            <a href="teknisi.html" class="option-card">
-                <div class="option-icon">
+            <a href="teknisi.html" class="login-option-card">
+                <div class="option-icon-wrapper">
                     <svg viewBox="0 0 24 24">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                         <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
@@ -144,46 +331,44 @@
                     </svg>
                 </div>
                 <div class="option-title">Penarikan Perangkat</div>
-                <div class="option-desc">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
+                <div class="option-description">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
             </a>
 
             <!-- Pengecekan Redaman -->
-            <a href="https://bot-production-ee35.up.railway.app/" target="_blank" class="option-card">
-                <div class="option-icon">
+            <a href="https://bot-production-ee35.up.railway.app/" target="_blank" rel="noopener noreferrer" class="login-option-card">
+                <div class="option-icon-wrapper">
                     <svg viewBox="0 0 24 24">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                     </svg>
                 </div>
                 <div class="option-title">Pengecekan Redaman</div>
-                <div class="option-desc">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
+                <div class="option-description">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
             </a>
         </div>
 
         <!-- Divider -->
-        <div class="divider">
-            <span>ATAU LOGIN SEBAGAI ADMIN</span>
+        <div class="login-divider">
+            <span>Atau Login Sebagai Admin</span>
         </div>
 
         <!-- Admin Login Form -->
-        <div class="modern-card">
-            <div class="card-header" style="margin-bottom: var(--spacing-xl);">
-                <div>
-                    <div class="card-title">Login Admin</div>
-                    <div class="card-subtitle">Masukkan kredensial Anda</div>
-                </div>
+        <div class="login-form-container" style="position: relative;">
+            <div class="login-form-header">
+                <div class="login-form-title">Login Admin</div>
+                <div class="login-form-subtitle">Masukkan kredensial Anda</div>
             </div>
 
             <form id="loginForm">
                 <div class="input-group">
                     <label class="input-label" for="username">Username</label>
-                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" required>
+                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" required autocomplete="username">
                 </div>
 
                 <div class="input-group">
                     <label class="input-label" for="password">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required>
-                        <button type="button" class="password-toggle" id="togglePassword">
+                    <div class="password-input-wrapper">
+                        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Toggle password visibility">
                             <svg viewBox="0 0 24 24" id="eyeIcon">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -192,16 +377,17 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-full btn-large">
+                <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-md);">
                     Masuk
                 </button>
             </form>
         </div>
 
         <!-- Footer -->
-        <div class="footer-text">
+        <div class="login-footer">
             Iyann RnB &copy; 2026
         </div>
+
     </div>
 
     <!-- Toast Notification -->
@@ -209,16 +395,16 @@
 
     <script>
         // Toggle Password Visibility
-        const toggleBtn = document.getElementById('togglePassword');
+        const togglePasswordBtn = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
 
-        toggleBtn.addEventListener('click', () => {
-            const isPassword = passwordInput.type === 'password';
-            passwordInput.type = isPassword ? 'text' : 'password';
+        togglePasswordBtn.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
             
-            // Change icon
-            if (isPassword) {
+            // Toggle icon
+            if (type === 'text') {
                 eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
             } else {
                 eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
@@ -228,11 +414,12 @@
         // Login Form Handler
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            // Simple validation (replace with your actual auth logic)
-            if (username === 'admin' && password === 'admin') {
+            // Simple authentication (replace with your actual auth logic)
+            if (username === 'admin' && password === 'admin123') {
                 showToast('Login berhasil! Mengalihkan...', 'success');
                 setTimeout(() => {
                     window.location.href = 'admin.html';
@@ -240,16 +427,16 @@
             } else {
                 showToast('Username atau password salah!', 'error');
                 
-                // Shake animation
-                const form = document.querySelector('.modern-card');
-                form.style.animation = 'shake 0.4s ease';
+                // Shake animation on form
+                const formContainer = document.querySelector('.login-form-container');
+                formContainer.style.animation = 'shake 0.5s ease';
                 setTimeout(() => {
-                    form.style.animation = '';
-                }, 400);
+                    formContainer.style.animation = '';
+                }, 500);
             }
         });
 
-        // Toast Notification
+        // Toast Notification Function
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -265,11 +452,12 @@
         style.textContent = `
             @keyframes shake {
                 0%, 100% { transform: translateX(0); }
-                20%, 60% { transform: translateX(-8px); }
-                40%, 80% { transform: translateX(8px); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
             }
         `;
         document.head.appendChild(style);
     </script>
+
 </body>
 </html>
