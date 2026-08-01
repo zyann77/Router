@@ -1,7 +1,260 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<meta http-equiv="refresh" content="0; url=login.html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Iyann RnB - Network Tools</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Override khusus halaman menu agar full screen & center */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--spacing-xl);
+            background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08) 0%, transparent 60%), var(--bg-primary);
+        }
+
+        .menu-container {
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .app-logo {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 12px 32px rgba(201, 169, 97, 0.3);
+        }
+
+        .app-logo svg {
+            width: 36px;
+            height: 36px;
+            stroke: var(--leather-dark);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .app-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--cream);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .app-subtitle {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .menu-card {
+            background: rgba(31, 31, 46, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: var(--cream);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gold);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .menu-card:active {
+            transform: scale(0.97);
+            background: rgba(201, 169, 97, 0.1);
+            border-color: var(--gold);
+        }
+
+        .menu-card:active::before {
+            opacity: 1;
+        }
+
+        .menu-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.05) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(201, 169, 97, 0.3);
+        }
+
+        .menu-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--gold);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .menu-text {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-family: var(--font-ui);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--cream);
+        }
+
+        .menu-desc {
+            font-size: 12px;
+            color: var(--cream-dark);
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        .menu-arrow {
+            color: var(--gold);
+            opacity: 0.5;
+            transition: transform 0.3s;
+        }
+
+        .menu-card:active .menu-arrow {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        .footer {
+            margin-top: 48px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--cream-dark);
+            opacity: 0.4;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body></body>
+<body>
+
+    <div class="menu-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="app-logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <h1 class="app-title">Iyann RnB</h1>
+            <div class="app-subtitle">Network Management Tools</div>
+        </div>
+
+        <!-- Menu List -->
+        <div class="menu-list">
+            
+            <!-- 1. Penarikan Perangkat -->
+            <a href="login.html" class="menu-card">
+                <div class="menu-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    </svg>
+                </div>
+                <div class="menu-text">
+                    <div class="menu-title">Penarikan Perangkat</div>
+                    <div class="menu-desc">Kelola data isolir & penarikan router/STB</div>
+                </div>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </a>
+
+            <!-- 2. Cek Redaman Pelanggan -->
+            <a href="https://bot-production-ee35.up.railway.app/" class="menu-card" target="_blank">
+                <div class="menu-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                        <line x1="12" y1="20" x2="12.01" y2="20"/>
+                    </svg>
+                </div>
+                <div class="menu-text">
+                    <div class="menu-title">Cek Redaman Pelanggan</div>
+                    <div class="menu-desc">Monitoring kualitas sinyal & redaman ODP</div>
+                </div>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </a>
+
+            <!-- 3. Setting Router HG8145V5 -->
+            <a href="https://generatorwan.netlify.app/" class="menu-card" target="_blank">
+                <div class="menu-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                        <line x1="6" y1="6" x2="6.01" y2="6"/>
+                        <line x1="6" y1="18" x2="6.01" y2="18"/>
+                    </svg>
+                </div>
+                <div class="menu-text">
+                    <div class="menu-title">Setting Router HG8145V5</div>
+                    <div class="menu-desc">Tools konfigurasi & generator WAN ONU</div>
+                </div>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            v2.0 • Iyann RnB Network
+        </div>
+    </div>
+
+</body>
 </html>
