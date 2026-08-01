@@ -7,47 +7,23 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Iyann RnB - Network Tools</title>
-    
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
-    
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: var(--spacing-xl);
-            background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08) 0%, transparent 60%), var(--bg-primary);
-        }
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: var(--spacing-xl); background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08) 0%, transparent 60%), var(--bg-primary); }
         .menu-container { width: 100%; max-width: 400px; animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .app-header { text-align: center; margin-bottom: 40px; }
-        .app-logo {
-            width: 72px; height: 72px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; box-shadow: 0 12px 32px rgba(201, 169, 97, 0.3);
-        }
+        .app-logo { width: 72px; height: 72px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 12px 32px rgba(201, 169, 97, 0.3); }
         .app-logo svg { width: 36px; height: 36px; stroke: var(--leather-dark); stroke-width: 2; fill: none; }
         .app-title { font-family: var(--font-display); font-size: 28px; font-weight: 900; color: var(--cream); margin-bottom: 8px; letter-spacing: -0.02em; }
         .app-subtitle { font-family: var(--font-mono); font-size: 12px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; }
         .menu-list { display: flex; flex-direction: column; gap: 16px; }
-        .menu-card {
-            background: rgba(31, 31, 46, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(201, 169, 97, 0.2); border-radius: 20px; padding: 20px;
-            display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--cream);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
-        }
+        .menu-card { background: rgba(31, 31, 46, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(201, 169, 97, 0.2); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--cream); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
         .menu-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); opacity: 0; transition: opacity 0.3s; }
         .menu-card:active { transform: scale(0.97); background: rgba(201, 169, 97, 0.1); border-color: var(--gold); }
         .menu-card:active::before { opacity: 1; }
-        .menu-icon {
-            width: 48px; height: 48px; background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.05) 100%);
-            border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(201, 169, 97, 0.3);
-        }
+        .menu-icon { width: 48px; height: 48px; background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.05) 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(201, 169, 97, 0.3); }
         .menu-icon svg { width: 24px; height: 24px; stroke: var(--gold); stroke-width: 2; fill: none; }
         .menu-text { flex: 1; }
         .menu-title { font-family: var(--font-ui); font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--cream); }
@@ -55,55 +31,15 @@
         .menu-arrow { color: var(--gold); opacity: 0.5; transition: transform 0.3s; }
         .menu-card:active .menu-arrow { transform: translateX(4px); opacity: 1; }
         .footer { margin-top: 48px; text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--cream-dark); opacity: 0.4; letter-spacing: 0.1em; }
-        
-        /* INSTALL BANNER */
-        .install-banner {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: var(--leather-dark);
-            padding: 14px 24px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4);
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 9999;
-            font-weight: 700;
-            font-size: 14px;
-            opacity: 0;
-        }
-        .install-banner.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .install-banner { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); padding: 14px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4); cursor: pointer; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; font-weight: 700; font-size: 14px; opacity: 0; }
+        .install-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .install-banner:active { transform: translateX(-50%) scale(0.95); }
         .install-banner svg { width: 20px; height: 20px; stroke: var(--leather-dark); stroke-width: 2.5; fill: none; }
-        .close-install {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid var(--bg-primary);
-        }
-
+        .close-install { position: absolute; top: -8px; right: -8px; background: var(--danger); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid var(--bg-primary); }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
     <div class="menu-container">
         <div class="app-header">
             <div class="app-logo">
@@ -112,7 +48,6 @@
             <h1 class="app-title">Iyann RnB</h1>
             <div class="app-subtitle">Network Management Tools</div>
         </div>
-
         <div class="menu-list">
             <a href="login.html" class="menu-card">
                 <div class="menu-icon">
@@ -124,7 +59,6 @@
                 </div>
                 <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
-
             <a href="https://bot-production-ee35.up.railway.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
                     <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
@@ -135,7 +69,6 @@
                 </div>
                 <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
-
             <a href="https://generatorwan.netlify.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
                     <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
@@ -147,38 +80,24 @@
                 <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
         </div>
-
         <div class="footer">v2.1 • Iyann RnB Network</div>
     </div>
-
-    <!-- INSTALL BANNER -->
     <div id="installBanner" class="install-banner" onclick="installApp()">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>Install Aplikasi</span>
         <div class="close-install" onclick="event.stopPropagation(); hideInstallBanner()">×</div>
     </div>
-
     <script>
-        // === PWA INSTALL PROMPT LOGIC ===
         let deferredPrompt;
         const installBanner = document.getElementById('installBanner');
-
-        // Cek apakah sudah di-install
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            // Sudah di-install, jangan tampilkan banner
             console.log('App is already installed');
         } else {
-            // Dengarkan event beforeinstallprompt
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
-                // Tampilkan banner setelah 1.5 detik
-                setTimeout(() => {
-                    installBanner.classList.add('show');
-                }, 1500);
+                setTimeout(() => { installBanner.classList.add('show'); }, 1500);
             });
-
-            // Untuk iOS (Safari)
             if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
                 setTimeout(() => {
                     installBanner.querySelector('span').textContent = 'Add to Home Screen (+)';
@@ -186,45 +105,31 @@
                 }, 1500);
             }
         }
-
         function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    }
+                    if (choiceResult.outcome === 'accepted') { console.log('User accepted the install prompt'); }
                     deferredPrompt = null;
                     hideInstallBanner();
                 });
             } else {
-                // Fallback untuk iOS
                 alert('Untuk menginstall:\n1. Klik tombol "Share" (kotak dengan panah) di bawah Safari\n2. Pilih "Add to Home Screen" (Tambahkan ke Layar Utama)');
                 hideInstallBanner();
             }
         }
-
         function hideInstallBanner() {
             installBanner.classList.remove('show');
-            // Simpan di localStorage agar tidak muncul lagi jika user menutupnya
             localStorage.setItem('installBannerClosed', 'true');
         }
-
-        // Cek jika user pernah menutup banner
         if (localStorage.getItem('installBannerClosed') === 'true') {
             installBanner.style.display = 'none';
         }
-
-        // === REGISTER SERVICE WORKER ===
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+                    .then((registration) => { console.log('SW registered: ', registration); })
+                    .catch((registrationError) => { console.log('SW registration failed: ', registrationError); });
             });
         }
     </script>
