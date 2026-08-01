@@ -7,7 +7,6 @@ const urlsToCache = [
   './config.js'
 ];
 
-// Install Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -17,7 +16,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch Strategy (Cache First)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
