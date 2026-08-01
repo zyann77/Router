@@ -4,80 +4,227 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Login - RnB Network</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* LOGIN PAGE SPECIFIC STYLES */
-        .login-wrapper {
-            min-height: calc(100vh - 200px);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --gold: #C9A961;
+            --gold-light: #E5C97A;
+            --gold-dark: #A08340;
+            --leather: #2C1810;
+            --leather-light: #3D2418;
+            --leather-dark: #1A0F0A;
+            --cream: #F5F1E8;
+            --cream-dark: #E8E0D0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #16161F;
+            --bg-card: #1F1F2E;
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-ui: 'Manrope', system-ui, sans-serif;
+            --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            --spacing-2xl: 32px;
+            --spacing-3xl: 48px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-primary);
+            color: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(201, 169, 97, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(201, 169, 97, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(201, 169, 97, 0.03) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Top Header */
+        .top-header {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: calc(var(--safe-top) + 16px) var(--spacing-xl) var(--spacing-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(201, 169, 97, 0.1);
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header-content {
             display: flex;
-            flex-direction: column;
-            padding: var(--spacing-xl);
-            padding-bottom: calc(var(--spacing-3xl) + var(--safe-bottom));
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: var(--spacing-3xl);
-            padding-top: var(--spacing-xl);
-        }
-
-        .login-welcome {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--gold);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            margin-bottom: var(--spacing-sm);
-            opacity: 0.9;
-        }
-
-        .login-title {
+        .header-title {
             font-family: var(--font-display);
-            font-size: 32px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--cream);
-            margin-bottom: var(--spacing-sm);
         }
 
-        .login-subtitle {
-            font-size: 14px;
-            color: var(--cream-dark);
-            opacity: 0.8;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .login-section-label {
+        .header-subtitle {
             font-family: var(--font-mono);
             font-size: 11px;
             color: var(--gold);
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            margin-bottom: var(--spacing-lg);
-            padding: 0 var(--spacing-xs);
+            margin-top: 2px;
         }
 
-        .login-options {
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--leather-dark);
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+            50% { box-shadow: 0 4px 20px rgba(201, 169, 97, 0.5); }
+        }
+
+        /* Main Container */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+            padding-bottom: calc(var(--spacing-3xl) + var(--safe-bottom));
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: var(--spacing-3xl);
+            padding-top: var(--spacing-2xl);
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.9;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--cream);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: var(--cream-dark);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Section Label */
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-lg);
+            padding: 0 var(--spacing-xs);
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        /* Action Cards */
+        .action-grid {
             display: grid;
             gap: var(--spacing-lg);
             margin-bottom: var(--spacing-2xl);
         }
 
-        .login-option-card {
+        .action-card {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
             border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: var(--spacing-xl);
             text-decoration: none;
             color: var(--cream);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: block;
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            animation: fadeInUp 0.8s ease both;
         }
 
-        .login-option-card::before {
+        .action-card:nth-child(1) { animation-delay: 0.5s; }
+        .action-card:nth-child(2) { animation-delay: 0.6s; }
+
+        .action-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -87,60 +234,91 @@
             background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease;
         }
 
-        .login-option-card:hover::before,
-        .login-option-card:active::before {
+        .action-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(201, 169, 97, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .action-card:hover::before,
+        .action-card:active::before {
             transform: scaleX(1);
         }
 
-        .login-option-card:hover {
+        .action-card:hover::after,
+        .action-card:active::after {
+            opacity: 1;
+        }
+
+        .action-card:hover {
             border-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(201, 169, 97, 0.25);
         }
 
-        .login-option-card:active {
-            transform: translateY(0) scale(0.98);
+        .action-card:active {
+            transform: translateY(-2px) scale(0.98);
         }
 
-        .option-icon-wrapper {
-            width: 56px;
-            height: 56px;
+        .action-icon {
+            width: 64px;
+            height: 64px;
             background: rgba(201, 169, 97, 0.1);
-            border-radius: 12px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: var(--spacing-lg);
             border: 1px solid rgba(201, 169, 97, 0.2);
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s ease;
         }
 
-        .option-icon-wrapper svg {
-            width: 28px;
-            height: 28px;
+        .action-card:hover .action-icon {
+            background: rgba(201, 169, 97, 0.2);
+            transform: scale(1.05);
+        }
+
+        .action-icon svg {
+            width: 32px;
+            height: 32px;
             stroke: var(--gold);
             stroke-width: 2;
             fill: none;
         }
 
-        .option-title {
+        .action-title {
             font-family: var(--font-display);
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--cream);
             margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
         }
 
-        .option-description {
+        .action-description {
             font-size: 13px;
             color: var(--cream-dark);
             opacity: 0.8;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
-        .login-divider {
+        /* Divider */
+        .divider {
             display: flex;
             align-items: center;
             margin: var(--spacing-2xl) 0;
@@ -150,37 +328,41 @@
             font-family: var(--font-mono);
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            animation: fadeInUp 0.8s ease 0.7s both;
         }
 
-        .login-divider::before,
-        .login-divider::after {
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(201, 169, 97, 0.3), transparent);
         }
 
-        .login-divider span {
+        .divider span {
             padding: 0 var(--spacing-lg);
         }
 
-        .login-form-container {
-            background: var(--bg-card);
-            border-radius: 16px;
+        /* Login Form Card */
+        .login-form-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border-radius: 20px;
             padding: var(--spacing-2xl);
-            border: 1px solid rgba(201, 169, 97, 0.15);
-            margin-bottom: var(--spacing-xl);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease 0.8s both;
         }
 
-        .login-form-container::before {
+        .login-form-card::before {
             content: '';
             position: absolute;
-            top: 6px;
-            left: 6px;
-            right: 6px;
-            bottom: 6px;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
             border: 1px dashed rgba(201, 169, 97, 0.25);
-            border-radius: 12px;
+            border-radius: 16px;
             pointer-events: none;
             z-index: 0;
         }
@@ -193,7 +375,7 @@
 
         .login-form-title {
             font-family: var(--font-display);
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--cream);
             margin-bottom: var(--spacing-xs);
@@ -205,22 +387,53 @@
             opacity: 0.8;
         }
 
-        .login-footer {
-            text-align: center;
-            margin-top: auto;
-            padding-top: var(--spacing-2xl);
-            font-family: var(--font-display);
-            font-size: 14px;
-            color: var(--gold);
-            opacity: 0.6;
-            letter-spacing: 0.1em;
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+            z-index: 1;
         }
 
-        .password-input-wrapper {
+        .input-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-primary);
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 12px;
+            color: var(--cream);
+            font-family: var(--font-ui);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            min-height: 48px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--cream-dark);
+            opacity: 0.4;
+        }
+
+        .password-wrapper {
             position: relative;
         }
 
-        .password-toggle-btn {
+        .password-toggle {
             position: absolute;
             right: 16px;
             top: 50%;
@@ -232,65 +445,152 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2;
+            transition: all 0.3s ease;
         }
 
-        .password-toggle-btn svg {
+        .password-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-toggle svg {
             width: 20px;
             height: 20px;
             stroke: var(--gold);
             stroke-width: 2;
             fill: none;
             opacity: 0.7;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s ease;
         }
 
-        .password-toggle-btn:hover svg {
+        .password-toggle:hover svg {
             opacity: 1;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--leather-dark);
+            font-family: var(--font-ui);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 16px rgba(201, 169, 97, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: var(--spacing-3xl);
+            padding-top: var(--spacing-2xl);
+            font-family: var(--font-display);
+            font-size: 14px;
+            color: var(--gold);
+            opacity: 0.6;
+            letter-spacing: 0.1em;
+            animation: fadeInUp 0.8s ease 1s both;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: calc(var(--safe-top) + 80px);
+            left: var(--spacing-xl);
+            right: var(--spacing-xl);
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border: 1px solid rgba(201, 169, 97, 0.3);
+            z-index: 3000;
+            display: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            font-weight: 600;
+            animation: slideDown 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Shake Animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
         }
 
         /* Responsive */
         @media (max-width: 480px) {
-            .login-title {
-                font-size: 28px;
+            .hero-title {
+                font-size: 32px;
             }
 
-            .login-form-container {
+            .login-form-card {
                 padding: var(--spacing-xl);
             }
 
-            .login-option-card {
+            .action-card {
                 padding: var(--spacing-lg);
             }
         }
 
-        /* Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(26, 15, 10, 0.3);
+            border-top-color: var(--leather-dark);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
         }
 
-        .login-option-card {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        .login-option-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .login-option-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .login-form-container {
-            animation: fadeIn 0.5s ease 0.3s forwards;
-            opacity: 0;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -308,51 +608,51 @@
     </header>
 
     <!-- Main Content -->
-    <div class="login-wrapper">
+    <div class="login-container">
         
-        <!-- Welcome Section -->
-        <div class="login-header">
-            <div class="login-welcome">Selamat Datang</div>
-            <h1 class="login-title">Silakan Pilih Akses</h1>
-            <p class="login-subtitle">Pilih mode masuk sesuai dengan tugas Anda hari ini.</p>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-label">Selamat Datang</div>
+            <h1 class="hero-title">Silakan Pilih Akses</h1>
+            <p class="hero-subtitle">Pilih mode masuk sesuai dengan tugas Anda hari ini.</p>
         </div>
 
-        <!-- Teknisi Access Options -->
-        <div class="login-section-label">Akses Teknisi</div>
+        <!-- Teknisi Access -->
+        <div class="section-label">Akses Teknisi</div>
         
-        <div class="login-options">
+        <div class="action-grid">
             <!-- Penarikan Perangkat -->
-            <a href="teknisi.html" class="login-option-card">
-                <div class="option-icon-wrapper">
+            <a href="teknisi.html" class="action-card">
+                <div class="action-icon">
                     <svg viewBox="0 0 24 24">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                         <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
                         <line x1="12" y1="22.08" x2="12" y2="12"/>
                     </svg>
                 </div>
-                <div class="option-title">Penarikan Perangkat</div>
-                <div class="option-description">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
+                <div class="action-title">Penarikan Perangkat</div>
+                <div class="action-description">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
             </a>
 
             <!-- Pengecekan Redaman -->
-            <a href="https://bot-production-ee35.up.railway.app/" target="_blank" rel="noopener noreferrer" class="login-option-card">
-                <div class="option-icon-wrapper">
+            <a href="https://bot-production-ee35.up.railway.app/" target="_blank" rel="noopener noreferrer" class="action-card">
+                <div class="action-icon">
                     <svg viewBox="0 0 24 24">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                     </svg>
                 </div>
-                <div class="option-title">Pengecekan Redaman</div>
-                <div class="option-description">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
+                <div class="action-title">Pengecekan Redaman</div>
+                <div class="action-description">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
             </a>
         </div>
 
         <!-- Divider -->
-        <div class="login-divider">
+        <div class="divider">
             <span>Atau Login Sebagai Admin</span>
         </div>
 
         <!-- Admin Login Form -->
-        <div class="login-form-container" style="position: relative;">
+        <div class="login-form-card" id="loginCard">
             <div class="login-form-header">
                 <div class="login-form-title">Login Admin</div>
                 <div class="login-form-subtitle">Masukkan kredensial Anda</div>
@@ -366,9 +666,9 @@
 
                 <div class="input-group">
                     <label class="input-label" for="password">Password</label>
-                    <div class="password-input-wrapper">
+                    <div class="password-wrapper">
                         <input type="password" id="password" class="input-field" placeholder="Masukkan password" required autocomplete="current-password">
-                        <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Toggle password visibility">
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
                             <svg viewBox="0 0 24 24" id="eyeIcon">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -377,14 +677,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-md);">
+                <button type="submit" class="btn-submit" id="submitBtn">
                     Masuk
                 </button>
             </form>
         </div>
 
         <!-- Footer -->
-        <div class="login-footer">
+        <div class="footer">
             Iyann RnB &copy; 2026
         </div>
 
@@ -417,23 +717,35 @@
             
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const loginCard = document.getElementById('loginCard');
 
-            // Simple authentication (replace with your actual auth logic)
-            if (username === 'admin' && password === 'admin123') {
-                showToast('Login berhasil! Mengalihkan...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'admin.html';
-                }, 1000);
-            } else {
-                showToast('Username atau password salah!', 'error');
-                
-                // Shake animation on form
-                const formContainer = document.querySelector('.login-form-container');
-                formContainer.style.animation = 'shake 0.5s ease';
-                setTimeout(() => {
-                    formContainer.style.animation = '';
-                }, 500);
-            }
+            // Show loading state
+            submitBtn.innerHTML = '<span class="spinner"></span> Memproses...';
+            submitBtn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                // Simple authentication (replace with your actual auth logic)
+                if (username === 'admin' && password === 'admin123') {
+                    showToast('Login berhasil! Mengalihkan...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                } else {
+                    showToast('Username atau password salah!', 'error');
+                    
+                    // Shake animation on form
+                    loginCard.classList.add('shake');
+                    setTimeout(() => {
+                        loginCard.classList.remove('shake');
+                    }, 500);
+
+                    // Reset button
+                    submitBtn.innerHTML = 'Masuk';
+                    submitBtn.disabled = false;
+                }
+            }, 800);
         });
 
         // Toast Notification Function
@@ -447,16 +759,25 @@
             }, 3000);
         }
 
-        // Add shake animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all action cards
+        document.querySelectorAll('.action-card').forEach(card => {
+            observer.observe(card);
+        });
     </script>
 
 </body>
