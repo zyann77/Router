@@ -3,79 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Login — RnB Network</title>
+<title>Kelola Data — RnB Network</title>
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-  /* Spesifik untuk halaman login agar lebih terpusat dan elegan */
-  .login-wrap {
-    padding: var(--spacing-xl);
-    padding-bottom: calc(var(--spacing-3xl) + var(--safe-bottom));
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-  }
-  .action-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-  @media (min-width: 480px) {
-    .action-grid { grid-template-columns: 1fr 1fr; }
-  }
-  .action-card {
+  /* Tambahan khusus halaman admin */
+  .admin-wrap { padding-bottom: 120px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+  @media (max-width: 420px) { .form-row { grid-template-columns: 1fr; } }
+
+  .pelanggan-list { padding: 0 var(--spacing-xl); display: flex; flex-direction: column; gap: var(--spacing-md); }
+  .pelanggan-item {
     background: var(--bg-card);
-    border: 1px solid rgba(201, 169, 97, 0.2);
+    border: 1px solid rgba(201, 169, 97, 0.15);
     border-radius: 16px;
-    padding: var(--spacing-xl);
-    text-decoration: none;
-    color: var(--cream);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: var(--spacing-lg);
     position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--spacing-md);
+    transition: all 0.2s;
   }
-  .action-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-    opacity: 0;
-    transition: opacity 0.25s;
+  .pelanggan-item:active { transform: scale(0.98); }
+  .pelanggan-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm); }
+  .pelanggan-name { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--cream); }
+  .pelanggan-phone { font-family: var(--font-mono); font-size: 12px; color: var(--gold); margin-top: 2px; }
+  .pelanggan-meta { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; margin-top: var(--spacing-sm); }
+  .meta-tag {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    background: rgba(201, 169, 97, 0.1); color: var(--gold);
+    border: 1px solid rgba(201, 169, 97, 0.25);
+    font-family: var(--font-mono); letter-spacing: 0.05em;
   }
-  .action-card:active { transform: scale(0.97); background: var(--bg-secondary); }
-  .action-card:hover::before { opacity: 1; }
-  
-  .action-icon {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: rgba(201, 169, 97, 0.1);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: var(--spacing-sm);
-  }
-  .action-icon svg { width: 28px; height: 28px; stroke: var(--gold); stroke-width: 2; fill: none; }
-  
-  .action-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--cream); }
-  .action-desc { font-size: 13px; color: var(--cream-dark); opacity: 0.8; line-height: 1.4; }
+  .pelanggan-actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); }
+  .pelanggan-actions .btn { flex: 1; }
 
-  .divider {
-    display: flex; align-items: center; gap: var(--spacing-md);
-    color: var(--cream-dark); opacity: 0.5; font-size: 12px; font-family: var(--font-mono);
-    margin: var(--spacing-md) 0;
-  }
-  .divider::before, .divider::after {
-    content: ''; flex: 1; height: 1px; background: rgba(201, 169, 97, 0.2);
-  }
+  .empty-list { text-align: center; padding: var(--spacing-3xl) var(--spacing-xl); color: var(--cream-dark); }
+  .empty-list-icon { font-size: 48px; opacity: 0.3; margin-bottom: var(--spacing-md); }
 
-  .footer-brand {
-    text-align: center; margin-top: auto; padding-top: var(--spacing-2xl);
-    font-family: var(--font-display); font-size: 14px; color: var(--gold); opacity: 0.6;
-    letter-spacing: 0.1em;
-  }
+  /* Leaflet override agar sesuai tema */
+  .leaflet-container { background: #0f172a !important; }
+  .leaflet-control-attribution { background: rgba(0,0,0,0.6) !important; color: var(--cream-dark) !important; font-size: 9px !important; }
+  .leaflet-control-attribution a { color: var(--gold) !important; }
 </style>
 </head>
 <body>
@@ -84,145 +50,550 @@
 <header class="top-header">
   <div class="header-content">
     <div>
-      <div class="header-title">RnB Network</div>
-      <div class="header-subtitle">Portal Teknisi & Admin</div>
+      <div class="header-title">Kelola Data</div>
+      <div class="header-subtitle">RnB Network · Pelanggan Isolir</div>
     </div>
-    <div class="header-icon">R</div>
+    <div class="header-icon">A</div>
   </div>
 </header>
 
-<div class="login-wrap">
+<div class="admin-wrap">
 
-  <!-- HERO WELCOME -->
-  <div class="hero-card">
-    <div class="hero-label">Selamat Datang</div>
-    <div class="hero-value" style="font-size: 32px;">Silakan Pilih Akses</div>
-    <div style="font-size: 14px; color: var(--cream-dark); opacity: 0.8; position: relative;">
-      Pilih mode masuk sesuai dengan tugas Anda hari ini.
-    </div>
-  </div>
+  <!-- FORM TAMBAH DATA -->
+  <section class="section-header">
+    <div class="section-label">Form Input</div>
+    <div class="section-title">Tambah Data Baru</div>
+  </section>
 
-  <!-- AKSI TEKNISI -->
-  <div class="section-label" style="padding: 0 var(--spacing-xs);">Akses Teknisi</div>
-  
-  <div class="action-grid">
-    <!-- 1. Penarikan Perangkat -->
-    <a href="teknisi.html" class="action-card">
-      <div class="action-icon">
-        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>
-      </div>
-      <div class="action-title">Penarikan Perangkat</div>
-      <div class="action-desc">Catat dan kelola data penarikan perangkat isolir pelanggan di lapangan.</div>
-    </a>
-
-    <!-- 2. Pengecekan Redaman -->
-    <a href="https://bot-production-ee35.up.railway.app/" target="_blank" rel="noopener noreferrer" class="action-card">
-      <div class="action-icon">
-        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      </div>
-      <div class="action-title">Pengecekan Redaman</div>
-      <div class="action-desc">Cek kualitas sinyal dan redaman jaringan secara real-time via Bot.</div>
-    </a>
-  </div>
-
-  <!-- DIVIDER -->
-  <div class="divider">ATAU LOGIN SEBAGAI ADMIN</div>
-
-  <!-- FORM LOGIN ADMIN -->
-  <form id="loginForm" class="modern-card" autocomplete="off" style="margin: 0;">
-    <div class="card-header" style="margin-bottom: var(--spacing-lg);">
-      <div>
-        <div class="card-title">Login Admin</div>
-        <div class="card-subtitle">Masukkan kredensial Anda</div>
-      </div>
+  <form id="formPelanggan" class="modern-card" autocomplete="off">
+    <div class="input-group">
+      <label class="input-label" for="nama">Nama Pelanggan</label>
+      <input type="text" id="nama" class="input-field" placeholder="Contoh: Budi Santoso" required />
     </div>
 
     <div class="input-group">
-      <label class="input-label" for="username">Username</label>
-      <input type="text" id="username" class="input-field" placeholder="Masukkan username" required />
+      <label class="input-label" for="hp">Nomor HP</label>
+      <input type="tel" id="hp" class="input-field input-mono" placeholder="08xxxxxxxxxx" required />
     </div>
 
-    <div class="input-group">
-      <label class="input-label" for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" class="input-field" placeholder="Masukkan password" required />
-        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
-          <svg viewBox="0 0 24 24" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
+    <div class="form-row">
+      <div class="input-group">
+        <label class="input-label" for="wilayah">Wilayah</label>
+        <select id="wilayah" class="input-field" required>
+          <option value="">Pilih Wilayah</option>
+          <option value="Sukamelang">Sukamelang</option>
+          <option value="Cibarola">Cibarola</option>
+          <option value="Panglejar">Panglejar</option>
+          <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Jenis Perangkat</label>
+        <div class="perangkat-selector" id="perangkatSelector">
+          <div class="perangkat-option" data-value="Router">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 15h.01M11 15h.01"/><path d="M7 7l5-4 5 4"/></svg>
+            Router
+          </div>
+          <div class="perangkat-option" data-value="STB">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 11h.01M10 11h.01M14 11h.01M18 11h.01"/></svg>
+            STB
+          </div>
+          <div class="perangkat-option" data-value="Router+STB">
+            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="9" height="7" rx="1"/><rect x="13" y="13" width="9" height="7" rx="1"/><path d="M6 11v2M18 13v-2"/></svg>
+            Router+STB
+          </div>
+        </div>
+        <input type="hidden" id="perangkat" required />
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-md);">
-      Masuk
+    <!-- MAP PICKER -->
+    <div class="input-group">
+      <label class="input-label">Pilih Lokasi di Peta</label>
+      <div class="map-container">
+        <div id="map-picker"></div>
+      </div>
+      <div class="coord-display">
+        <div>Lat: <span id="latDisplay">-</span></div>
+        <div>Lng: <span id="lngDisplay">-</span></div>
+      </div>
+      <button type="button" class="btn btn-outline btn-full gps-btn" id="gpsBtn">
+        📍 Gunakan GPS Saya
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label" for="catatan">Catatan (Opsional)</label>
+      <input type="text" id="catatan" class="input-field" placeholder="Catatan tambahan..." />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full btn-large" id="submitBtn">
+      💾 Simpan Data
     </button>
   </form>
 
-  <!-- FOOTER -->
-  <div class="footer-brand">
-    Iyann RnB &copy; 2026
+  <!-- DAFTAR PELANGGAN -->
+  <section class="section-header">
+    <div class="section-label">Database</div>
+    <div class="section-title">Daftar Pelanggan</div>
+  </section>
+
+  <!-- Search -->
+  <div class="search-container">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Cari nama / nomor HP..." />
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-chips" id="filterChips">
+    <div class="chip active" data-filter="all">Semua</div>
+    <div class="chip" data-filter="Sukamelang">Sukamelang</div>
+    <div class="chip" data-filter="Cibarola">Cibarola</div>
+    <div class="chip" data-filter="Panglejar">Panglejar</div>
+    <div class="chip" data-filter="Perum / Flamboyan">Perum / Flamboyan</div>
+  </div>
+
+  <!-- Statistik Mini -->
+  <div class="action-bar">
+    <div class="modern-card" style="margin:0;">
+      <div class="card-subtitle">Total Data</div>
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--gold);" id="statTotal">0</div>
+    </div>
+    <div class="modern-card" style="margin:0;">
+      <div class="card-subtitle">Belum Diambil</div>
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--warning);" id="statPending">0</div>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="pelanggan-list" id="pelangganList"></div>
+
+  <!-- Export/Import -->
+  <div class="action-bar">
+    <button type="button" class="btn btn-outline btn-full" id="exportBtn">📤 Export JSON</button>
+    <button type="button" class="btn btn-outline btn-full" id="importBtn">📥 Import JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;" />
   </div>
 
 </div>
 
-<!-- TOAST NOTIFICATION -->
+<!-- BOTTOM SHEET EDIT -->
+<div class="bottom-sheet-overlay" id="editOverlay">
+  <div class="bottom-sheet" id="editSheet">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-title">Edit Data Pelanggan</div>
+    <form id="formEdit">
+      <input type="hidden" id="editId" />
+      <div class="input-group">
+        <label class="input-label">Nama Pelanggan</label>
+        <input type="text" id="editNama" class="input-field" required />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Nomor HP</label>
+        <input type="tel" id="editHp" class="input-field input-mono" required />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Wilayah</label>
+        <select id="editWilayah" class="input-field" required>
+          <option value="Sukamelang">Sukamelang</option>
+          <option value="Cibarola">Cibarola</option>
+          <option value="Panglejar">Panglejar</option>
+          <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Jenis Perangkat</label>
+        <select id="editPerangkat" class="input-field" required>
+          <option value="Router">Router</option>
+          <option value="STB">STB</option>
+          <option value="Router+STB">Router+STB</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Status</label>
+        <select id="editStatus" class="input-field">
+          <option value="pending">Belum Diambil</option>
+          <option value="taken">Sudah Diambil</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Catatan</label>
+        <input type="text" id="editCatatan" class="input-field" />
+      </div>
+      <div class="modal-buttons">
+        <button type="button" class="btn btn-outline" onclick="closeEdit()">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-content">
+    <div class="modal-title">Hapus Data?</div>
+    <p style="text-align:center;color:var(--cream-dark);margin-bottom:var(--spacing-md);">
+      Data <strong id="deleteName" style="color:var(--gold);"></strong> akan dihapus permanen.
+    </p>
+    <div class="modal-buttons">
+      <button class="btn btn-outline" onclick="closeDelete()">Batal</button>
+      <button class="btn btn-danger" id="confirmDelete">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="nav-item">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+    <span class="nav-label">Dashboard</span>
+  </a>
+  <a href="admin.html" class="nav-item active">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h6"/></svg>
+    <span class="nav-label">Kelola Data</span>
+  </a>
+  <a href="login.html" class="nav-item">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    <span class="nav-label">Keluar</span>
+  </a>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  /* =========================================================
-     LOGIN.JS — Interaksi Halaman Login
-     ========================================================= */
+/* =========================================================
+   ADMIN.JS — Kelola Data Pelanggan
+   ========================================================= */
 
-  // Toggle Password Visibility
-  const toggleBtn = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
+const STORAGE_KEY = 'rnb_pelanggan';
+let pelanggan = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let map, marker;
+let currentFilter = 'all';
+let currentSearch = '';
+let editingId = null;
+let deletingId = null;
 
-  toggleBtn.addEventListener('click', () => {
-    const isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-    
-    // Ganti ikon mata
-    eyeIcon.innerHTML = isPassword 
-      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+// Default center: Subang, Jawa Barat (wilayah Sukamelang area)
+const DEFAULT_CENTER = [-6.5, 107.75];
+const DEFAULT_ZOOM = 13;
+
+/* ---------- INIT ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  initPerangkatSelector();
+  initFilterChips();
+  initSearch();
+  initForm();
+  initEditForm();
+  initExportImport();
+  renderList();
+});
+
+/* ---------- MAP ---------- */
+function initMap() {
+  map = L.map('map-picker', { zoomControl: true }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(map);
+
+  map.on('click', (e) => setMarker(e.latlng.lat, e.latlng.lng));
+}
+
+function setMarker(lat, lng) {
+  const latlng = [lat, lng];
+  if (marker) marker.setLatLng(latlng);
+  else marker = L.marker(latlng, { draggable: true }).addTo(map);
+
+  marker.on('dragend', (e) => {
+    const p = e.target.getLatLng();
+    updateCoordDisplay(p.lat, p.lng);
   });
+  updateCoordDisplay(lat, lng);
+}
 
-  // Mock Admin Login Handler
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
+function updateCoordDisplay(lat, lng) {
+  document.getElementById('latDisplay').textContent = lat.toFixed(6);
+  document.getElementById('lngDisplay').textContent = lng.toFixed(6);
+}
+
+/* GPS */
+document.getElementById('gpsBtn').addEventListener('click', () => {
+  if (!navigator.geolocation) return toast('GPS tidak didukung di perangkat ini', 'error');
+  toast('Mendeteksi lokasi...', 'success');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      map.setView([latitude, longitude], 17);
+      setMarker(latitude, longitude);
+      toast('Lokasi berhasil diambil', 'success');
+    },
+    (err) => toast('Gagal mendapatkan lokasi: ' + err.message, 'error'),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
+
+/* ---------- PERANGKAT SELECTOR ---------- */
+function initPerangkatSelector() {
+  const options = document.querySelectorAll('#perangkatSelector .perangkat-option');
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      document.getElementById('perangkat').value = opt.dataset.value;
+    });
+  });
+}
+
+/* ---------- FILTER CHIPS ---------- */
+function initFilterChips() {
+  document.querySelectorAll('#filterChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#filterChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.filter;
+      renderList();
+    });
+  });
+}
+
+/* ---------- SEARCH ---------- */
+function initSearch() {
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    currentSearch = e.target.value.toLowerCase().trim();
+    renderList();
+  });
+}
+
+/* ---------- FORM SUBMIT ---------- */
+function initForm() {
+  document.getElementById('formPelanggan').addEventListener('submit', (e) => {
     e.preventDefault();
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value.trim();
 
-    // Ganti logika ini dengan validasi backend / localStorage sesuai kebutuhan Anda
-    if (user === 'admin' && pass === 'admin123') {
-      showToast('Login berhasil! Mengalihkan...', 'success');
-      setTimeout(() => {
-        window.location.href = 'admin.html';
-      }, 1000);
-    } else {
-      showToast('Username atau password salah!', 'error');
-      // Animasi getar pada form
-      const form = document.getElementById('loginForm');
-      form.style.animation = 'shake 0.4s ease';
-      setTimeout(() => form.style.animation = '', 400);
+    const nama = document.getElementById('nama').value.trim();
+    const hp = document.getElementById('hp').value.trim();
+    const wilayah = document.getElementById('wilayah').value;
+    const perangkat = document.getElementById('perangkat').value;
+    const catatan = document.getElementById('catatan').value.trim();
+    const lat = document.getElementById('latDisplay').textContent;
+    const lng = document.getElementById('lngDisplay').textContent;
+
+    if (!nama || !hp || !wilayah || !perangkat) {
+      return toast('Lengkapi semua field yang wajib', 'error');
     }
+    if (lat === '-' || lng === '-') {
+      return toast('Pilih lokasi di peta terlebih dahulu', 'error');
+    }
+
+    const data = {
+      id: Date.now().toString(),
+      nama, hp, wilayah, perangkat, catatan,
+      lat: parseFloat(lat), lng: parseFloat(lng),
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+
+    pelanggan.unshift(data);
+    save();
+    renderList();
+    resetForm();
+    toast('Data pelanggan berhasil disimpan', 'success');
+  });
+}
+
+function resetForm() {
+  document.getElementById('formPelanggan').reset();
+  document.querySelectorAll('#perangkatSelector .perangkat-option').forEach(o => o.classList.remove('selected'));
+  document.getElementById('perangkat').value = '';
+  document.getElementById('latDisplay').textContent = '-';
+  document.getElementById('lngDisplay').textContent = '-';
+  if (marker) { map.removeLayer(marker); marker = null; }
+}
+
+/* ---------- RENDER LIST ---------- */
+function renderList() {
+  const list = document.getElementById('pelangganList');
+  let filtered = pelanggan.filter(p => {
+    const matchFilter = currentFilter === 'all' || p.wilayah === currentFilter;
+    const matchSearch = !currentSearch ||
+      p.nama.toLowerCase().includes(currentSearch) ||
+      p.hp.includes(currentSearch);
+    return matchFilter && matchSearch;
   });
 
-  function showToast(msg, type = 'success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast show ${type}`;
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-</script>
+  // Stats
+  document.getElementById('statTotal').textContent = pelanggan.length;
+  document.getElementById('statPending').textContent = pelanggan.filter(p => p.status === 'pending').length;
 
-<style>
-  /* Animasi getar untuk login gagal */
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-8px); }
-    40%, 80% { transform: translateX(8px); }
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-list">
+        <div class="empty-list-icon">📭</div>
+        <div class="empty-title">${pelanggan.length === 0 ? 'Belum ada data' : 'Tidak ditemukan'}</div>
+        <div style="font-size:13px;opacity:0.7;">
+          ${pelanggan.length === 0 ? 'Mulai tambahkan data pelanggan baru di atas.' : 'Coba ubah kata kunci atau filter wilayah.'}
+        </div>
+      </div>`;
+    return;
   }
-</style>
+
+  list.innerHTML = filtered.map(p => `
+    <div class="pelanggan-item">
+      <div class="pelanggan-head">
+        <div>
+          <div class="pelanggan-name">${escapeHtml(p.nama)}</div>
+          <div class="pelanggan-phone">${escapeHtml(p.hp)}</div>
+        </div>
+        <span class="card-badge ${p.status === 'taken' ? 'badge-success' : 'badge-warning'}">
+          ${p.status === 'taken' ? 'Sudah Diambil' : 'Belum Diambil'}
+        </span>
+      </div>
+      <div class="pelanggan-meta">
+        <span class="meta-tag">📍 ${escapeHtml(p.wilayah)}</span>
+        <span class="meta-tag">📦 ${escapeHtml(p.perangkat)}</span>
+        ${p.catatan ? `<span class="meta-tag">📝 ${escapeHtml(p.catatan)}</span>` : ''}
+      </div>
+      <div class="pelanggan-actions">
+        <button class="btn btn-small btn-outline" onclick="openEdit('${p.id}')">✏️ Edit</button>
+        <button class="btn btn-small btn-map" onclick="openMap('${p.id}')">🗺️ Peta</button>
+        <button class="btn btn-small btn-danger" onclick="openDelete('${p.id}')">🗑️ Hapus</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---------- EDIT ---------- */
+function openEdit(id) {
+  const p = pelanggan.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('editId').value = id;
+  document.getElementById('editNama').value = p.nama;
+  document.getElementById('editHp').value = p.hp;
+  document.getElementById('editWilayah').value = p.wilayah;
+  document.getElementById('editPerangkat').value = p.perangkat;
+  document.getElementById('editStatus').value = p.status;
+  document.getElementById('editCatatan').value = p.catatan || '';
+  document.getElementById('editOverlay').classList.add('active');
+  document.getElementById('editSheet').classList.add('active');
+}
+function closeEdit() {
+  document.getElementById('editOverlay').classList.remove('active');
+  document.getElementById('editSheet').classList.remove('active');
+  editingId = null;
+}
+function initEditForm() {
+  document.getElementById('formEdit').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!editingId) return;
+    const idx = pelanggan.findIndex(x => x.id === editingId);
+    if (idx < 0) return;
+    pelanggan[idx] = {
+      ...pelanggan[idx],
+      nama: document.getElementById('editNama').value.trim(),
+      hp: document.getElementById('editHp').value.trim(),
+      wilayah: document.getElementById('editWilayah').value,
+      perangkat: document.getElementById('editPerangkat').value,
+      status: document.getElementById('editStatus').value,
+      catatan: document.getElementById('editCatatan').value.trim()
+    };
+    save();
+    renderList();
+    closeEdit();
+    toast('Data berhasil diperbarui', 'success');
+  });
+  document.getElementById('editOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'editOverlay') closeEdit();
+  });
+}
+
+/* ---------- DELETE ---------- */
+function openDelete(id) {
+  const p = pelanggan.find(x => x.id === id);
+  if (!p) return;
+  deletingId = id;
+  document.getElementById('deleteName').textContent = p.nama;
+  document.getElementById('deleteModal').classList.add('active');
+}
+function closeDelete() {
+  document.getElementById('deleteModal').classList.remove('active');
+  deletingId = null;
+}
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  if (!deletingId) return;
+  pelanggan = pelanggan.filter(x => x.id !== deletingId);
+  save();
+  renderList();
+  closeDelete();
+  toast('Data berhasil dihapus', 'success');
+});
+
+/* ---------- OPEN MAP ---------- */
+function openMap(id) {
+  const p = pelanggan.find(x => x.id === id);
+  if (!p) return;
+  const url = `https://www.google.com/maps?q=${p.lat},${p.lng}`;
+  window.open(url, '_blank');
+}
+
+/* ---------- EXPORT / IMPORT ---------- */
+function initExportImport() {
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    if (pelanggan.length === 0) return toast('Tidak ada data untuk diekspor', 'error');
+    const blob = new Blob([JSON.stringify(pelanggan, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rnb_pelanggan_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Data berhasil diekspor', 'success');
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('Format tidak valid');
+        pelanggan = data;
+        save();
+        renderList();
+        toast(`${data.length} data berhasil diimpor`, 'success');
+      } catch (err) {
+        toast('File JSON tidak valid', 'error');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+}
+
+/* ---------- UTIL ---------- */
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(pelanggan));
+}
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+</script>
 </body>
 </html>
