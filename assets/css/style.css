@@ -380,3 +380,136 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 
 @media (max-width: 380px) { .hero-value { font-size: 40px; } .section-title { font-size: 20px; } }
 ::-webkit-scrollbar { width: 0; height: 0; }
+
+/* MOBILE RESPONSIVE FIX */
+@media (max-width: 480px) {
+    .menu-container {
+        padding: var(--spacing-md);
+        max-width: 100%;
+    }
+    
+    .app-header {
+        margin: 20px 0;
+    }
+    
+    .app-title {
+        font-size: 24px;
+    }
+    
+    .app-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .app-logo svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .menu-list {
+        gap: 12px;
+    }
+    
+    .menu-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    
+    .menu-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .menu-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .menu-title {
+        font-size: 15px;
+    }
+    
+    .menu-desc {
+        font-size: 11px;
+    }
+    
+    .footer {
+        margin-top: 32px;
+        font-size: 10px;
+    }
+    
+    /* Pastikan semua menu terlihat */
+    body {
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+    
+    /* Perbaiki header di mobile */
+    .top-header {
+        padding: calc(var(--safe-top) + 12px) var(--spacing-md) var(--spacing-md);
+    }
+    
+    .header-title {
+        font-size: 16px;
+    }
+    
+    .header-subtitle {
+        font-size: 10px;
+    }
+    
+    .nav-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .header-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Install banner lebih kecil di mobile */
+    .install-banner {
+        padding: 12px 20px;
+        font-size: 13px;
+        bottom: 16px;
+    }
+    
+    .install-banner svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* VERY SMALL SCREEN */
+@media (max-width: 360px) {
+    .app-title {
+        font-size: 20px;
+    }
+    
+    .menu-title {
+        font-size: 14px;
+    }
+    
+    .menu-card {
+        padding: 14px;
+    }
+}
+
+/* LANDSCAPE MODE */
+@media (max-height: 500px) and (orientation: landscape) {
+    .menu-container {
+        padding: var(--spacing-sm);
+    }
+    
+    .app-header {
+        margin: 10px 0;
+    }
+    
+    .menu-list {
+        gap: 8px;
+    }
+    
+    .menu-card {
+        padding: 12px;
+    }
+}
