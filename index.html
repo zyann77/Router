@@ -14,346 +14,310 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        :root {
+            --gold: #C9A961;
+            --gold-light: #E5C97A;
+            --gold-dark: #A08340;
+            --bg-dark: #050508;
+            --text-main: #F5F1E8;
+            --text-muted: #A0A0B0;
+        }
+
         body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            margin: 0;
             padding: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08) 0%, transparent 60%), var(--bg-primary);
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Manrope', system-ui, sans-serif;
             overflow-x: hidden;
+            position: relative;
         }
-        .menu-container {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: var(--spacing-xl);
-            flex: 1;
-            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
+
+        /* ANIMATED BACKGROUND ORBS */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: floatOrb 10s infinite alternate ease-in-out;
         }
-        .app-header {
-            text-align: center;
-            margin: 40px 0;
+        .orb-1 {
+            top: -10%; left: -10%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(201, 169, 97, 0.3) 0%, transparent 70%);
         }
-        .app-logo {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 12px 32px rgba(201, 169, 97, 0.3);
+        .orb-2 {
+            bottom: 10%; right: -10%; width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+            animation-delay: -5s;
         }
-        .app-logo svg {
-            width: 36px;
-            height: 36px;
-            stroke: var(--leather-dark);
-            stroke-width: 2;
-            fill: none;
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
         }
-        .app-title {
-            font-family: var(--font-display);
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--cream);
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-        }
-        .app-subtitle {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--gold);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-        .menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .menu-card {
-            background: rgba(31, 31, 46, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 20px;
+
+        /* HEADER */
+        .top-header {
             padding: 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            text-decoration: none;
-            color: var(--cream);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .menu-card::before {
-            content: '';
-            position: absolute;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gold);
-            opacity: 0;
-            transition: opacity 0.3s;
+            z-index: 100;
+            background: rgba(5, 5, 8, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .nav-btn svg { width: 20px; height: 20px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .nav-btn.home-btn { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border: none; }
+        .nav-btn.home-btn svg { stroke: #000; }
+        
+        .header-title-container { text-align: center; flex: 1; }
+        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+        .header-title { font-size: 18px; font-weight: 700; color: white; margin: 0; }
+
+        /* MAIN CONTAINER */
+        .menu-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* LOGO SECTION */
+        .app-header {
+            text-align: center;
+            margin: 30px 0 40px;
+            animation: fadeInDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .app-logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.3);
+            animation: floatLogo 4s infinite ease-in-out;
+            position: relative;
+        }
+        .app-logo::after {
+            content: ''; position: absolute; inset: -2px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--gold), transparent);
+            z-index: -1; filter: blur(10px); opacity: 0.5;
+        }
+        .app-logo svg { width: 40px; height: 40px; stroke: #000; stroke-width: 2; fill: none; }
+        
+        .app-title {
+            font-size: 32px; font-weight: 800; margin: 0 0 8px;
+            background: linear-gradient(to right, #fff, var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+        .app-subtitle { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MENU CARDS */
+        .menu-list { display: flex; flex-direction: column; gap: 16px; }
+        
+        .menu-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex; align-items: center; gap: 16px;
+            text-decoration: none; color: white;
+            position: relative; overflow: hidden;
+            opacity: 0; /* Hidden initially for animation */
+            animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Staggered Animation Delays */
+        .menu-card:nth-child(1) { animation-delay: 0.2s; }
+        .menu-card:nth-child(2) { animation-delay: 0.3s; }
+        .menu-card:nth-child(3) { animation-delay: 0.4s; }
+        .menu-card:nth-child(4) { animation-delay: 0.5s; }
+
+        .menu-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--gold); opacity: 0; transition: opacity 0.3s;
+        }
+
         .menu-card:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
             background: rgba(201, 169, 97, 0.1);
             border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(201, 169, 97, 0.15);
         }
-        .menu-card:active::before {
-            opacity: 1;
-        }
+        .menu-card:active::before { opacity: 1; }
+
         .menu-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.05) 100%);
+            width: 50px; height: 50px; flex-shrink: 0;
+            background: rgba(201, 169, 97, 0.1);
             border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            border: 1px solid rgba(201, 169, 97, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            transition: all 0.3s;
         }
-        .menu-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--gold);
-            stroke-width: 2;
-            fill: none;
+        .menu-card:active .menu-icon {
+            background: var(--gold);
+            transform: rotate(-5deg);
         }
-        .menu-text {
-            flex: 1;
-            min-width: 0;
-        }
-        .menu-title {
-            font-family: var(--font-ui);
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--cream);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .menu-desc {
-            font-size: 12px;
-            color: var(--cream-dark);
-            opacity: 0.7;
-            line-height: 1.4;
-        }
-        .menu-arrow {
-            color: var(--gold);
-            opacity: 0.5;
-            transition: transform 0.3s;
-            flex-shrink: 0;
-        }
-        .menu-card:active .menu-arrow {
-            transform: translateX(4px);
-            opacity: 1;
-        }
-        .footer {
-            margin-top: 48px;
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--cream-dark);
-            opacity: 0.4;
-            letter-spacing: 0.1em;
-        }
-        .install-banner {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: var(--leather-dark);
-            padding: 14px 24px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4);
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 9999;
-            font-weight: 700;
-            font-size: 14px;
-            opacity: 0;
-            max-width: 90%;
-        }
-        .install-banner.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        .install-banner:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-        .install-banner svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--leather-dark);
-            stroke-width: 2.5;
-            fill: none;
-        }
-        .close-install {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 2px solid var(--bg-primary);
-        }
-        @keyframes fadeInUp {
+        .menu-icon svg { width: 24px; height: 24px; stroke: var(--gold); stroke-width: 2; fill: none; transition: stroke 0.3s; }
+        .menu-card:active .menu-icon svg { stroke: #000; }
+
+        .menu-text { flex: 1; }
+        .menu-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: white; }
+        .menu-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+        .menu-arrow { color: var(--gold); opacity: 0.3; transition: all 0.3s; }
+        .menu-card:active .menu-arrow { opacity: 1; transform: translateX(5px); }
+
+        @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* MOBILE FIX */
-        @media (max-width: 480px) {
-            .menu-container {
-                padding: var(--spacing-md);
-            }
-            .app-header {
-                margin: 20px 0;
-            }
-            .app-title {
-                font-size: 24px;
-            }
-            .menu-list {
-                gap: 12px;
-            }
+
+        /* FOOTER */
+        .footer {
+            text-align: center; margin-top: 50px;
+            font-size: 11px; color: var(--text-muted); opacity: 0.5;
+            animation: fadeIn 1s 0.8s forwards; opacity: 0;
+        }
+        @keyframes fadeIn { to { opacity: 0.5; } }
+
+        /* INSTALL BANNER */
+        .install-banner {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000; padding: 12px 24px; border-radius: 50px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.4);
+            cursor: pointer; z-index: 999; font-weight: 700; font-size: 14px;
+            opacity: 0; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .install-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .install-banner:active { transform: translateX(-50%) scale(0.95); }
+        .install-banner svg { width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none; }
+        .close-install {
+            position: absolute; top: -8px; right: -8px;
+            background: #EF4444; color: white; width: 22px; height: 22px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; border: 2px solid var(--bg-dark);
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- Background Orbs -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- Header -->
     <div class="top-header">
-        <div class="header-content">
-            <div class="nav-buttons">
-                <button class="nav-btn" onclick="history.back()">
-                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <a href="index.html" class="nav-btn home-btn">
-                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </a>
-            </div>
-            <div style="text-align: center; flex: 1;">
-                <div class="header-subtitle">Selamat Datang</div>
-                <div class="header-title">Menu Utama</div>
-            </div>
-            <div class="header-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-            </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <a href="index.html" class="nav-btn home-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
         </div>
+        <div class="header-title-container">
+            <div class="header-subtitle">Selamat Datang</div>
+            <h2 class="header-title">Menu Utama</h2>
+        </div>
+        <div style="width: 90px;"></div> <!-- Spacer for balance -->
     </div>
 
-    <!-- MENU CONTAINER -->
+    <!-- Main Content -->
     <div class="menu-container">
         <div class="app-header">
             <div class="app-logo">
                 <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
             <h1 class="app-title">Iyann RnB</h1>
-            <div class="app-subtitle">Network Management Tools</div>
+            <div class="app-subtitle">NETWORK MANAGEMENT TOOLS</div>
         </div>
 
         <div class="menu-list">
-            
             <!-- 1. Penarikan Perangkat -->
             <a href="login.html" class="menu-card">
                 <div class="menu-icon">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
                 <div class="menu-text">
                     <div class="menu-title">Penarikan Perangkat</div>
                     <div class="menu-desc">Kelola data isolir & penarikan router/STB</div>
                 </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                </svg>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
 
             <!-- 2. Cek Redaman Pelanggan -->
             <a href="https://bot-production-ee35.up.railway.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-                        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-                        <line x1="12" y1="20" x2="12.01" y2="20"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
                 </div>
                 <div class="menu-text">
                     <div class="menu-title">Cek Redaman Pelanggan</div>
                     <div class="menu-desc">Monitoring kualitas sinyal & redaman ODP</div>
                 </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                </svg>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
 
             <!-- 3. Kalkulator Redaman -->
             <a href="https://ratioredaman.netlify.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="4" y="2" width="16" height="20" rx="2"/>
-                        <line x1="8" y1="6" x2="16" y2="6"/>
-                        <line x1="8" y1="10" x2="16" y2="10"/>
-                        <line x1="8" y1="14" x2="12" y2="14"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
                 </div>
                 <div class="menu-text">
                     <div class="menu-title">Kalkulator Redaman</div>
                     <div class="menu-desc">Hitung redaman fiber optik & loss budget</div>
                 </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                </svg>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
 
             <!-- 4. Setting Router HG8145V5 -->
             <a href="https://generatorwan.netlify.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                        <line x1="6" y1="6" x2="6.01" y2="6"/>
-                        <line x1="6" y1="18" x2="6.01" y2="18"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
                 </div>
                 <div class="menu-text">
                     <div class="menu-title">Setting Router HG8145V5</div>
                     <div class="menu-desc">Tools konfigurasi & generator WAN ONU</div>
                 </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                </svg>
+                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
-
         </div>
 
-        <div class="footer">v2.2 • Iyann RnB Network</div>
+        <div class="footer">v2.3 • Iyann RnB Network</div>
     </div>
 
-    <!-- INSTALL BANNER -->
+    <!-- Install Banner -->
     <div id="installBanner" class="install-banner" onclick="installApp()">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>Install Aplikasi</span>
@@ -372,7 +336,6 @@
                 deferredPrompt = e;
                 setTimeout(() => { installBanner.classList.add('show'); }, 1500);
             });
-
             if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
                 setTimeout(() => {
                     installBanner.querySelector('span').textContent = 'Add to Home Screen (+)';
@@ -385,9 +348,7 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    }
+                    if (choiceResult.outcome === 'accepted') console.log('User accepted');
                     deferredPrompt = null;
                     hideInstallBanner();
                 });
@@ -409,12 +370,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+                    .then((reg) => console.log('SW registered'))
+                    .catch((err) => console.log('SW failed', err));
             });
         }
     </script>
