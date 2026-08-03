@@ -17,6 +17,7 @@
             min-height: 100vh;
             padding: 0;
             background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08) 0%, transparent 60%), var(--bg-primary);
+            overflow-x: hidden;
         }
         .menu-container {
             width: 100%;
@@ -25,6 +26,7 @@
             padding: var(--spacing-xl);
             flex: 1;
             animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
         }
         .app-header {
             text-align: center;
@@ -123,6 +125,7 @@
         }
         .menu-text {
             flex: 1;
+            min-width: 0;
         }
         .menu-title {
             font-family: var(--font-ui);
@@ -130,6 +133,9 @@
             font-weight: 700;
             margin-bottom: 4px;
             color: var(--cream);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .menu-desc {
             font-size: 12px;
@@ -141,6 +147,7 @@
             color: var(--gold);
             opacity: 0.5;
             transition: transform 0.3s;
+            flex-shrink: 0;
         }
         .menu-card:active .menu-arrow {
             transform: translateX(4px);
@@ -174,6 +181,7 @@
             font-weight: 700;
             font-size: 14px;
             opacity: 0;
+            max-width: 90%;
         }
         .install-banner.show {
             transform: translateX(-50%) translateY(0);
@@ -208,18 +216,34 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* MOBILE FIX */
+        @media (max-width: 480px) {
+            .menu-container {
+                padding: var(--spacing-md);
+            }
+            .app-header {
+                margin: 20px 0;
+            }
+            .app-title {
+                font-size: 24px;
+            }
+            .menu-list {
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- HEADER DENGAN TOMBOL BACK & HOME -->
+    <!-- HEADER -->
     <div class="top-header">
         <div class="header-content">
             <div class="nav-buttons">
-                <button class="nav-btn" onclick="history.back()" title="Kembali">
+                <button class="nav-btn" onclick="history.back()">
                     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <a href="index.html" class="nav-btn home-btn" title="Home">
+                <a href="index.html" class="nav-btn home-btn">
                     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </a>
             </div>
@@ -235,7 +259,7 @@
         </div>
     </div>
 
-    <!-- KONTEN MENU -->
+    <!-- MENU CONTAINER -->
     <div class="menu-container">
         <div class="app-header">
             <div class="app-logo">
@@ -283,7 +307,7 @@
                 </svg>
             </a>
 
-            <!-- 3. Kalkulator Redaman (BARU) -->
+            <!-- 3. Kalkulator Redaman -->
             <a href="https://ratioredaman.netlify.app/" class="menu-card" target="_blank">
                 <div class="menu-icon">
                     <svg viewBox="0 0 24 24">
@@ -326,7 +350,7 @@
         <div class="footer">v2.2 • Iyann RnB Network</div>
     </div>
 
-    <!-- INSTALL BANNER PWA -->
+    <!-- INSTALL BANNER -->
     <div id="installBanner" class="install-banner" onclick="installApp()">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>Install Aplikasi</span>
@@ -334,7 +358,6 @@
     </div>
 
     <script>
-        // === PWA INSTALL PROMPT LOGIC ===
         let deferredPrompt;
         const installBanner = document.getElementById('installBanner');
 
@@ -366,7 +389,7 @@
                     hideInstallBanner();
                 });
             } else {
-                alert('Untuk menginstall:\n1. Klik tombol "Share" (kotak dengan panah) di bawah Safari\n2. Pilih "Add to Home Screen" (Tambahkan ke Layar Utama)');
+                alert('Untuk menginstall:\n1. Klik tombol "Share" di Safari\n2. Pilih "Add to Home Screen"');
                 hideInstallBanner();
             }
         }
@@ -380,7 +403,6 @@
             installBanner.style.display = 'none';
         }
 
-        // === REGISTER SERVICE WORKER ===
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
