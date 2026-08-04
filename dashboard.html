@@ -190,18 +190,21 @@
         .toast.error { border-color: var(--danger); color: var(--danger); }
 
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-            display: flex; justify-content: space-around; z-index: 100;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
-        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
-        .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
-        .nav-item.active svg { stroke: var(--gold); }
-        .nav-item.active span { color: var(--gold); }
-        .nav-item:active { transform: scale(0.9); }
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    display: flex; justify-content: space-around; z-index: 100;
+}
+.nav-item { 
+    display: flex; flex-direction: column; align-items: center; gap: 3px; 
+    cursor: pointer; flex: 1; padding: 4px 2px;
+}
+.nav-item svg { width: 20px; height: 20px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
+.nav-item span { font-size: 9px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; text-align: center; }
+.nav-item.active svg { stroke: var(--gold); }
+.nav-item.active span { color: var(--gold); }
+.nav-item:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
