@@ -3,429 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tugas Teknisi</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tugas Teknisi - Iyann RnB</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; padding: var(--spacing-xl); }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--bg-card); border-radius: 20px; padding: var(--spacing-2xl); width: 100%; max-width: 400px; border: 1px solid rgba(201, 169, 97, 0.3); position: relative; }
-        .modal-content::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px dashed rgba(201, 169, 97, 0.3); border-radius: 16px; pointer-events: none; }
-        .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-xl); text-align: center; color: var(--cream); position: relative; }
-        .modal-subtitle { text-align: center; color: var(--cream-dark); margin-bottom: var(--spacing-xl); font-size: 14px; line-height: 1.5; }
-        .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-xl); position: relative; }
-        
-        .filter-section { padding: 0 var(--spacing-xl) var(--spacing-sm); }
-        .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md); }
-        
-        .status-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
-        .status-chips::-webkit-scrollbar { display: none; }
-        .chip { padding: 10px 18px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-        .chip:active { transform: scale(0.95); }
-        .chip.active { background: var(--gold); color: var(--leather-dark); border-color: var(--gold); }
-        
-        .bulan-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
-        .bulan-chips::-webkit-scrollbar { display: none; }
-        .chip-bulan { padding: 10px 16px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; min-width: 70px; text-align: center; }
-        .chip-bulan:active { transform: scale(0.95); }
-        .chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
-        
-        .warning-icon {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto var(--spacing-lg);
-            font-size: 32px;
+        :root {
+            --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340;
+            --bg-dark: #050508; --bg-card: rgba(255, 255, 255, 0.03);
+            --text-main: #F5F1E8; --text-muted: #A0A0B0;
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            min-height: 100vh; overflow-x: hidden; position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* BACKGROUND ORBS */
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
+        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
+        .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 50px); } }
+
+        /* HEADER */
+        .top-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .header-info { text-align: center; flex: 1; }
+        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
+        .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
+        .header-icon {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 800; font-size: 16px;
+        }
+
+        /* CONTAINER */
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* FILTER SECTIONS */
+        .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+        
+        /* Wilayah Grid */
+        .wilayah-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .wilayah-card {
+            background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
+        }
+        .wilayah-card:nth-child(1) { animation-delay: 0.1s; }
+        .wilayah-card:nth-child(2) { animation-delay: 0.2s; }
+        .wilayah-card:nth-child(3) { animation-delay: 0.3s; }
+        .wilayah-card:nth-child(4) { animation-delay: 0.4s; }
+        .wilayah-card:nth-child(5) { animation-delay: 0.5s; }
+        
+        .wilayah-card:active { transform: scale(0.96); }
+        .wilayah-card.active { border-color: var(--gold); background: rgba(201, 169, 97, 0.1); box-shadow: 0 0 20px rgba(201, 169, 97, 0.15); }
+        .wilayah-card.full-width { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+        
+        .w-icon { width: 32px; height: 32px; background: rgba(201, 169, 97, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .wilayah-card.full-width .w-icon { margin-bottom: 0; }
+        .w-icon svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .w-name { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
+        .w-count { font-size: 11px; color: var(--text-muted); }
+
+        /* Chips (Status & Bulan) */
+        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; scrollbar-width: none; }
+        .chips-container::-webkit-scrollbar { display: none; }
+        .chip {
+            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s;
+        }
+        .chip:active { transform: scale(0.95); }
+        .chip.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+
+        /* Search */
+        .search-box {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 24px; transition: all 0.3s;
+        }
+        .search-box:focus-within { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        .search-box svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
+        .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        /* Customer List - COMPACT */
+        .customer-list { display: flex; flex-direction: column; gap: 8px; }
+        
+        .cust-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .cust-card:active { background: rgba(201, 169, 97, 0.05); }
+        
+        .cust-info-main { flex: 1; min-width: 0; }
+        .cust-name { font-size: 15px; font-weight: 700; color: white; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .cust-sub .dot { width: 3px; height: 3px; background: var(--text-muted); border-radius: 50%; }
+        
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+        .badge-belum { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-selesai { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* More Button */
+        .more-btn {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+        }
+        .more-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .more-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+
+        /* Popup Menu */
+        .popup-menu {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1000;
+        }
+        .popup-menu.active { display: block; }
+        .popup-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+        .popup-content {
+            position: absolute;
+            background: #1a1a24;
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 16px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: popupIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes popupIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .popup-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+            text-decoration: none; color: white;
+            border: none; background: none; width: 100%;
+            font-family: inherit; font-size: 14px; font-weight: 600;
+        }
+        .popup-item:active { background: rgba(201, 169, 97, 0.1); }
+        .popup-item svg { width: 18px; height: 18px; stroke-width: 2; fill: none; flex-shrink: 0; }
+        .popup-item.wa svg { stroke: #25D366; }
+        .popup-item.map svg { stroke: #3B82F6; }
+        .popup-item.selesai svg { stroke: var(--success); }
+        .popup-item.langganan svg { stroke: var(--warning); }
+        .popup-divider { height: 1px; background: rgba(255, 255, 255, 0.05); margin: 4px 0; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); animation: fadeIn 0.5s; }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content {
+            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
+            animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal-title { font-size: 20px; font-weight: 700; color: white; text-align: center; margin-bottom: 20px; }
+        .modal-icon { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .modal-icon.warn { background: rgba(245, 158, 11, 0.15); }
+        .modal-icon.success { background: rgba(16, 185, 129, 0.15); }
+        .modal-text { text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .input-field {
+            width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            color: white; font-size: 14px; font-family: inherit; outline: none; transition: all 0.3s;
+        }
+        .input-field:focus { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        textarea.input-field { min-height: 80px; resize: none; }
+
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn-modal { padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn-modal:active { transform: scale(0.95); }
+        .btn-cancel { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-confirm { background: var(--gold); color: #000; }
+        .btn-confirm.danger { background: var(--danger); color: white; }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px; border-radius: 12px; z-index: 2000;
+            font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-around; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
+        .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
+        .nav-item.active svg { stroke: var(--gold); }
+        .nav-item.active span { color: var(--gold); }
+        .nav-item:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
-    <div id="toast" class="toast"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
+    <!-- Header -->
     <div class="top-header">
-        <div class="header-content">
-            <div>
-                <div class="header-subtitle">Lapangan Hari Ini</div>
-                <div class="header-title">Tugas Teknisi</div>
-            </div>
-            <div class="header-icon">T</div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <a href="index.html" class="nav-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
         </div>
+        <div class="header-info">
+            <div class="header-subtitle">Lapangan Hari Ini</div>
+            <div class="header-title">Tugas Teknisi</div>
+        </div>
+        <div class="header-icon">T</div>
     </div>
 
-    <div class="filter-section">
+    <div class="container">
+        <!-- Filter Wilayah -->
         <div class="filter-label">Pilih Wilayah</div>
-    </div>
-    <div class="wilayah-grid" id="wilayahGrid"></div>
+        <div class="wilayah-grid" id="wilayahGrid"></div>
 
-    <div class="filter-section">
+        <!-- Filter Status -->
         <div class="filter-label">Filter Status</div>
-    </div>
-    <div class="status-chips">
-        <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
-        <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum</div>
-        <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Selesai</div>
-    </div>
-
-    <div class="filter-section">
-        <div class="filter-label">Filter Bulan Penarikan</div>
-    </div>
-    <div class="bulan-chips" id="bulanChips"></div>
-
-    <div class="search-container">
-        <div class="search-box">
-            <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Cari nama atau HP...">
+        <div class="chips-container" id="statusChips">
+            <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
+            <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum Diambil</div>
+            <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Sudah Diambil</div>
         </div>
+
+        <!-- Filter Bulan -->
+        <div class="filter-label">Filter Bulan Penarikan</div>
+        <div class="chips-container" id="bulanChips"></div>
+
+        <!-- Search -->
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP...">
+        </div>
+
+        <!-- Customer List -->
+        <div class="customer-list" id="customerList"></div>
     </div>
 
-    <div id="customerList"></div>
+    <!-- Popup Menu -->
+    <div id="popupMenu" class="popup-menu">
+        <div class="popup-overlay" onclick="closePopup()"></div>
+        <div class="popup-content" id="popupContent"></div>
+    </div>
 
-    <!-- MODAL SELESAI (DIAMBIL) -->
-    <div id="modalOverlay" class="modal-overlay">
+    <!-- Modal Selesai -->
+    <div id="modalSelesai" class="modal-overlay">
         <div class="modal-content">
+            <div class="modal-icon success">✅</div>
             <div class="modal-title">Konfirmasi Penyelesaian</div>
             <div class="input-group">
                 <label class="input-label">Tanggal Penarikan</label>
-                <input type="date" id="modalTanggal" class="input-field input-mono">
+                <input type="date" id="inputTanggal" class="input-field">
             </div>
             <div class="input-group">
                 <label class="input-label">Catatan (Opsional)</label>
-                <textarea id="modalCatatan" class="input-field" style="min-height: 80px;" placeholder="Tambahkan catatan..."></textarea>
+                <textarea id="inputCatatan" class="input-field" placeholder="Tambahkan catatan..."></textarea>
             </div>
-            <div class="modal-buttons">
-                <button onclick="closeModal()" class="btn btn-danger">Batal</button>
-                <button onclick="confirmComplete()" class="btn btn-success">Selesai</button>
+            <div class="modal-btns">
+                <button class="btn-modal btn-cancel" onclick="closeModal('modalSelesai')">Batal</button>
+                <button class="btn-modal btn-confirm" onclick="confirmSelesai()">Simpan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL LANJUT BERLANGGANAN (HAPUS DATA) -->
-    <div id="modalBerlangganan" class="modal-overlay">
+    <!-- Modal Berlangganan (Hapus Data) -->
+    <div id="modalLangganan" class="modal-overlay">
         <div class="modal-content">
-            <div class="warning-icon">⚠️</div>
+            <div class="modal-icon warn">️</div>
             <div class="modal-title">Lanjut Berlangganan?</div>
-            <p class="modal-subtitle">
-                Pelanggan memutuskan untuk <b style="color: var(--gold);">tetap berlangganan</b>.<br><br>
-                Data ini akan <b style="color: var(--danger);">dihapus dari daftar isolir</b> karena tidak jadi ditarik.
-            </p>
+            <p class="modal-text">Pelanggan memutuskan untuk <b style="color: var(--gold);">tetap berlangganan</b>.<br><br>Data ini akan <b style="color: var(--danger);">dihapus</b> dari daftar isolir.</p>
             <div class="input-group">
                 <label class="input-label">Catatan (Opsional)</label>
-                <textarea id="modalCatatanBerlangganan" class="input-field" style="min-height: 80px;" placeholder="Contoh: Pelanggan ingin lanjut paket..."></textarea>
+                <textarea id="inputCatatanLangganan" class="input-field" placeholder="Contoh: Pelanggan ingin lanjut paket..."></textarea>
             </div>
-            <div class="modal-buttons">
-                <button onclick="closeModalBerlangganan()" class="btn btn-danger">Batal</button>
-                <button onclick="confirmBerlangganan()" class="btn btn-primary">Ya, Hapus Data</button>
+            <div class="modal-btns">
+                <button class="btn-modal btn-cancel" onclick="closeModal('modalLangganan')">Batal</button>
+                <button class="btn-modal btn-confirm danger" onclick="confirmLangganan()">Ya, Hapus Data</button>
             </div>
         </div>
     </div>
 
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item active">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <div class="nav-label">Teknisi</div>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Teknisi</span>
         </div>
         <div class="nav-item" onclick="logout()">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <div class="nav-label">Keluar</div>
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Keluar</span>
         </div>
     </div>
 
     <script>
+        // === INIT & AUTH ===
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn) { window.location.href = 'login.html'; }
-        
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         var currentPelangganId = null;
         var currentWilayah = 'all';
         var currentStatus = 'all';
         var currentBulan = 'all';
         var isLoading = false;
-        var dataLoaded = false;
         var allCustomers = [];
 
-        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>`;
-
+        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
         const wilayahConfig = [
-            { name: 'Sukamelang', class: 'wilayah-sukamelang' },
-            { name: 'Cibarola', class: 'wilayah-cibarola' },
-            { name: 'Panglejar', class: 'wilayah-panglejar' },
-            { name: 'Perum / Flamboyan', class: 'wilayah-perum' }
+            { name: 'Sukamelang', class: '' }, { name: 'Cibarola', class: '' },
+            { name: 'Panglejar', class: '' }, { name: 'Perum / Flamboyan', class: '' }
         ];
-
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-        function initApp() {
-            if (dataLoaded) return;
-            dataLoaded = true;
-            loadCustomers();
-            setupSearch();
-        }
-
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
-
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast show ' + type;
+            setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
         function formatWA(nomor) {
-            var clean = nomor.replace(/\D/g, '');
+            let clean = nomor.replace(/\D/g, '');
             if (clean.startsWith('0')) clean = '62' + clean.substring(1);
             return 'https://wa.me/' + clean;
         }
 
-        function showToast(message, type) {
-            var toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(function() { toast.className = 'toast'; }, 3000);
-        }
-
-        function renderBulanChips() {
-            const container = document.getElementById('bulanChips');
-            container.innerHTML = '';
-            container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
-            
-            const bulanTersedia = new Set();
-            allCustomers.forEach(p => {
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) bulanTersedia.add(d.getMonth());
-                }
-            });
-            bulanTersedia.add(new Date().getMonth());
-            
-            const sortedBulan = Array.from(bulanTersedia).sort((a, b) => a - b);
-            sortedBulan.forEach(m => {
-                container.innerHTML += `<div class="chip-bulan ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]}</div>`;
-            });
-        }
-
-        function loadWilayahGrid() {
+        // === RENDER UI ===
+        function renderWilayah() {
             const grid = document.getElementById('wilayahGrid');
             grid.innerHTML = '';
-            
             const allPending = allCustomers.filter(p => p.status === 'Belum Diambil').length;
+            
             grid.innerHTML += `
-                <div class="wilayah-card" onclick="filterByWilayah('all', this)" style="${currentWilayah === 'all' ? 'border-color: var(--gold); box-shadow: 0 0 20px rgba(201, 169, 97, 0.4);' : ''}; grid-column: 1 / -1;">
-                    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                        <div class="wilayah-icon" style="margin-bottom: 0;">${serverIcon}</div>
-                        <div>
-                            <div class="wilayah-name">Semua Wilayah</div>
-                            <div class="wilayah-count">${allPending} tugas pending</div>
-                        </div>
+                <div class="wilayah-card full-width ${currentWilayah === 'all' ? 'active' : ''}" onclick="filterByWilayah('all', this)">
+                    <div class="w-icon">${serverIcon}</div>
+                    <div>
+                        <div class="w-name">Semua Wilayah</div>
+                        <div class="w-count">${allPending} tugas pending</div>
                     </div>
                 </div>
             `;
             
-            wilayahConfig.forEach((w) => {
+            wilayahConfig.forEach(w => {
                 const count = allCustomers.filter(p => p.wilayah === w.name && p.status === 'Belum Diambil').length;
                 grid.innerHTML += `
-                    <div class="wilayah-card ${w.class}" onclick="filterByWilayah('${w.name}', this)" style="${currentWilayah === w.name ? 'box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transform: scale(1.02);' : ''}">
-                        <div>
-                            <div class="wilayah-icon">${serverIcon}</div>
-                            <div class="wilayah-name">${w.name}</div>
-                            <div class="wilayah-count">${count} tugas</div>
-                        </div>
+                    <div class="wilayah-card ${currentWilayah === w.name ? 'active' : ''}" onclick="filterByWilayah('${w.name}', this)">
+                        <div class="w-icon">${serverIcon}</div>
+                        <div class="w-name">${w.name}</div>
+                        <div class="w-count">${count} tugas</div>
                     </div>
                 `;
             });
         }
 
-        function filterByWilayah(wilayah) {
-            currentWilayah = wilayah;
-            loadWilayahGrid();
-            renderCustomers();
-        }
-
-        function filterByStatus(status, element) {
-            currentStatus = status;
-            var parent = element.parentElement;
-            parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            renderCustomers();
-        }
-
-        function filterByBulan(bulan, element) {
-            currentBulan = bulan;
-            var parent = element.parentElement;
-            parent.querySelectorAll('.chip-bulan').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            renderCustomers();
-        }
-
-        function filterByBulanPenarikan(pelanggan, bulan) {
-            if (bulan === 'all') return true;
-            if (!pelanggan.tanggal_penarikan) return false;
-            const d = new Date(pelanggan.tanggal_penarikan);
-            if (isNaN(d)) return false;
-            return String(d.getMonth()) === bulan;
-        }
-
-        function renderCustomers() {
-            var container = document.getElementById('customerList');
-            var filtered = allCustomers;
-            
-            if (currentWilayah !== 'all') filtered = filtered.filter(p => p.wilayah === currentWilayah);
-            if (currentStatus !== 'all') filtered = filtered.filter(p => p.status === currentStatus);
-            if (currentBulan !== 'all') filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
-            
-            let filterInfo = '';
-            if (currentBulan !== 'all') {
-                filterInfo = `<div style="padding: 0 var(--spacing-xl) var(--spacing-md); font-family: var(--font-mono); font-size: 12px; color: var(--gold);">📅 Menampilkan data bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> (${filtered.length} data)</div>`;
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = filterInfo + '<div class="empty-state"><div class="empty-title">Tidak ada data</div><div class="empty-subtitle">Belum ada tugas untuk filter ini</div></div>';
-                return;
-            }
-            
-            container.innerHTML = filterInfo;
-            
-            filtered.forEach(function(p) {
-                var badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
-                
-                var waLink = formatWA(p.nomor_hp);
-                var mapsLink = 'https://www.google.com/maps?q=' + p.latitude + ',' + p.longitude;
-                
-                var tanggalInfo = '';
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) {
-                        const tgl = d.getDate();
-                        const bln = namaBulan[d.getMonth()];
-                        const thn = d.getFullYear();
-                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ Diambil: ${tgl} ${bln} ${thn}</div>`;
-                    }
-                }
-                
-                var actionButtons = '<div class="card-actions">';
-                actionButtons += '<a href="' + waLink + '" target="_blank" class="btn btn-whatsapp">WhatsApp</a>';
-                actionButtons += '<a href="' + mapsLink + '" target="_blank" class="btn btn-map">Maps</a>';
-                
-                if (p.status === 'Belum Diambil') {
-                    actionButtons += '<button onclick="openModal(\'' + p.id + '\')" class="btn btn-success btn-full">✅ Diambil</button>';
-                    actionButtons += '<button onclick="openModalBerlangganan(\'' + p.id + '\')" class="btn btn-primary btn-full">🔄 Lanjut Berlangganan</button>';
-                }
-                actionButtons += '</div>';
-                
-                var cardHTML = '<div class="modern-card">';
-                cardHTML += '<div class="card-header">';
-                cardHTML += '<div><div class="card-title">' + p.nama_pelanggan + '</div>';
-                cardHTML += '<div class="card-subtitle mono-text">' + (p.wilayah || '-') + ' • ' + (p.perangkat || 'Router') + '</div></div>';
-                cardHTML += '<span class="card-badge ' + badgeClass + '">' + p.status + '</span>';
-                cardHTML += '</div>';
-                cardHTML += '<div class="card-info mono-text">📱 <a href="' + waLink + '" target="_blank">' + p.nomor_hp + '</a></div>';
-                cardHTML += tanggalInfo;
-                
-                if (p.alamat) {
-                    var alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    cardHTML += '<div class="card-info mono-text" style="font-size:12px; line-height:1.4;"> ' + alamatText + '</div>';
-                }
-                cardHTML += actionButtons;
-                cardHTML += '</div>';
-                
-                container.innerHTML += cardHTML;
+        function renderBulan() {
+            const container = document.getElementById('bulanChips');
+            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
+            const bulanSet = new Set();
+            allCustomers.forEach(p => {
+                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }
+            });
+            bulanSet.add(new Date().getMonth());
+            Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => {
+                container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]}</div>`;
             });
         }
 
-        // === MODAL SELESAI (DIAMBIL) ===
-        function openModal(pelangganId) {
-            currentPelangganId = pelangganId;
-            document.getElementById('modalTanggal').value = new Date().toISOString().split('T')[0];
-            document.getElementById('modalCatatan').value = '';
-            document.getElementById('modalOverlay').classList.add('active');
+        function renderCustomers() {
+            const container = document.getElementById('customerList');
+            let filtered = allCustomers;
+            if (currentWilayah !== 'all') filtered = filtered.filter(p => p.wilayah === currentWilayah);
+            if (currentStatus !== 'all') filtered = filtered.filter(p => p.status === currentStatus);
+            if (currentBulan !== 'all') {
+                filtered = filtered.filter(p => {
+                    if (!p.tanggal_penarikan) return false;
+                    const d = new Date(p.tanggal_penarikan);
+                    return !isNaN(d) && String(d.getMonth()) === currentBulan;
+                });
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><div>Tidak ada data untuk filter ini</div></div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach((p, index) => {
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
+                
+                container.innerHTML += `
+                    <div class="cust-card" style="animation-delay: ${index * 0.03}s">
+                        <div class="cust-info-main">
+                            <div class="cust-name">${p.nama_pelanggan}</div>
+                            <div class="cust-sub">
+                                <span>${p.wilayah}</span>
+                                <span class="dot"></span>
+                                <span>${p.perangkat || 'Router'}</span>
+                            </div>
+                        </div>
+                        <span class="badge ${badgeClass}">${p.status}</span>
+                        <button class="more-btn" onclick="showPopup(event, '${p.id}')">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        </button>
+                    </div>
+                `;
+            });
         }
 
-        function closeModal() {
-            currentPelangganId = null;
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
-
-        async function confirmComplete() {
-            if (!currentPelangganId) return;
-            var tanggal = document.getElementById('modalTanggal').value;
-            var catatan = document.getElementById('modalCatatan').value;
+        // === POPUP MENU ===
+        function showPopup(event, pelangganId) {
+            event.stopPropagation();
+            const p = allCustomers.find(c => c.id === pelangganId);
+            if (!p) return;
             
+            currentPelangganId = pelangganId;
+            const waLink = formatWA(p.nomor_hp);
+            const mapsLink = `https://www.google.com/maps?q=${p.latitude},${p.longitude}`;
+            
+            const popupContent = document.getElementById('popupContent');
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            
+            let menuHTML = '';
+            
+            if (p.status === 'Belum Diambil') {
+                menuHTML = `
+                    <button class="popup-item selesai" onclick="closePopup(); openModal('modalSelesai', '${p.id}')">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        Selesai Diambil
+                    </button>
+                    <button class="popup-item langganan" onclick="closePopup(); openModal('modalLangganan', '${p.id}')">
+                        <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+                        Lanjut Berlangganan
+                    </button>
+                    <div class="popup-divider"></div>
+                    <a href="${waLink}" target="_blank" class="popup-item wa" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="${mapsLink}" target="_blank" class="popup-item map" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Google Maps
+                    </a>
+                `;
+            } else {
+                menuHTML = `
+                    <a href="${waLink}" target="_blank" class="popup-item wa" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="${mapsLink}" target="_blank" class="popup-item map" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Google Maps
+                    </a>
+                `;
+            }
+            
+            popupContent.innerHTML = menuHTML;
+            
+            // Position popup
+            const popup = document.getElementById('popupMenu');
+            popup.classList.add('active');
+            
+            const popupRect = popupContent.getBoundingClientRect();
+            let top = rect.bottom + 8;
+            let left = rect.right - popupRect.width;
+            
+            if (left < 16) left = 16;
+            if (top + popupRect.height > window.innerHeight - 16) {
+                top = rect.top - popupRect.height - 8;
+            }
+            
+            popupContent.style.top = top + 'px';
+            popupContent.style.left = left + 'px';
+        }
+
+        function closePopup() {
+            document.getElementById('popupMenu').classList.remove('active');
+        }
+
+        // === FILTERS ===
+        function filterByWilayah(w, el) {
+            currentWilayah = w;
+            document.querySelectorAll('.wilayah-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            renderCustomers();
+        }
+        function filterByStatus(s, el) {
+            currentStatus = s;
+            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            renderCustomers();
+        }
+        function filterByBulan(b, el) {
+            currentBulan = b;
+            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            renderCustomers();
+        }
+
+        // === MODALS ===
+        function openModal(id, pelangganId) {
+            currentPelangganId = pelangganId;
+            if (id === 'modalSelesai') document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            currentPelangganId = null;
+        }
+
+        async function confirmSelesai() {
+            const tanggal = document.getElementById('inputTanggal').value;
+            const catatan = document.getElementById('inputCatatan').value;
             if (!tanggal) { showToast('Tanggal wajib diisi!', 'error'); return; }
             
             try {
-                var result = await supabaseClient.from('pelanggan').update({
-                    status: 'Sudah Diambil',
-                    tanggal_penarikan: tanggal,
-                    teknisi: 'Teknisi',
-                    catatan: catatan
+                const { error } = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil', tanggal_penarikan: tanggal, teknisi: 'Teknisi', catatan: catatan
                 }).eq('id', currentPelangganId);
-                
-                if (result.error) throw result.error;
+                if (error) throw error;
                 showToast('Perangkat berhasil diambil!', 'success');
-                closeModal();
+                closeModal('modalSelesai');
                 loadCustomers();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
-        // === MODAL LANJUT BERLANGGANAN (HAPUS DATA) ===
-        function openModalBerlangganan(pelangganId) {
-            currentPelangganId = pelangganId;
-            document.getElementById('modalCatatanBerlangganan').value = '';
-            document.getElementById('modalBerlangganan').classList.add('active');
-        }
-
-        function closeModalBerlangganan() {
-            currentPelangganId = null;
-            document.getElementById('modalBerlangganan').classList.remove('active');
-        }
-
-        async function confirmBerlangganan() {
-            if (!currentPelangganId) return;
-            
+        async function confirmLangganan() {
             try {
-                // HAPUS DATA DARI DATABASE
-                var result = await supabaseClient.from('pelanggan').delete().eq('id', currentPelangganId);
-                
-                if (result.error) throw result.error;
+                const { error } = await supabaseClient.from('pelanggan').delete().eq('id', currentPelangganId);
+                if (error) throw error;
                 showToast('Data dihapus! Pelanggan lanjut berlangganan.', 'success');
-                closeModalBerlangganan();
+                closeModal('modalLangganan');
                 loadCustomers();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
+        // === LOAD DATA ===
         async function loadCustomers() {
             if (isLoading) return;
             isLoading = true;
-            
-            var container = document.getElementById('customerList');
-            container.innerHTML = '<div class="skeleton" style="height: 180px; margin: 0 var(--spacing-xl) var(--spacing-lg);"></div><div class="skeleton" style="height: 180px; margin: 0 var(--spacing-xl) var(--spacing-lg);"></div>';
+            document.getElementById('customerList').innerHTML = '<div class="empty-state">Memuat data...</div>';
             
             try {
-                var result = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-                if (result.error) throw result.error;
-                allCustomers = result.data || [];
-                loadWilayahGrid();
-                renderBulanChips();
+                const { data, error } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                allCustomers = data || [];
+                renderWilayah();
+                renderBulan();
                 renderCustomers();
             } catch (err) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-title">Error</div><div class="empty-subtitle">' + err.message + '</div></div>';
+                document.getElementById('customerList').innerHTML = `<div class="empty-state">Error: ${err.message}</div>`;
             }
             isLoading = false;
         }
 
-        function setupSearch() {
-            var searchInput = document.getElementById('searchInput');
-            var searchTimeout = null;
-            searchInput.addEventListener('input', function(e) {
-                clearTimeout(searchTimeout);
-                var keyword = e.target.value.toLowerCase();
-                searchTimeout = setTimeout(function() {
-                    var cards = document.querySelectorAll('.modern-card');
-                    cards.forEach(function(card) {
-                        var text = card.textContent.toLowerCase();
-                        card.style.display = text.includes(keyword) ? 'block' : 'none';
-                    });
-                }, 300);
+        // === SEARCH ===
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            document.querySelectorAll('.cust-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(keyword) ? 'flex' : 'none';
             });
-        }
+        });
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else { initApp(); }
+        // Start
+        loadCustomers();
     </script>
 </body>
 </html>
