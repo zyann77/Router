@@ -57,51 +57,85 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
-        
-        .wilayah-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-        .wilayah-card {
-            background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.3s;
-            position: relative; overflow: hidden;
-            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
+        /* 2 TAB BESAR */
+        .main-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        .wilayah-card:nth-child(1) { animation-delay: 0.1s; }
-        .wilayah-card:nth-child(2) { animation-delay: 0.2s; }
-        .wilayah-card:nth-child(3) { animation-delay: 0.3s; }
-        .wilayah-card:nth-child(4) { animation-delay: 0.4s; }
-        .wilayah-card:nth-child(5) { animation-delay: 0.5s; }
-        
-        .wilayah-card:active { transform: scale(0.96); }
-        .wilayah-card.active { border-color: var(--gold); background: rgba(201, 169, 97, 0.1); box-shadow: 0 0 20px rgba(201, 169, 97, 0.15); }
-        .wilayah-card.full-width { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
-        
-        .w-icon { width: 32px; height: 32px; background: rgba(201, 169, 97, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-        .wilayah-card.full-width .w-icon { margin-bottom: 0; }
-        .w-icon svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
-        .w-name { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
-        .w-count { font-size: 11px; color: var(--text-muted); }
-
-        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; scrollbar-width: none; }
-        .chips-container::-webkit-scrollbar { display: none; }
-        .chip {
-            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s;
+        .main-tab {
+            padding: 16px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .chip:active { transform: scale(0.95); }
-        .chip.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+        .main-tab:active { transform: scale(0.97); }
+        .main-tab.active {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-color: var(--gold);
+        }
+        .main-tab.active .tab-label,
+        .main-tab.active .tab-count { color: #000; }
+        .main-tab.active .tab-icon svg { stroke: #000; }
+        .tab-icon { margin-bottom: 6px; }
+        .tab-icon svg { width: 24px; height: 24px; stroke: var(--gold); stroke-width: 2; fill: none; transition: stroke 0.3s; }
+        .tab-label { font-size: 13px; font-weight: 700; color: white; margin-bottom: 2px; transition: color 0.3s; }
+        .tab-count { font-size: 11px; color: var(--text-muted); transition: color 0.3s; }
 
+        /* SORTING DROPDOWN */
+        .sort-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .sort-label {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .sort-select {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C9A961' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+        .sort-select:focus { border-color: var(--gold); }
+        .sort-select option { background: #121218; color: white; }
+
+        /* SEARCH */
         .search-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
-            margin-bottom: 24px; transition: all 0.3s;
+            margin-bottom: 20px; transition: all 0.3s;
         }
         .search-box:focus-within { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
         .search-box svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
         .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
         .search-box input::placeholder { color: var(--text-muted); }
 
+        /* CUSTOMER LIST */
         .customer-list { display: flex; flex-direction: column; gap: 8px; }
         
         .cust-card {
@@ -113,7 +147,7 @@
             align-items: center;
             gap: 12px;
             position: relative;
-            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
             transition: all 0.2s;
         }
@@ -121,7 +155,7 @@
         
         .cust-info-main { flex: 1; min-width: 0; }
         .cust-name { font-size: 15px; font-weight: 700; color: white; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .cust-sub .dot { width: 3px; height: 3px; background: var(--text-muted); border-radius: 50%; }
         
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
@@ -132,14 +166,14 @@
         .isolir-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 11px;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 10px;
             font-weight: 600;
-            margin-top: 8px;
+            margin-top: 6px;
         }
-        .isolir-badge svg { width: 12px; height: 12px; stroke-width: 2; fill: none; }
+        .isolir-badge svg { width: 11px; height: 11px; stroke-width: 2; fill: none; }
         .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
         .isolir-short svg { stroke: #60A5FA; }
         .isolir-long { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -187,7 +221,7 @@
         .popup-item.langganan svg { stroke: var(--warning); }
         .popup-divider { height: 1px; background: rgba(255, 255, 255, 0.05); margin: 4px 0; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); animation: fadeIn 0.5s; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
@@ -275,32 +309,53 @@
     </div>
 
     <div class="container">
-        <div class="filter-label">Pilih Wilayah</div>
-        <div class="wilayah-grid" id="wilayahGrid"></div>
-
-        <div class="filter-label">Filter Status</div>
-        <div class="chips-container" id="statusChips">
-            <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
-            <div class="chip" onclick="filterByStatus('Belum Diambil', this)">Belum Diambil</div>
-            <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Sudah Diambil</div>
+        <!-- 2 TAB BESAR -->
+        <div class="main-tabs">
+            <div class="main-tab active" onclick="switchTab('belum', this)">
+                <div class="tab-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="tab-label">Belum Diambil</div>
+                <div class="tab-count" id="countBelum">0 tugas</div>
+            </div>
+            <div class="main-tab" onclick="switchTab('sudah', this)">
+                <div class="tab-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="tab-label">Sudah Diambil</div>
+                <div class="tab-count" id="countSudah">0 tugas</div>
+            </div>
         </div>
 
-        <div class="filter-label">Filter Bulan Penarikan</div>
-        <div class="chips-container" id="bulanChips"></div>
+        <!-- SORTING -->
+        <div class="sort-section">
+            <div class="sort-label">Urutkan:</div>
+            <select class="sort-select" id="sortSelect" onchange="applySort()">
+                <option value="isolir_desc">🔴 Isolir Terlama</option>
+                <option value="isolir_asc">🔵 Isolir Terbaru</option>
+                <option value="nama_asc">A-Z (Nama)</option>
+                <option value="nama_desc">Z-A (Nama)</option>
+                <option value="wilayah_asc">Wilayah A-Z</option>
+            </select>
+        </div>
 
+        <!-- SEARCH -->
         <div class="search-box">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP...">
         </div>
 
+        <!-- CUSTOMER LIST -->
         <div class="customer-list" id="customerList"></div>
     </div>
 
+    <!-- POPUP MENU -->
     <div id="popupMenu" class="popup-menu">
         <div class="popup-overlay" onclick="closePopup()"></div>
         <div class="popup-content" id="popupContent"></div>
     </div>
 
+    <!-- MODAL SELESAI -->
     <div id="modalSelesai" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-icon success">✅</div>
@@ -320,6 +375,7 @@
         </div>
     </div>
 
+    <!-- MODAL BERLANGGANAN -->
     <div id="modalLangganan" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-icon warn">️</div>
@@ -355,17 +411,11 @@
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         var currentPelangganId = null;
-        var currentWilayah = 'all';
-        var currentStatus = 'all';
-        var currentBulan = 'all';
+        var currentTab = 'belum'; // 'belum' atau 'sudah'
+        var currentSort = 'isolir_desc';
         var isLoading = false;
         var allCustomers = [];
 
-        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
-        const wilayahConfig = [
-            { name: 'Sukamelang', class: '' }, { name: 'Cibarola', class: '' },
-            { name: 'Panglejar', class: '' }, { name: 'Perum / Flamboyan', class: '' }
-        ];
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
@@ -400,74 +450,84 @@
                 icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
             } else if (days >= 14) {
                 className = 'isolir-long';
-                icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
             }
             return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`;
         }
 
-        function renderWilayah() {
-            const grid = document.getElementById('wilayahGrid');
-            grid.innerHTML = '';
-            const allPending = allCustomers.filter(p => p.status === 'Belum Diambil').length;
-            
-            grid.innerHTML += `
-                <div class="wilayah-card full-width ${currentWilayah === 'all' ? 'active' : ''}" onclick="filterByWilayah('all', this)">
-                    <div class="w-icon">${serverIcon}</div>
-                    <div>
-                        <div class="w-name">Semua Wilayah</div>
-                        <div class="w-count">${allPending} tugas pending</div>
-                    </div>
-                </div>
-            `;
-            
-            wilayahConfig.forEach(w => {
-                const count = allCustomers.filter(p => p.wilayah === w.name && p.status === 'Belum Diambil').length;
-                grid.innerHTML += `
-                    <div class="wilayah-card ${currentWilayah === w.name ? 'active' : ''}" onclick="filterByWilayah('${w.name}', this)">
-                        <div class="w-icon">${serverIcon}</div>
-                        <div class="w-name">${w.name}</div>
-                        <div class="w-count">${count} tugas</div>
-                    </div>
-                `;
-            });
+        // === SWITCH TAB ===
+        function switchTab(tab, el) {
+            currentTab = tab;
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderCustomers();
         }
 
-        function renderBulan() {
-            const container = document.getElementById('bulanChips');
-            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
-            const bulanSet = new Set();
-            allCustomers.forEach(p => {
-                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }
-            });
-            bulanSet.add(new Date().getMonth());
-            Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => {
-                container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]}</div>`;
-            });
+        // === SORTING ===
+        function applySort() {
+            currentSort = document.getElementById('sortSelect').value;
+            renderCustomers();
         }
 
+        function sortData(data) {
+            const sorted = [...data];
+            switch (currentSort) {
+                case 'isolir_desc':
+                    sorted.sort((a, b) => {
+                        const da = hitungDurasiIsolir(a.tanggal_isolir) || 0;
+                        const db = hitungDurasiIsolir(b.tanggal_isolir) || 0;
+                        return db - da;
+                    });
+                    break;
+                case 'isolir_asc':
+                    sorted.sort((a, b) => {
+                        const da = hitungDurasiIsolir(a.tanggal_isolir) || 9999;
+                        const db = hitungDurasiIsolir(b.tanggal_isolir) || 9999;
+                        return da - db;
+                    });
+                    break;
+                case 'nama_asc':
+                    sorted.sort((a, b) => (a.nama_pelanggan || '').localeCompare(b.nama_pelanggan || ''));
+                    break;
+                case 'nama_desc':
+                    sorted.sort((a, b) => (b.nama_pelanggan || '').localeCompare(a.nama_pelanggan || ''));
+                    break;
+                case 'wilayah_asc':
+                    sorted.sort((a, b) => (a.wilayah || '').localeCompare(b.wilayah || ''));
+                    break;
+            }
+            return sorted;
+        }
+
+        // === RENDER CUSTOMERS ===
         function renderCustomers() {
             const container = document.getElementById('customerList');
-            let filtered = allCustomers;
-            if (currentWilayah !== 'all') filtered = filtered.filter(p => p.wilayah === currentWilayah);
-            if (currentStatus !== 'all') filtered = filtered.filter(p => p.status === currentStatus);
-            if (currentBulan !== 'all') {
-                filtered = filtered.filter(p => {
-                    if (!p.tanggal_penarikan) return false;
-                    const d = new Date(p.tanggal_penarikan);
-                    return !isNaN(d) && String(d.getMonth()) === currentBulan;
-                });
-            }
+            
+            // Filter berdasarkan tab
+            let filtered = allCustomers.filter(p => {
+                if (currentTab === 'belum') return p.status === 'Belum Diambil';
+                if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
+                return true;
+            });
+
+            // Update counter
+            const countBelum = allCustomers.filter(p => p.status === 'Belum Diambil').length;
+            const countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil').length;
+            document.getElementById('countBelum').textContent = countBelum + ' tugas';
+            document.getElementById('countSudah').textContent = countSudah + ' tugas';
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><div>Tidak ada data untuk filter ini</div></div>';
+                const emptyMsg = currentTab === 'belum' ? 'Tidak ada tugas pending' : 'Belum ada yang selesai';
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div>${emptyMsg}</div></div>`;
                 return;
             }
+
+            // Apply sorting
+            filtered = sortData(filtered);
 
             container.innerHTML = '';
             filtered.forEach((p, index) => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
                 
-                // Hitung durasi isolir
                 const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
                 const isolirBadge = getIsolirBadge(durasiIsolir);
                 
@@ -482,7 +542,7 @@
                             </div>
                             ${isolirBadge}
                         </div>
-                        <span class="badge ${badgeClass}">${p.status}</span>
+                        <span class="badge ${badgeClass}">${p.status === 'Sudah Diambil' ? 'Selesai' : 'Pending'}</span>
                         <button class="more-btn" onclick="showPopup(event, '${p.id}')">
                             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                         </button>
@@ -491,6 +551,7 @@
             });
         }
 
+        // === POPUP MENU ===
         function showPopup(event, pelangganId) {
             event.stopPropagation();
             const p = allCustomers.find(c => c.id === pelangganId);
@@ -561,25 +622,7 @@
             document.getElementById('popupMenu').classList.remove('active');
         }
 
-        function filterByWilayah(w, el) {
-            currentWilayah = w;
-            document.querySelectorAll('.wilayah-card').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderCustomers();
-        }
-        function filterByStatus(s, el) {
-            currentStatus = s;
-            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderCustomers();
-        }
-        function filterByBulan(b, el) {
-            currentBulan = b;
-            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderCustomers();
-        }
-
+        // === MODALS ===
         function openModal(id, pelangganId) {
             currentPelangganId = pelangganId;
             if (id === 'modalSelesai') document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
@@ -616,6 +659,7 @@
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
+        // === LOAD DATA ===
         async function loadCustomers() {
             if (isLoading) return;
             isLoading = true;
@@ -625,8 +669,6 @@
                 const { data, error } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 allCustomers = data || [];
-                renderWilayah();
-                renderBulan();
                 renderCustomers();
             } catch (err) {
                 document.getElementById('customerList').innerHTML = `<div class="empty-state">Error: ${err.message}</div>`;
@@ -634,6 +676,7 @@
             isLoading = false;
         }
 
+        // === SEARCH ===
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const keyword = e.target.value.toLowerCase();
             document.querySelectorAll('.cust-card').forEach(card => {
