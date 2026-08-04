@@ -1,0 +1,202 @@
+:root {
+    --bg-base: #050508;
+    --glass-bg: rgba(30, 30, 35, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    --text-main: #F5F1E8;
+    --text-muted: #A0A0B0;
+    --gold: #C9A961;
+    --blue: #3B82F6;
+    --purple: #BF5AF2;
+    --blur-heavy: blur(40px) saturate(200%);
+    --shadow-depth: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh; width: 100vw;
+    perspective: 1000px;
+}
+
+/* Hilangkan underline dari link */
+a { text-decoration: none; color: inherit; }
+
+/* 1. MESH GRADIENT BACKGROUND */
+.bg-mesh {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; background: var(--bg-base);
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(90px); opacity: 0.5;
+    animation: drift 20s infinite alternate ease-in-out;
+}
+
+.orb-1 { width: 40vw; height: 40vw; background: rgba(201, 169, 97, 0.2); top: -10%; left: -10%; }
+.orb-2 { width: 50vw; height: 50vw; background: rgba(59, 130, 246, 0.15); bottom: -20%; right: -10%; animation-delay: -5s; }
+.orb-3 { width: 30vw; height: 30vw; background: rgba(191, 90, 242, 0.15); top: 30%; left: 40%; animation-duration: 25s; }
+
+.glass-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, var(--bg-base) 100%);
+    opacity: 0.8;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(15vw, 10vh) scale(1.1); }
+}
+
+/* 2. SCREEN TRANSITIONS */
+.screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+}
+
+.screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.05) translateY(20px); }
+
+/* 3. LOCK SCREEN */
+#lock-screen {
+    justify-content: space-between; align-items: center;
+    padding: 10vh 20px 8vh 20px; z-index: 10;
+    backdrop-filter: blur(15px);
+}
+
+#lock-screen.unlocking { transform: translateY(-100%) scale(0.9); opacity: 0; }
+
+.lock-top { text-align: center; }
+#lock-clock { font-size: 5.5rem; font-weight: 200; letter-spacing: -3px; line-height: 1; margin-bottom: 5px;}
+#lock-date { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; }
+
+.lock-middle { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.brand-logo { margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(201, 169, 97, 0.4)); }
+.brand-text { font-size: 1.6rem; font-weight: 700; letter-spacing: 4px; }
+.brand-sub { font-size: 0.85rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; font-weight: 600;}
+
+.lock-bottom { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; padding: 20px; }
+.chevron-up { animation: bounceUp 2s infinite ease-in-out; }
+
+.shimmer {
+    background: linear-gradient(90deg, #A0A0B0 0%, #FFFFFF 50%, #A0A0B0 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine { to { background-position: 200% center; } }
+@keyframes bounceUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* 4. HOME SCREEN & VISION PANELS */
+#home-screen { z-index: 5; padding: calc(env(safe-area-inset-top) + 20px) 20px 140px 20px; overflow-y: auto; }
+.vision-container { max-width: 900px; margin: 0 auto; width: 100%; }
+
+.vision-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    backdrop-filter: var(--blur-heavy);
+    -webkit-backdrop-filter: var(--blur-heavy);
+    box-shadow: var(--shadow-depth);
+    padding: 24px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.vision-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 40%;
+    background: linear-gradient(180deg, var(--glass-highlight), transparent);
+    pointer-events: none;
+}
+
+.panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+.panel-header h3 { font-size: 2.5rem; font-weight: 500; line-height: 1.2; }
+.text-muted { color: var(--text-muted); font-size: 0.9rem;}
+
+.network-status {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.3); padding: 8px 14px;
+    border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.ping-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 10px #10B981; animation: pulse 2s infinite; }
+
+.stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat-box { display: flex; flex-direction: column; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.2); transition: transform 0.3s; }
+.stat-title { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+.stat-value { font-size: 1.4rem; font-weight: 600; }
+
+.glow-gold .stat-value { color: var(--gold); text-shadow: 0 0 15px rgba(201,169,97,0.4); }
+.glow-blue .stat-value { color: var(--blue); text-shadow: 0 0 15px rgba(59,130,246,0.4); }
+.glow-purple .stat-value { color: var(--purple); text-shadow: 0 0 15px rgba(191,90,242,0.4); }
+
+/* 5. APP GRID */
+.app-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; row-gap: 30px; }
+.app-card { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+.app-icon {
+    width: 68px; height: 68px;
+    border-radius: 20px; 
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.3);
+    position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.app-name { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+
+.bg-gold { background: linear-gradient(135deg, #E5C97A, #A08340); }
+.bg-red { background: linear-gradient(135deg, #F87171, #DC2626); }
+.bg-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+.bg-green { background: linear-gradient(135deg, #34D399, #059669); }
+
+.app-card:hover .app-icon { transform: scale(1.1) translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.5); }
+.app-card:active .app-icon { transform: scale(0.95); }
+
+/* 6. VISION DOCK */
+.vision-dock {
+    position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; padding: 12px 20px;
+    background: rgba(20, 20, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    backdrop-filter: var(--blur-heavy);
+    -webkit-backdrop-filter: var(--blur-heavy);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    z-index: 100;
+}
+.dock-btn {
+    width: 45px; height: 45px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+}
+.dock-btn svg { opacity: 0.6; transition: opacity 0.3s; width: 22px; height: 22px; }
+.dock-btn:hover, .dock-btn.active { background: rgba(255,255,255,0.1); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+.dock-btn:hover svg, .dock-btn.active svg { opacity: 1; stroke: var(--gold); }
+
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 10px #10B981; } 50% { opacity: 0.4; box-shadow: 0 0 2px #10B981; } }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .stats-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .app-layout { grid-template-columns: repeat(3, 1fr); gap: 12px; row-gap: 25px; }
+    .app-icon { width: 60px; height: 60px; border-radius: 16px; }
+    #lock-clock { font-size: 4.5rem; }
+    .panel-header h3 { font-size: 2rem; }
+    .vision-dock { padding: 10px 16px; }
+    .dock-btn { width: 40px; height: 40px; }
+}
+
+@media (max-width: 400px) {
+    .app-layout { grid-template-columns: repeat(2, 1fr); }
+}
