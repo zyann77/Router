@@ -3,138 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kelola Data</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Kelola Data - Iyann RnB</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="config.js"></script>
     <style>
-        .coord-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-top: var(--spacing-md); }
-        .coord-input-wrapper { position: relative; }
-        .coord-input-wrapper .input-label { margin-bottom: 4px; }
-        .coord-input {
-            width: 100%; padding: 12px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 12px; color: var(--gold);
-            font-family: var(--font-mono); font-size: 14px; font-weight: 600;
-            transition: all 0.2s;
+        :root {
+            --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340;
+            --bg-dark: #050508; --bg-card: rgba(255, 255, 255, 0.03);
+            --text-main: #F5F1E8; --text-muted: #A0A0B0;
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444; --info: #3B82F6;
         }
-        .coord-input:focus { outline: none; border-color: var(--gold); background: var(--bg-card); }
-        .coord-input::placeholder { color: var(--cream-dark); opacity: 0.4; font-weight: 400; }
-        .coord-divider { text-align: center; color: var(--gold); font-size: 11px; font-family: var(--font-mono); margin: var(--spacing-sm) 0; opacity: 0.7; }
-        .optional-badge { display: inline-block; font-size: 10px; color: var(--cream-dark); opacity: 0.6; font-weight: 400; margin-left: 8px; font-family: var(--font-mono); }
-        
-        .bulan-chips { display: flex; gap: var(--spacing-sm); padding: 0 var(--spacing-xl) var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
-        .bulan-chips::-webkit-scrollbar { display: none; }
-        .chip-bulan { padding: 10px 16px; border-radius: 20px; background: var(--bg-secondary); border: 1px solid rgba(201, 169, 97, 0.2); color: var(--cream-dark); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; min-width: 70px; text-align: center; }
-        .chip-bulan:active { transform: scale(0.95); }
-        .chip-bulan.active { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--leather-dark); border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
-        
-        /* MODAL DUPLIKAT */
-        .duplicate-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 3000; justify-content: center; align-items: center; padding: var(--spacing-xl); }
-        .duplicate-modal-overlay.active { display: flex; }
-        .duplicate-modal {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: var(--spacing-2xl);
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            position: relative;
-            animation: slideUp 0.3s ease;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            min-height: 100vh; overflow-x: hidden; position: relative;
+            padding-bottom: 80px;
         }
-        .duplicate-modal::before {
-            content: ''; position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 1px dashed rgba(239, 68, 68, 0.3);
-            border-radius: 16px; pointer-events: none;
-        }
-        .duplicate-icon {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto var(--spacing-lg);
-            font-size: 32px;
-        }
-        .duplicate-title {
-            font-family: var(--font-display);
-            font-size: 22px; font-weight: 700;
-            margin-bottom: var(--spacing-md);
-            text-align: center; color: var(--cream);
-        }
-        .duplicate-warning {
-            text-align: center;
-            color: var(--cream-dark);
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: var(--spacing-xl);
-        }
-        .duplicate-info {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
-        }
-        .duplicate-info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: var(--spacing-sm) 0;
-            font-size: 14px;
+
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
+        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
+        .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 50px); } }
+
+        .top-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .duplicate-info-item:last-child { border-bottom: none; }
-        .duplicate-info-label { color: var(--cream-dark); font-family: var(--font-mono); font-size: 12px; }
-        .duplicate-info-value { color: var(--cream); font-weight: 600; }
-        .duplicate-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
         }
+        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .header-info { text-align: center; flex: 1; }
+        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
+        .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
+        .header-icon {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 800; font-size: 16px;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* EXPORT BUTTONS */
+        .export-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .export-btn {
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(201, 169, 97, 0.3);
+            background: rgba(201, 169, 97, 0.05);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .export-btn:active { transform: scale(0.95); background: rgba(201, 169, 97, 0.15); }
+        .export-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .export-btn.primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; border: none; }
+
+        /* SEARCH */
+        .search-box {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 24px; transition: all 0.3s;
+        }
+        .search-box:focus-within { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        .search-box svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
+        .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        /* FILTER BULAN */
+        .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; scrollbar-width: none; }
+        .chips-container::-webkit-scrollbar { display: none; }
+        .chip {
+            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s;
+        }
+        .chip:active { transform: scale(0.95); }
+        .chip.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
+
+        /* CUSTOMER CARDS */
+        .customer-list { display: flex; flex-direction: column; gap: 10px; }
+        .cust-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 16px;
+            position: relative;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .cust-card:active { background: rgba(201, 169, 97, 0.05); }
+        
+        .cust-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .cust-name { font-size: 16px; font-weight: 700; color: white; margin-bottom: 3px; }
+        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .cust-sub .dot { width: 3px; height: 3px; background: var(--text-muted); border-radius: 50%; }
+        
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+        .badge-belum { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-selesai { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        .cust-info { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .cust-info svg { width: 14px; height: 14px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
+        .cust-info a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+        /* Isolir Badge */
+        .isolir-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .isolir-badge svg { width: 12px; height: 12px; stroke-width: 2; fill: none; }
+        .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .isolir-short svg { stroke: #60A5FA; }
+        .isolir-long { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .isolir-long svg { stroke: var(--warning); }
+        .isolir-critical { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .isolir-critical svg { stroke: var(--danger); }
+
+        .cust-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn-action {
+            padding: 8px 14px; border-radius: 10px; border: none; font-size: 12px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: all 0.2s; text-decoration: none; font-family: inherit;
+        }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-map { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .btn-edit { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); animation: fadeIn 0.5s; }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* FAB */
+        .fab {
+            position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 20px;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none; color: #000; cursor: pointer;
+            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4);
+            z-index: 99; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .fab:active { transform: scale(0.9); }
+        .fab svg { width: 24px; height: 24px; stroke: #000; stroke-width: 2.5; fill: none; }
+
+        /* BOTTOM SHEET */
+        .bottom-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 200; }
+        .bottom-sheet-overlay.active { display: block; }
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #121218;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            z-index: 201;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .bottom-sheet.active { transform: translateY(0); }
+        .bottom-sheet-handle { width: 40px; height: 4px; background: var(--gold); border-radius: 2px; margin: 0 auto 16px; opacity: 0.5; }
+        .bottom-sheet-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: white; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .input-field {
+            width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            color: white; font-size: 14px; font-family: inherit; outline: none; transition: all 0.3s;
+        }
+        .input-field:focus { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        .input-field::placeholder { color: var(--text-muted); }
+        textarea.input-field { min-height: 80px; resize: vertical; }
+
+        /* Perangkat Selector */
+        .perangkat-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .perangkat-option {
+            padding: 12px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            font-size: 12px; font-weight: 600; color: var(--text-muted);
+        }
+        .perangkat-option:active { transform: scale(0.95); }
+        .perangkat-option.selected { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        /* Map */
+        .map-container { width: 100%; height: 220px; border-radius: 14px; overflow: hidden; margin: 8px 0; border: 1px solid rgba(201, 169, 97, 0.3); position: relative; }
+        .map-container::before { content: ' Klik peta untuk pilih lokasi'; position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: var(--gold); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-family: var(--font-mono); z-index: 500; pointer-events: none; }
+        #map-picker { width: 100%; height: 100%; }
+        .coord-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .coord-input {
+            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
+            color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;
+        }
+        .coord-input:focus { outline: none; border-color: var(--gold); }
+
+        .btn-submit {
+            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000; font-size: 15px; font-weight: 700; cursor: pointer;
+            margin-top: 16px; font-family: inherit; transition: all 0.2s;
+        }
+        .btn-submit:active { transform: scale(0.97); }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px; border-radius: 12px; z-index: 2000;
+            font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-around; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
+        .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
+        .nav-item.active svg { stroke: var(--gold); }
+        .nav-item.active span { color: var(--gold); }
+        .nav-item:active { transform: scale(0.9); }
+
+        /* EXPORT MODAL */
+        .export-modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .export-modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .export-modal {
+            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
+            animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .export-modal-title { font-size: 20px; font-weight: 700; color: white; text-align: center; margin-bottom: 8px; }
+        .export-modal-sub { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+        .export-option {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+            width: 100%; text-align: left; color: white;
+            font-family: inherit;
+        }
+        .export-option:active { transform: scale(0.97); background: rgba(201, 169, 97, 0.1); border-color: var(--gold); }
+        .export-option-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .export-option-icon svg { width: 22px; height: 22px; stroke-width: 2; fill: none; }
+        .export-option-icon.all { background: rgba(201, 169, 97, 0.15); }
+        .export-option-icon.all svg { stroke: var(--gold); }
+        .export-option-icon.taken { background: rgba(16, 185, 129, 0.15); }
+        .export-option-icon.taken svg { stroke: var(--success); }
+        .export-option-text { flex: 1; }
+        .export-option-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .export-option-desc { font-size: 11px; color: var(--text-muted); }
+        .export-option-count { font-size: 18px; font-weight: 800; color: var(--gold); }
+        .export-close {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
+            font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
+            font-family: inherit;
+        }
+        .export-close:active { background: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
-    <div id="toast" class="toast"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
+    <!-- Header -->
     <div class="top-header">
-        <div class="header-content">
-            <div>
-                <div class="header-subtitle">Panel Administrasi</div>
-                <div class="header-title">Kelola Data</div>
-            </div>
-            <div class="header-icon">A</div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <a href="index.html" class="nav-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
         </div>
+        <div class="header-info">
+            <div class="header-subtitle">Panel Administrasi</div>
+            <div class="header-title">Kelola Data</div>
+        </div>
+        <div class="header-icon">A</div>
     </div>
 
-    <div id="wilayahBanner" style="display: none;"></div>
+    <div class="container">
+        <!-- EXPORT BUTTONS (No Import) -->
+        <div class="export-section">
+            <button class="export-btn primary" onclick="openExportModal()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Excel
+            </button>
+            <button class="export-btn" onclick="openBottomSheet()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Tambah Data
+            </button>
+        </div>
 
-    <div class="section-header">
-        <div class="section-label">Daftar Pelanggan</div>
-        <div class="section-title">Data Lapangan</div>
-    </div>
-
-    <div class="search-container">
+        <!-- Search -->
         <div class="search-box">
-            <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchTable" placeholder="Cari pelanggan...">
         </div>
+
+        <!-- Filter Bulan -->
+        <div class="filter-label">Filter Bulan Penarikan</div>
+        <div class="chips-container" id="bulanChips"></div>
+
+        <!-- Customer List -->
+        <div class="customer-list" id="tableContainer"></div>
     </div>
 
-    <div class="filter-section" style="padding: 0 var(--spacing-xl) var(--spacing-sm);">
-        <div class="filter-label" style="font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: var(--spacing-md);">Filter Bulan Penarikan</div>
-    </div>
-    <div class="bulan-chips" id="bulanChips"></div>
-
-    <div id="tableContainer"></div>
-
+    <!-- FAB -->
     <button class="fab" onclick="openBottomSheet()">
         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
 
+    <!-- Bottom Sheet Form -->
     <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
     <div id="bottomSheet" class="bottom-sheet">
         <div class="bottom-sheet-handle"></div>
@@ -144,17 +382,17 @@
             <input type="hidden" id="editId">
             
             <div class="input-group">
-                <label class="input-label">Nama Pelanggan <span style="color: var(--danger);">*</span></label>
+                <label class="input-label">Nama Pelanggan *</label>
                 <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
             </div>
             
             <div class="input-group">
-                <label class="input-label">Nomor HP <span style="color: var(--danger);">*</span></label>
-                <input type="text" id="nomor_hp" class="input-field input-mono" placeholder="08xxxxxxxxxx" required>
+                <label class="input-label">Nomor HP *</label>
+                <input type="text" id="nomor_hp" class="input-field" placeholder="08xxxxxxxxxx" required>
             </div>
             
             <div class="input-group">
-                <label class="input-label">Wilayah <span style="color: var(--danger);">*</span></label>
+                <label class="input-label">Wilayah *</label>
                 <select id="wilayah" class="input-field" required>
                     <option value="">Pilih Wilayah</option>
                     <option value="Sukamelang">Sukamelang</option>
@@ -167,86 +405,90 @@
             <div class="input-group">
                 <label class="input-label">Jenis Perangkat</label>
                 <div class="perangkat-selector">
-                    <div class="perangkat-option selected" onclick="selectPerangkat('Router', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-                        Router
-                    </div>
-                    <div class="perangkat-option" onclick="selectPerangkat('STB', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><line x1="16" y1="10" x2="18" y2="10"/><line x1="16" y1="14" x2="18" y2="14"/></svg>
-                        STB
-                    </div>
-                    <div class="perangkat-option" onclick="selectPerangkat('Router + STB', this)">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="18" width="20" height="4" rx="1"/></svg>
-                        Router+STB
-                    </div>
+                    <div class="perangkat-option selected" onclick="selectPerangkat('Router', this)">Router</div>
+                    <div class="perangkat-option" onclick="selectPerangkat('STB', this)">STB</div>
+                    <div class="perangkat-option" onclick="selectPerangkat('Router + STB', this)">Router+STB</div>
                 </div>
                 <input type="hidden" id="perangkat" value="Router">
             </div>
-            
+
             <div class="input-group">
-                <label class="input-label">Alamat Lengkap <span class="optional-badge">(Opsional)</span></label>
-                <textarea id="alamat" class="input-field" style="min-height: 80px; resize: vertical;" placeholder="Contoh: Jl. Merdeka No. 10, RT 02/RW 05"></textarea>
+                <label class="input-label">Tanggal Isolir</label>
+                <input type="date" id="tanggal_isolir" class="input-field">
             </div>
             
             <div class="input-group">
-                <label class="input-label">Titik Koordinat <span class="optional-badge">(Opsional)</span></label>
+                <label class="input-label">Alamat (Opsional)</label>
+                <textarea id="alamat" class="input-field" placeholder="Contoh: Jl. Merdeka No. 10"></textarea>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Titik Koordinat (Opsional)</label>
                 <div class="map-container">
                     <div id="map-picker"></div>
                 </div>
-                
-                <div class="coord-divider"> Atau isi koordinat manual</div>
                 <div class="coord-inputs">
-                    <div class="coord-input-wrapper">
-                        <label class="input-label">Latitude</label>
-                        <input type="text" id="latitude" class="coord-input" placeholder="-6.xxxxxx">
-                    </div>
-                    <div class="coord-input-wrapper">
-                        <label class="input-label">Longitude</label>
-                        <input type="text" id="longitude" class="coord-input" placeholder="107.xxxxxx">
-                    </div>
+                    <input type="text" id="latitude" class="coord-input" placeholder="Latitude">
+                    <input type="text" id="longitude" class="coord-input" placeholder="Longitude">
                 </div>
-                
-                <button type="button" class="btn btn-outline gps-btn" onclick="useMyGPS()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                <button type="button" class="btn-action btn-map" style="width: 100%; margin-top: 10px;" onclick="useMyGPS()">
+                    <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none;"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
                     Gunakan GPS Saya
                 </button>
             </div>
             
-            <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: var(--spacing-lg);">
-                Simpan Data
-            </button>
+            <button type="submit" class="btn-submit">Simpan Data</button>
         </form>
     </div>
 
-    <!-- MODAL KONFIRMASI DUPLIKAT -->
-    <div id="duplicateModal" class="duplicate-modal-overlay">
-        <div class="duplicate-modal">
-            <div class="duplicate-icon">⚠️</div>
-            <div class="duplicate-title">Data Duplikat Terdeteksi!</div>
-            <p class="duplicate-warning">
-                Sudah ada pelanggan dengan <b>Nama</b> dan <b>Nomor HP</b> yang sama di database.<br><br>
-                Yakin ingin tetap menambahkan data ini?
-            </p>
-            <div class="duplicate-info" id="duplicateInfo"></div>
-            <div class="duplicate-buttons">
-                <button onclick="cancelDuplicate()" class="btn btn-danger">Batal</button>
-                <button onclick="forceInsert()" class="btn btn-primary">Ya, Tetap Input</button>
-            </div>
+    <!-- Export Modal -->
+    <div id="exportModal" class="export-modal-overlay">
+        <div class="export-modal">
+            <div class="export-modal-title">Pilih Export</div>
+            <div class="export-modal-sub">Data akan diexport ke format Excel</div>
+            
+            <button class="export-option" onclick="doExport('all')">
+                <div class="export-option-icon all">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="export-option-text">
+                    <div class="export-option-title">Export Semua Data</div>
+                    <div class="export-option-desc">Semua pelanggan (aktif & selesai)</div>
+                </div>
+                <div class="export-option-count" id="countAll">0</div>
+            </button>
+            
+            <button class="export-option" onclick="doExport('taken')">
+                <div class="export-option-icon taken">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="export-option-text">
+                    <div class="export-option-title">Alat Sudah Diambil</div>
+                    <div class="export-option-desc">Hanya yang status Selesai</div>
+                </div>
+                <div class="export-option-count" id="countTaken">0</div>
+            </button>
+            
+            <button class="export-close" onclick="closeExportModal()">Batal</button>
         </div>
     </div>
 
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="window.location.href='dashboard.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <div class="nav-label">Dashboard</div>
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Dashboard</span>
         </div>
         <div class="nav-item active">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            <div class="nav-label">Kelola Data</div>
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Kelola Data</span>
         </div>
         <div class="nav-item" onclick="logout()">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <div class="nav-label">Keluar</div>
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Keluar</span>
         </div>
     </div>
 
@@ -256,69 +498,148 @@
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let map, marker;
-        let currentWilayahFilter = null;
         let currentBulan = 'all';
-        let allDataForBulan = [];
-        let pendingData = null; // Simpan data yang pending duplikat
+        let allData = [];
 
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
-
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast show ' + type;
+            setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        function selectPerangkat(value, element) {
-            document.querySelectorAll('.perangkat-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
+        function selectPerangkat(value, el) {
+            document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
             document.getElementById('perangkat').value = value;
         }
 
+        // === HITUNG DURASI ISOLIR ===
+        function hitungDurasiIsolir(tanggalIsolir) {
+            if (!tanggalIsolir) return null;
+            const tgl = new Date(tanggalIsolir);
+            if (isNaN(tgl)) return null;
+            const hariIni = new Date();
+            const diffTime = Math.abs(hariIni - tgl);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function getIsolirBadge(days) {
+            if (days === null) return '';
+            let className = 'isolir-short';
+            let icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+            if (days >= 30) {
+                className = 'isolir-critical';
+                icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+            } else if (days >= 14) {
+                className = 'isolir-long';
+                icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+            }
+            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`;
+        }
+
+        // === RENDER BULAN ===
         function renderBulanChips() {
             const container = document.getElementById('bulanChips');
-            container.innerHTML = '';
-            container.innerHTML += `<div class="chip-bulan ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
-            
-            const bulanTersedia = new Set();
-            allDataForBulan.forEach(p => {
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) bulanTersedia.add(d.getMonth());
-                }
+            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
+            const bulanSet = new Set();
+            allData.forEach(p => {
+                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }
             });
-            bulanTersedia.add(new Date().getMonth());
-            
-            const sortedBulan = Array.from(bulanTersedia).sort((a, b) => a - b);
-            sortedBulan.forEach(m => {
-                const count = allDataForBulan.filter(p => {
+            bulanSet.add(new Date().getMonth());
+            Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => {
+                const count = allData.filter(p => {
                     if (!p.tanggal_penarikan) return false;
                     const d = new Date(p.tanggal_penarikan);
                     return !isNaN(d) && d.getMonth() === m;
                 }).length;
-                container.innerHTML += `<div class="chip-bulan ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`;
+                container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`;
             });
         }
 
-        function filterByBulan(bulan, element) {
-            currentBulan = bulan;
-            var parent = element.parentElement;
-            parent.querySelectorAll('.chip-bulan').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
+        function filterByBulan(b, el) {
+            currentBulan = b;
+            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
             loadTable();
         }
 
-        function filterByBulanPenarikan(pelanggan, bulan) {
-            if (bulan === 'all') return true;
-            if (!pelanggan.tanggal_penarikan) return false;
-            const d = new Date(pelanggan.tanggal_penarikan);
-            if (isNaN(d)) return false;
-            return String(d.getMonth()) === bulan;
+        // === LOAD TABLE ===
+        async function loadTable() {
+            const { data } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
+            allData = data || [];
+            renderBulanChips();
+            
+            let filtered = allData;
+            if (currentBulan !== 'all') {
+                filtered = filtered.filter(p => {
+                    if (!p.tanggal_penarikan) return false;
+                    const d = new Date(p.tanggal_penarikan);
+                    return !isNaN(d) && String(d.getMonth()) === currentBulan;
+                });
+            }
+
+            const container = document.getElementById('tableContainer');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>Belum ada data</div></div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach((p, index) => {
+                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
+                const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
+                
+                const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
+                const isolirBadge = getIsolirBadge(durasiIsolir);
+                
+                let tanggalInfo = '';
+                if (p.tanggal_penarikan) {
+                    const d = new Date(p.tanggal_penarikan);
+                    if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diambil: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
+                }
+
+                container.innerHTML += `
+                    <div class="cust-card" style="animation-delay: ${index * 0.03}s">
+                        <div class="cust-header">
+                            <div>
+                                <div class="cust-name">${p.nama_pelanggan}</div>
+                                <div class="cust-sub">
+                                    <span>${p.wilayah}</span>
+                                    <span class="dot"></span>
+                                    <span>${p.perangkat || 'Router'}</span>
+                                    <span class="dot"></span>
+                                    <span>${p.nomor_hp}</span>
+                                </div>
+                            </div>
+                            <span class="badge ${badgeClass}">${p.status}</span>
+                        </div>
+                        ${isolirBadge}
+                        ${tanggalInfo}
+                        ${p.alamat ? `<div class="cust-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${p.alamat}</div>` : ''}
+                        <div class="cust-actions">
+                            ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn-action btn-map">🗺️ Maps</a>` : ''}
+                            <button class="btn-action btn-edit" onclick="editData('${p.id}')">✏️ Edit</button>
+                            <button class="btn-action btn-delete" onclick="deleteData('${p.id}')">️ Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
+        // === SEARCH ===
+        document.getElementById('searchTable').addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            document.querySelectorAll('.cust-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(keyword) ? 'block' : 'none';
+            });
+        });
+
+        // === BOTTOM SHEET ===
         function openBottomSheet(editData = null) {
             document.getElementById('bottomSheetOverlay').classList.add('active');
             document.getElementById('bottomSheet').classList.add('active');
@@ -330,6 +651,7 @@
                 document.getElementById('nomor_hp').value = editData.nomor_hp;
                 document.getElementById('wilayah').value = editData.wilayah;
                 document.getElementById('alamat').value = editData.alamat || '';
+                document.getElementById('tanggal_isolir').value = editData.tanggal_isolir || '';
                 document.getElementById('perangkat').value = editData.perangkat || 'Router';
                 
                 document.querySelectorAll('.perangkat-option').forEach(el => {
@@ -345,6 +667,7 @@
                 document.getElementById('formPelanggan').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('perangkat').value = 'Router';
+                document.getElementById('tanggal_isolir').value = new Date().toISOString().split('T')[0];
                 document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); });
                 setTimeout(initMap, 300);
             }
@@ -365,24 +688,14 @@
                 }
                 return;
             }
-            
             map = L.map('map-picker').setView([lat, lng], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '© OpenStreetMap © CARTO', maxZoom: 19
             }).addTo(map);
-            
             marker = L.marker([lat, lng], { draggable: true }).addTo(map);
             updateCoordDisplay(lat, lng);
-            
-            map.on('click', function(e) {
-                marker.setLatLng(e.latlng);
-                updateCoordDisplay(e.latlng.lat, e.latlng.lng);
-            });
-            
-            marker.on('dragend', function(e) {
-                const pos = marker.getLatLng();
-                updateCoordDisplay(pos.lat, pos.lng);
-            });
+            map.on('click', function(e) { marker.setLatLng(e.latlng); updateCoordDisplay(e.latlng.lat, e.latlng.lng); });
+            marker.on('dragend', function(e) { const pos = marker.getLatLng(); updateCoordDisplay(pos.lat, pos.lng); });
         }
 
         function updateCoordDisplay(lat, lng) {
@@ -393,316 +706,148 @@
         document.getElementById('latitude').addEventListener('input', function(e) {
             const lat = parseFloat(e.target.value);
             const lng = parseFloat(document.getElementById('longitude').value);
-            if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                marker.setLatLng([lat, lng]);
-                map.setView([lat, lng], 15);
-            }
+            if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }
         });
-
         document.getElementById('longitude').addEventListener('input', function(e) {
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(e.target.value);
-            if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                marker.setLatLng([lat, lng]);
-                map.setView([lat, lng], 15);
-            }
-        });
-
-        ['latitude', 'longitude'].forEach(id => {
-            document.getElementById(id).addEventListener('paste', function(e) {
-                setTimeout(() => {
-                    const lat = parseFloat(document.getElementById('latitude').value);
-                    const lng = parseFloat(document.getElementById('longitude').value);
-                    if (!isNaN(lat) && !isNaN(lng) && map && marker) {
-                        marker.setLatLng([lat, lng]);
-                        map.setView([lat, lng], 15);
-                    }
-                }, 100);
-            });
+            if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }
         });
 
         function useMyGPS() {
             if (!navigator.geolocation) { showToast('GPS tidak didukung', 'error'); return; }
-            showToast('Mencari lokasi GPS...', 'success');
+            showToast('Mencari lokasi...', 'success');
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+                (pos) => {
+                    const lat = pos.coords.latitude; const lng = pos.coords.longitude;
                     if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); }
                     updateCoordDisplay(lat, lng);
-                    showToast('Lokasi GPS berhasil!', 'success');
+                    showToast('GPS berhasil!', 'success');
                 },
-                (error) => {
-                    let msg = 'Gagal mengambil GPS';
-                    if (error.code === 1) msg = 'Izin GPS ditolak';
-                    else if (error.code === 2) msg = 'GPS tidak tersedia';
-                    else if (error.code === 3) msg = 'Timeout GPS';
-                    showToast(msg, 'error');
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                (err) => { showToast('Gagal ambil GPS', 'error'); },
+                { enableHighAccuracy: true, timeout: 10000 }
             );
-        }
-
-        // === CEK DUPLIKAT SEBELUM INSERT ===
-        async function checkDuplicate(nama, nomorHp, excludeId = null) {
-            // Normalisasi nomor HP (hapus spasi, tanda hubung, dll)
-            const cleanHp = nomorHp.replace(/\D/g, '');
-            
-            let query = supabaseClient
-                .from('pelanggan')
-                .select('id, nama_pelanggan, nomor_hp, wilayah, status')
-                .eq('nama_pelanggan', nama)
-                .eq('nomor_hp', nomorHp);
-            
-            const { data, error } = await query;
-            
-            if (error || !data || data.length === 0) return null;
-            
-            // Jika edit mode, abaikan data yang sedang diedit
-            if (excludeId) {
-                const filtered = data.filter(p => p.id !== excludeId);
-                return filtered.length > 0 ? filtered[0] : null;
-            }
-            
-            return data[0];
         }
 
         // === SUBMIT FORM ===
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const editId = document.getElementById('editId').value;
             const nama = document.getElementById('nama').value.trim();
             const nomorHp = document.getElementById('nomor_hp').value.trim();
             const alamat = document.getElementById('alamat').value.trim();
             const lat = parseFloat(document.getElementById('latitude').value);
             const lng = parseFloat(document.getElementById('longitude').value);
+            const tanggalIsolir = document.getElementById('tanggal_isolir').value;
             
-            // Validasi dasar
-            if (!nama || !nomorHp) {
-                showToast('Nama dan Nomor HP wajib diisi!', 'error');
-                return;
-            }
+            if (!nama || !nomorHp) { showToast('Nama & HP wajib!', 'error'); return; }
             
-            if (!alamat && (isNaN(lat) || isNaN(lng))) {
-                showToast('Isi alamat atau titik koordinat!', 'error');
-                return;
-            }
-            
-            // Jika EDIT, langsung update (tidak perlu cek duplikat)
-            if (editId) {
-                const data = {
-                    nama_pelanggan: nama,
-                    nomor_hp: nomorHp,
-                    alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
-                    latitude: isNaN(lat) ? null : lat,
-                    longitude: isNaN(lng) ? null : lng,
-                    wilayah: document.getElementById('wilayah').value,
-                    perangkat: document.getElementById('perangkat').value
-                };
-                
-                const { error } = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
-                
-                if (!error) {
-                    showToast('Data berhasil diupdate!', 'success');
-                    closeBottomSheet();
-                    loadTable();
-                } else {
-                    showToast('Error: ' + error.message, 'error');
+            // Cek duplikat (hanya untuk tambah baru)
+            if (!editId) {
+                const { data: existing } = await supabaseClient.from('pelanggan').select('id, nama_pelanggan, nomor_hp, wilayah, status').eq('nama_pelanggan', nama).eq('nomor_hp', nomorHp);
+                if (existing && existing.length > 0) {
+                    if (!confirm(`⚠️ Data duplikat terdeteksi!\n\nNama: ${existing[0].nama_pelanggan}\nHP: ${existing[0].nomor_hp}\nWilayah: ${existing[0].wilayah}\nStatus: ${existing[0].status}\n\nTetap simpan?`)) {
+                        return;
+                    }
                 }
-                return;
             }
             
-            // Jika TAMBAH BARU, cek duplikat dulu
-            const duplicate = await checkDuplicate(nama, nomorHp);
-            
-            if (duplicate) {
-                // Tampilkan modal duplikat
-                pendingData = {
-                    nama_pelanggan: nama,
-                    nomor_hp: nomorHp,
-                    alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
-                    latitude: isNaN(lat) ? null : lat,
-                    longitude: isNaN(lng) ? null : lng,
-                    wilayah: document.getElementById('wilayah').value,
-                    perangkat: document.getElementById('perangkat').value,
-                    status: 'Belum Diambil'
-                };
-                
-                // Tampilkan info data duplikat
-                document.getElementById('duplicateInfo').innerHTML = `
-                    <div class="duplicate-info-item">
-                        <span class="duplicate-info-label">Nama</span>
-                        <span class="duplicate-info-value">${duplicate.nama_pelanggan}</span>
-                    </div>
-                    <div class="duplicate-info-item">
-                        <span class="duplicate-info-label">Nomor HP</span>
-                        <span class="duplicate-info-value">${duplicate.nomor_hp}</span>
-                    </div>
-                    <div class="duplicate-info-item">
-                        <span class="duplicate-info-label">Wilayah</span>
-                        <span class="duplicate-info-value">${duplicate.wilayah || '-'}</span>
-                    </div>
-                    <div class="duplicate-info-item">
-                        <span class="duplicate-info-label">Status</span>
-                        <span class="duplicate-info-value">${duplicate.status}</span>
-                    </div>
-                `;
-                
-                document.getElementById('duplicateModal').classList.add('active');
-                return;
-            }
-            
-            // Tidak ada duplikat, langsung insert
-            await doInsert();
-        });
-
-        // === BATAL DUPLIKAT ===
-        function cancelDuplicate() {
-            pendingData = null;
-            document.getElementById('duplicateModal').classList.remove('active');
-            showToast('Input dibatalkan', 'error');
-        }
-
-        // === FORCE INSERT (TETAP INPUT MESKI DUPLIKAT) ===
-        async function forceInsert() {
-            if (!pendingData) return;
-            
-            document.getElementById('duplicateModal').classList.remove('active');
-            await doInsert();
-            pendingData = null;
-        }
-
-        // === LAKUKAN INSERT ===
-        async function doInsert() {
-            const { error } = await supabaseClient.from('pelanggan').insert([pendingData || {
-                nama_pelanggan: document.getElementById('nama').value,
-                nomor_hp: document.getElementById('nomor_hp').value,
-                alamat: document.getElementById('alamat').value.trim() || (isNaN(parseFloat(document.getElementById('latitude').value)) || isNaN(parseFloat(document.getElementById('longitude').value)) ? '' : `Lat: ${parseFloat(document.getElementById('latitude').value)}, Lng: ${parseFloat(document.getElementById('longitude').value)}`),
-                latitude: isNaN(parseFloat(document.getElementById('latitude').value)) ? null : parseFloat(document.getElementById('latitude').value),
-                longitude: isNaN(parseFloat(document.getElementById('longitude').value)) ? null : parseFloat(document.getElementById('longitude').value),
+            const data = {
+                nama_pelanggan: nama,
+                nomor_hp: nomorHp,
+                alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
+                latitude: isNaN(lat) ? null : lat,
+                longitude: isNaN(lng) ? null : lng,
                 wilayah: document.getElementById('wilayah').value,
                 perangkat: document.getElementById('perangkat').value,
-                status: 'Belum Diambil'
-            }]);
+                tanggal_isolir: tanggalIsolir || null
+            };
+            
+            let error;
+            if (editId) {
+                const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
+                error = result.error;
+            } else {
+                data.status = 'Belum Diambil';
+                const result = await supabaseClient.from('pelanggan').insert([data]);
+                error = result.error;
+            }
             
             if (!error) {
-                showToast('Data berhasil disimpan!', 'success');
+                showToast(editId ? 'Data diupdate!' : 'Data disimpan!', 'success');
                 closeBottomSheet();
                 loadTable();
-            } else {
-                showToast('Error: ' + error.message, 'error');
-            }
-        }
+            } else { showToast('Error: ' + error.message, 'error'); }
+        });
         
         async function deleteData(id) {
-            if (!confirm('Yakin ingin menghapus data ini?')) return;
+            if (!confirm('Yakin hapus data ini?')) return;
             const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
             if (!error) { showToast('Data dihapus!', 'success'); loadTable(); }
             else { showToast('Error: ' + error.message, 'error'); }
         }
 
         async function editData(id) {
-            const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
-            if (pelanggan) openBottomSheet(pelanggan);
+            const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
+            if (data) openBottomSheet(data);
         }
-        
-        async function loadTable() {
-            let query = supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-            if (currentWilayahFilter) query = query.eq('wilayah', currentWilayahFilter);
+
+        // === EXPORT ===
+        function openExportModal() {
+            const total = allData.length;
+            const taken = allData.filter(p => p.status === 'Sudah Diambil').length;
+            document.getElementById('countAll').textContent = total;
+            document.getElementById('countTaken').textContent = taken;
+            document.getElementById('exportModal').classList.add('active');
+        }
+        function closeExportModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+        function doExport(type) {
+            let dataToExport = allData;
+            let fileName = '';
             
-            const { data: pelanggan } = await query;
-            allDataForBulan = pelanggan || [];
-            renderBulanChips();
-            
-            let filtered = allDataForBulan;
-            if (currentBulan !== 'all') {
-                filtered = filtered.filter(p => filterByBulanPenarikan(p, currentBulan));
+            if (type === 'taken') {
+                dataToExport = allData.filter(p => p.status === 'Sudah Diambil');
+                fileName = `Alat_Sudah_Diambil_${new Date().toISOString().split('T')[0]}.xlsx`;
+            } else {
+                fileName = `Semua_Data_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`;
             }
             
-            const container = document.getElementById('tableContainer');
-            
-            let filterInfo = '';
-            if (currentBulan !== 'all') {
-                filterInfo = `<div style="padding: var(--spacing-md) var(--spacing-xl); font-family: var(--font-mono); font-size: 12px; color: var(--gold); background: rgba(201, 169, 97, 0.1); border-radius: 12px; margin: 0 var(--spacing-xl) var(--spacing-lg);">📅 Bulan: <b>${namaBulan[parseInt(currentBulan)]}</b> • ${filtered.length} data penarikan</div>`;
-            }
-            
-            if (!filtered || filtered.length === 0) {
-                container.innerHTML = filterInfo + '<div class="empty-state"><div class="empty-title">Belum ada data</div><div class="empty-subtitle">Tekan tombol + untuk menambah data</div></div>';
+            if (dataToExport.length === 0) {
+                showToast('Tidak ada data untuk diexport', 'error');
+                closeExportModal();
                 return;
             }
             
-            container.innerHTML = filterInfo;
+            const exportData = dataToExport.map(p => {
+                const durasi = hitungDurasiIsolir(p.tanggal_isolir);
+                return {
+                    'Nama Pelanggan': p.nama_pelanggan,
+                    'Nomor HP': p.nomor_hp,
+                    'Perangkat': p.perangkat || 'Router',
+                    'Wilayah': p.wilayah,
+                    'Alamat': p.alamat || '',
+                    'Latitude': p.latitude || '',
+                    'Longitude': p.longitude || '',
+                    'Tanggal Isolir': p.tanggal_isolir || '',
+                    'Durasi Isolir (Hari)': durasi !== null ? durasi : '',
+                    'Status': p.status,
+                    'Tanggal Penarikan': p.tanggal_penarikan || '',
+                    'Teknisi': p.teknisi || '',
+                    'Catatan': p.catatan || ''
+                };
+            });
             
-            filtered.forEach(p => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-success' : 'badge-warning';
-                const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
-                
-                let tanggalInfo = '';
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) {
-                        tanggalInfo = `<div class="card-info mono-text" style="font-size:12px; color: var(--success);">✅ ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
-                    }
-                }
-                
-                let alamatInfo = '';
-                if (p.alamat) {
-                    const alamatText = p.alamat.length > 100 ? p.alamat.substring(0, 100) + '...' : p.alamat;
-                    alamatInfo = `<div class="card-info mono-text" style="font-size:12px; line-height:1.4;">📍 ${alamatText}</div>`;
-                }
-                
-                container.innerHTML += `
-                    <div class="modern-card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">${p.nama_pelanggan}</div>
-                                <div class="card-subtitle mono-text">${p.wilayah} • ${p.perangkat || 'Router'}</div>
-                            </div>
-                            <span class="card-badge ${badgeClass}">${p.status}</span>
-                        </div>
-                        <div class="card-info mono-text">📱 ${p.nomor_hp}</div>
-                        ${alamatInfo}
-                        ${tanggalInfo}
-                        ${p.latitude && p.longitude ? `<div class="card-info mono-text" style="font-size:12px;">📍 ${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)}</div>` : ''}
-                        <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
-                            ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn btn-map btn-small">Maps</a>` : ''}
-                            <button onclick="editData('${p.id}')" class="btn btn-warning btn-small">✏️ Edit</button>
-                            <button onclick="deleteData('${p.id}')" class="btn btn-danger btn-small">Hapus</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        
-        document.getElementById('searchTable').addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('#tableContainer .modern-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(keyword) ? 'block' : 'none';
-            });
-        });
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const wilayahParam = urlParams.get('wilayah');
-        if (wilayahParam) {
-            currentWilayahFilter = wilayahParam;
-            const banner = document.getElementById('wilayahBanner');
-            banner.style.display = 'block';
-            banner.innerHTML = `
-                <div class="wilayah-banner" style="flex: 1;">
-                    <div>
-                        <div class="wilayah-banner-label">Wilayah Aktif</div>
-                        <div class="wilayah-banner-name">${wilayahParam}</div>
-                    </div>
-                    <button class="wilayah-banner-btn" onclick="clearWilayahFilter()">✕ Reset</button>
-                </div>
-            `;
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data');
+            XLSX.writeFile(wb, fileName);
+            
+            showToast(`Export ${dataToExport.length} data berhasil!`, 'success');
+            closeExportModal();
         }
 
-        function clearWilayahFilter() { window.location.href = 'admin.html'; }
-        
+        // Start
         loadTable();
     </script>
 </body>
