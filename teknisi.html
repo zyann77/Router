@@ -327,17 +327,26 @@
             </div>
         </div>
 
-        <!-- SORTING -->
-        <div class="sort-section">
-            <div class="sort-label">Urutkan:</div>
-            <select class="sort-select" id="sortSelect" onchange="applySort()">
-                <option value="isolir_desc">🔴 Isolir Terlama</option>
-                <option value="isolir_asc">🔵 Isolir Terbaru</option>
-                <option value="nama_asc">A-Z (Nama)</option>
-                <option value="nama_desc">Z-A (Nama)</option>
-                <option value="wilayah_asc">Wilayah A-Z</option>
-            </select>
-        </div>
+        <!-- SORTING & FILTER -->
+<div class="sort-section">
+    <div class="sort-select-wrapper">
+        <select class="sort-select" id="sortSelect" onchange="applySort()">
+            <option value="isolir_desc">🔴 Isolir Terlama</option>
+            <option value="isolir_asc">🔵 Isolir Terbaru</option>
+            <option value="nama_asc">A-Z (Nama)</option>
+            <option value="nama_desc">Z-A (Nama)</option>
+        </select>
+    </div>
+    <div class="sort-select-wrapper">
+        <select class="sort-select" id="wilayahSelect" onchange="applyWilayahFilter()">
+            <option value="all">📍 Semua Wilayah</option>
+            <option value="Sukamelang">Sukamelang</option>
+            <option value="Cibarola">Cibarola</option>
+            <option value="Panglejar">Panglejar</option>
+            <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+        </select>
+    </div>
+</div>
 
         <!-- SEARCH -->
         <div class="search-box">
