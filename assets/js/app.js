@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Waktu Realtime
+    // 1. Waktu Realtime (Agar jam tidak 00:00)
     const lockClock = document.getElementById('lock-clock');
     const lockDate = document.getElementById('lock-date');
     const homeClock = document.getElementById('home-clock');
@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const timeStr = `${hours}:${minutes}`;
+        
+        // Format tanggal: "Senin, 1 Jan"
         const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
 
         if(lockClock) lockClock.textContent = timeStr;
@@ -17,42 +19,51 @@ document.addEventListener('DOMContentLoaded', () => {
         if(lockDate) lockDate.textContent = dateStr;
         if(homeDate) homeDate.textContent = dateStr;
     };
+    
+    // Update jam setiap 1 detik
     setInterval(updateTime, 1000);
     updateTime();
 
-    // 2. Transisi Layar Halus (Unlock)
+    // 2. Transisi Layar Halus (Unlock / Buka Kunci)
     const lockScreen = document.getElementById('lock-screen');
     const homeScreen = document.getElementById('home-screen');
     const unlockTrigger = document.getElementById('unlock-trigger');
-    let isUnlocked = sessionStorage.getItem('isUnlocked') === 'true'; // Cek jika sudah unlock sebelumnya
+    
+    // Cek apakah user sudah membuka kunci sebelumnya (agar tidak perlu swipe terus saat refresh)
+    let isUnlocked = sessionStorage.getItem('isUnlocked') === 'true'; 
 
     const unlockDevice = () => {
         if (isUnlocked && lockScreen.style.display === 'none') return;
         
-        // Haptic feedback jika didukung (Android)
+        // Haptic feedback (getaran halus) jika HP mendukung
         if (navigator.vibrate) navigator.vibrate(50);
         
+        // Jalankan animasi transisi
         lockScreen.classList.add('unlocking');
         homeScreen.classList.remove('hidden');
         
+        // Hapus layar kunci setelah animasi selesai (0.8 detik)
         setTimeout(() => {
             lockScreen.style.display = 'none';
             isUnlocked = true;
-            sessionStorage.setItem('isUnlocked', 'true'); // Simpan sesi
-            startCounters(); // Jalankan animasi angka
+            sessionStorage.setItem('isUnlocked', 'true'); 
+            startCounters(); // Mulai animasi angka di dashboard
         }, 800);
     };
 
-    // Jika user me-refresh halaman (sudah unlock sebelumnya), lewati lock screen
+    // Jika statusnya sudah terbuka, langsung tampilkan menu utama
     if (isUnlocked) {
-        lockScreen.style.display = 'none';
-        homeScreen.classList.remove('hidden');
+        if(lockScreen) lockScreen.style.display = 'none';
+        if(homeScreen) homeScreen.classList.remove('hidden');
         startCounters();
     }
 
-    unlockTrigger.addEventListener('click', unlockDevice);
+    // Cara 1: Buka kunci dengan klik tulisan "Swipe up to open"
+    if (unlockTrigger) {
+        unlockTrigger.addEventListener('click', unlockDevice);
+    }
     
-    // Swipe to unlock (Touch Screen)
+    // Cara 2: Buka kunci dengan di-swipe ke atas (Layar Sentuh / HP)
     let touchStartY = 0;
     document.addEventListener('touchstart', e => {
         if(!isUnlocked) touchStartY = e.changedTouches[0].screenY;
@@ -63,27 +74,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Scroll to unlock (Mouse/Trackpad)
+    // Cara 3: Buka kunci dengan scroll mouse ke bawah (Laptop/PC)
     document.addEventListener('wheel', e => {
         if (!isUnlocked && e.deltaY > 20) {
             unlockDevice();
         }
     });
 
-    // 3. Animasi Angka Premium (Ease Out)
-    const startCounters = () => {
+    // 3. Animasi Angka Bergerak di Dashboard (Ease Out)
+    function startCounters() {
         const counters = document.querySelectorAll('.counter');
         counters.forEach(counter => {
             const target = +counter.getAttribute('data-target');
             let count = 0;
-            const duration = 2000; // 2 detik
+            const duration = 2000; // Berjalan selama 2 detik
             const start = performance.now();
 
             const updateCount = (currentTime) => {
                 const elapsed = currentTime - start;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Ease out cubic
+                // Efek animasi perlambatan di akhir (Ease out cubic)
                 const easeOut = 1 - Math.pow(1 - progress, 3);
                 
                 count = Math.floor(easeOut * target);
@@ -97,9 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             requestAnimationFrame(updateCount);
         });
-    };
+    }
 
-    // 4. Efek 3D Tilt ala Vision Pro (Hanya berfungsi di Mouse/Desktop)
+    // 4. Efek 3D Tilt ala Vision Pro (Hanya berjalan di perangkat dengan Mouse/Kursor)
     if (window.matchMedia("(pointer: fine)").matches) {
         const tiltElements = document.querySelectorAll('.tilt-effect');
         tiltElements.forEach(el => {
@@ -111,7 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
                 
-                const tiltX = ((y - centerY) / centerY) * -10; // Max tilt 10 deg
+                // Kalkulasi kemiringan maksimal 10 derajat
+                const tiltX = ((y - centerY) / centerY) * -10; 
                 const tiltY = ((x - centerX) / centerX) * 10;
                 
                 el.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
