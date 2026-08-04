@@ -25,13 +25,11 @@
             padding-bottom: 80px;
         }
 
-        /* BACKGROUND ORBS */
         .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
         .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
         .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
         @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 50px); } }
 
-        /* HEADER */
         .top-header {
             padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100;
@@ -57,13 +55,10 @@
             color: #000; font-weight: 800; font-size: 16px;
         }
 
-        /* CONTAINER */
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        /* FILTER SECTIONS */
         .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
         
-        /* Wilayah Grid */
         .wilayah-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .wilayah-card {
             background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
@@ -87,7 +82,6 @@
         .w-name { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
         .w-count { font-size: 11px; color: var(--text-muted); }
 
-        /* Chips (Status & Bulan) */
         .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; scrollbar-width: none; }
         .chips-container::-webkit-scrollbar { display: none; }
         .chip {
@@ -98,7 +92,6 @@
         .chip:active { transform: scale(0.95); }
         .chip.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
 
-        /* Search */
         .search-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
@@ -109,7 +102,6 @@
         .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
         .search-box input::placeholder { color: var(--text-muted); }
 
-        /* Customer List - COMPACT */
         .customer-list { display: flex; flex-direction: column; gap: 8px; }
         
         .cust-card {
@@ -136,7 +128,25 @@
         .badge-belum { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-selesai { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
-        /* More Button */
+        /* Isolir Badge */
+        .isolir-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .isolir-badge svg { width: 12px; height: 12px; stroke-width: 2; fill: none; }
+        .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .isolir-short svg { stroke: #60A5FA; }
+        .isolir-long { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .isolir-long svg { stroke: var(--warning); }
+        .isolir-critical { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .isolir-critical svg { stroke: var(--danger); }
+
         .more-btn {
             width: 36px; height: 36px; border-radius: 10px;
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -146,13 +156,7 @@
         .more-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
         .more-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
 
-        /* Popup Menu */
-        .popup-menu {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1000;
-        }
+        .popup-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
         .popup-menu.active { display: block; }
         .popup-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
         .popup-content {
@@ -185,12 +189,10 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Empty State */
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); animation: fadeIn 0.5s; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* MODALS */
         .modal-overlay {
             display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
@@ -226,7 +228,6 @@
         .btn-confirm { background: var(--gold); color: #000; }
         .btn-confirm.danger { background: var(--danger); color: white; }
 
-        /* Toast */
         .toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
@@ -238,7 +239,6 @@
         .toast.success { border-color: var(--success); color: var(--success); }
         .toast.error { border-color: var(--danger); color: var(--danger); }
 
-        /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
@@ -258,7 +258,6 @@
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
 
-    <!-- Header -->
     <div class="top-header">
         <div class="nav-buttons">
             <button class="nav-btn" onclick="history.back()">
@@ -276,11 +275,9 @@
     </div>
 
     <div class="container">
-        <!-- Filter Wilayah -->
         <div class="filter-label">Pilih Wilayah</div>
         <div class="wilayah-grid" id="wilayahGrid"></div>
 
-        <!-- Filter Status -->
         <div class="filter-label">Filter Status</div>
         <div class="chips-container" id="statusChips">
             <div class="chip active" onclick="filterByStatus('all', this)">Semua</div>
@@ -288,27 +285,22 @@
             <div class="chip" onclick="filterByStatus('Sudah Diambil', this)">Sudah Diambil</div>
         </div>
 
-        <!-- Filter Bulan -->
         <div class="filter-label">Filter Bulan Penarikan</div>
         <div class="chips-container" id="bulanChips"></div>
 
-        <!-- Search -->
         <div class="search-box">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP...">
         </div>
 
-        <!-- Customer List -->
         <div class="customer-list" id="customerList"></div>
     </div>
 
-    <!-- Popup Menu -->
     <div id="popupMenu" class="popup-menu">
         <div class="popup-overlay" onclick="closePopup()"></div>
         <div class="popup-content" id="popupContent"></div>
     </div>
 
-    <!-- Modal Selesai -->
     <div id="modalSelesai" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-icon success">✅</div>
@@ -328,7 +320,6 @@
         </div>
     </div>
 
-    <!-- Modal Berlangganan (Hapus Data) -->
     <div id="modalLangganan" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-icon warn">️</div>
@@ -345,10 +336,8 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item active">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -361,7 +350,6 @@
     </div>
 
     <script>
-        // === INIT & AUTH ===
         var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn) { window.location.href = 'login.html'; }
         var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -392,7 +380,31 @@
             return 'https://wa.me/' + clean;
         }
 
-        // === RENDER UI ===
+        // === HITUNG DURASI ISOLIR ===
+        function hitungDurasiIsolir(tanggalIsolir) {
+            if (!tanggalIsolir) return null;
+            const tgl = new Date(tanggalIsolir);
+            if (isNaN(tgl)) return null;
+            const hariIni = new Date();
+            const diffTime = Math.abs(hariIni - tgl);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function getIsolirBadge(days) {
+            if (days === null) return '';
+            let className = 'isolir-short';
+            let icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+            if (days >= 30) {
+                className = 'isolir-critical';
+                icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+            } else if (days >= 14) {
+                className = 'isolir-long';
+                icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+            }
+            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`;
+        }
+
         function renderWilayah() {
             const grid = document.getElementById('wilayahGrid');
             grid.innerHTML = '';
@@ -455,6 +467,10 @@
             filtered.forEach((p, index) => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
                 
+                // Hitung durasi isolir
+                const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
+                const isolirBadge = getIsolirBadge(durasiIsolir);
+                
                 container.innerHTML += `
                     <div class="cust-card" style="animation-delay: ${index * 0.03}s">
                         <div class="cust-info-main">
@@ -464,6 +480,7 @@
                                 <span class="dot"></span>
                                 <span>${p.perangkat || 'Router'}</span>
                             </div>
+                            ${isolirBadge}
                         </div>
                         <span class="badge ${badgeClass}">${p.status}</span>
                         <button class="more-btn" onclick="showPopup(event, '${p.id}')">
@@ -474,7 +491,6 @@
             });
         }
 
-        // === POPUP MENU ===
         function showPopup(event, pelangganId) {
             event.stopPropagation();
             const p = allCustomers.find(c => c.id === pelangganId);
@@ -525,7 +541,6 @@
             
             popupContent.innerHTML = menuHTML;
             
-            // Position popup
             const popup = document.getElementById('popupMenu');
             popup.classList.add('active');
             
@@ -546,7 +561,6 @@
             document.getElementById('popupMenu').classList.remove('active');
         }
 
-        // === FILTERS ===
         function filterByWilayah(w, el) {
             currentWilayah = w;
             document.querySelectorAll('.wilayah-card').forEach(c => c.classList.remove('active'));
@@ -566,7 +580,6 @@
             renderCustomers();
         }
 
-        // === MODALS ===
         function openModal(id, pelangganId) {
             currentPelangganId = pelangganId;
             if (id === 'modalSelesai') document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
@@ -603,7 +616,6 @@
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
-        // === LOAD DATA ===
         async function loadCustomers() {
             if (isLoading) return;
             isLoading = true;
@@ -622,7 +634,6 @@
             isLoading = false;
         }
 
-        // === SEARCH ===
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const keyword = e.target.value.toLowerCase();
             document.querySelectorAll('.cust-card').forEach(card => {
@@ -630,7 +641,6 @@
             });
         });
 
-        // Start
         loadCustomers();
     </script>
 </body>
