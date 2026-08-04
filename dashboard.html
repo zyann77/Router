@@ -3,178 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dashboard</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dashboard - Iyann RnB</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="config.js"></script>
+    <style>
+        :root {
+            --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340;
+            --bg-dark: #050508; --bg-card: rgba(255, 255, 255, 0.03);
+            --text-main: #F5F1E8; --text-muted: #A0A0B0;
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            min-height: 100vh; overflow-x: hidden; position: relative;
+            padding-bottom: 80px;
+        }
+
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
+        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
+        .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 50px); } }
+
+        .top-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .header-info { text-align: center; flex: 1; }
+        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
+        .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
+        .header-icon {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 800; font-size: 16px;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* WILAYAH GRID */
+        .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+        .wilayah-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+        .wilayah-card {
+            background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
+        }
+        .wilayah-card:nth-child(1) { animation-delay: 0.1s; }
+        .wilayah-card:nth-child(2) { animation-delay: 0.2s; }
+        .wilayah-card:nth-child(3) { animation-delay: 0.3s; }
+        .wilayah-card:nth-child(4) { animation-delay: 0.4s; }
+        .wilayah-card:active { transform: scale(0.96); }
+        .wilayah-card.active { border-color: var(--gold); background: rgba(201, 169, 97, 0.1); box-shadow: 0 0 20px rgba(201, 169, 97, 0.15); }
+        .w-icon { width: 32px; height: 32px; background: rgba(201, 169, 97, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .w-icon svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .w-name { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
+        .w-count { font-size: 11px; color: var(--text-muted); }
+        .w-stats { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .w-stat { text-align: center; flex: 1; }
+        .w-stat-value { font-size: 16px; font-weight: 700; color: var(--gold); }
+        .w-stat-label { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+
+        /* STATS CARD */
+        .stats-card {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 20px; padding: 24px;
+            margin-bottom: 32px;
+            position: relative; overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
+        }
+        .stats-card::before {
+            content: ''; position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 16px; pointer-events: none;
+        }
+        .stats-label { font-size: 11px; color: rgba(0, 0, 0, 0.6); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+        .stats-value { font-size: 48px; font-weight: 900; color: #000; margin-bottom: 20px; }
+        .stats-breakdown { display: flex; gap: 24px; }
+        .stat-item { flex: 1; }
+        .stat-item-value { font-size: 24px; font-weight: 800; color: #000; margin-bottom: 4px; }
+        .stat-item-label { font-size: 11px; color: rgba(0, 0, 0, 0.7); font-weight: 600; }
+
+        /* EXPORT BUTTONS */
+        .export-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .export-btn {
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(201, 169, 97, 0.3);
+            background: rgba(201, 169, 97, 0.05);
+            color: var(--gold);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .export-btn:active { transform: scale(0.97); background: rgba(201, 169, 97, 0.15); }
+        .export-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .export-btn.primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; border: none; }
+
+        /* EXPORT MODAL */
+        .export-modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .export-modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .export-modal {
+            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
+            animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .export-modal-title { font-size: 20px; font-weight: 700; color: white; text-align: center; margin-bottom: 8px; }
+        .export-modal-sub { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+        .export-option {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+            width: 100%; text-align: left; color: white;
+            font-family: inherit;
+        }
+        .export-option:active { transform: scale(0.97); background: rgba(201, 169, 97, 0.1); border-color: var(--gold); }
+        .export-option-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .export-option-icon svg { width: 22px; height: 22px; stroke-width: 2; fill: none; }
+        .export-option-icon.all { background: rgba(201, 169, 97, 0.15); }
+        .export-option-icon.all svg { stroke: var(--gold); }
+        .export-option-icon.taken { background: rgba(16, 185, 129, 0.15); }
+        .export-option-icon.taken svg { stroke: var(--success); }
+        .export-option-text { flex: 1; }
+        .export-option-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .export-option-desc { font-size: 11px; color: var(--text-muted); }
+        .export-option-count { font-size: 18px; font-weight: 800; color: var(--gold); }
+        .export-close {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
+            font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
+            font-family: inherit;
+        }
+        .export-close:active { background: rgba(255, 255, 255, 0.1); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px; border-radius: 12px; z-index: 2000;
+            font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-around; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
+        .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
+        .nav-item.active svg { stroke: var(--gold); }
+        .nav-item.active span { color: var(--gold); }
+        .nav-item:active { transform: scale(0.9); }
+    </style>
 </head>
 <body>
-    <div id="toast" class="toast"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
     <div class="top-header">
-        <div class="header-content">
-            <div class="nav-buttons">
-                <button class="nav-btn" onclick="history.back()">
-                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <a href="index.html" class="nav-btn home-btn">
-                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </a>
-            </div>
-            <div style="text-align: center; flex: 1;">
-                <div class="header-subtitle">Panel Administrasi</div>
-                <div class="header-title">Dashboard</div>
-            </div>
-            <div class="header-icon">A</div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <a href="index.html" class="nav-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
         </div>
+        <div class="header-info">
+            <div class="header-subtitle">Panel Administrasi</div>
+            <div class="header-title">Dashboard</div>
+        </div>
+        <div class="header-icon">A</div>
     </div>
-    <div class="section-header">
-        <div class="section-label">Pilih Wilayah</div>
-        <div class="section-title">Area Operasi</div>
-    </div>
-    <div class="wilayah-grid" id="wilayahGrid"></div>
-    <div class="section-header">
-        <div class="section-label">Ringkasan</div>
-        <div class="section-title">Statistik</div>
-    </div>
-    <div class="hero-section">
-        <div class="hero-card">
-            <div class="hero-label">Total Perangkat</div>
-            <div class="hero-value" id="totalData">0</div>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalDiambil">0</div>
-                    <div class="hero-stat-label">Sudah Diambil</div>
+
+    <div class="container">
+        <!-- Wilayah Grid -->
+        <div class="filter-label">Pilih Wilayah</div>
+        <div class="wilayah-grid" id="wilayahGrid"></div>
+
+        <!-- Stats Card -->
+        <div class="stats-card">
+            <div class="stats-label">Total Perangkat</div>
+            <div class="stats-value" id="totalData">0</div>
+            <div class="stats-breakdown">
+                <div class="stat-item">
+                    <div class="stat-item-value" id="totalDiambil">0</div>
+                    <div class="stat-item-label">Sudah Diambil</div>
                 </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalBelum">0</div>
-                    <div class="hero-stat-label">Belum Diambil</div>
+                <div class="stat-item">
+                    <div class="stat-item-value" id="totalBelum">0</div>
+                    <div class="stat-item-label">Belum Diambil</div>
                 </div>
             </div>
         </div>
+
+        <!-- Export Buttons (No Import) -->
+        <div class="filter-label">Export Data</div>
+        <div class="export-section">
+            <button class="export-btn primary" onclick="openExportModal()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export ke Excel
+            </button>
+        </div>
     </div>
-    <div class="section-header">
-        <div class="section-label">Aksi Cepat</div>
-        <div class="section-title">Import / Export</div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="export-modal-overlay">
+        <div class="export-modal">
+            <div class="export-modal-title">Pilih Export</div>
+            <div class="export-modal-sub">Data akan diexport ke format Excel</div>
+            
+            <button class="export-option" onclick="doExport('all')">
+                <div class="export-option-icon all">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="export-option-text">
+                    <div class="export-option-title">Export Semua Data</div>
+                    <div class="export-option-desc">Semua pelanggan (aktif & selesai)</div>
+                </div>
+                <div class="export-option-count" id="countAll">0</div>
+            </button>
+            
+            <button class="export-option" onclick="doExport('taken')">
+                <div class="export-option-icon taken">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="export-option-text">
+                    <div class="export-option-title">Alat Sudah Diambil</div>
+                    <div class="export-option-desc">Hanya yang status Selesai</div>
+                </div>
+                <div class="export-option-count" id="countTaken">0</div>
+            </button>
+            
+            <button class="export-close" onclick="closeExportModal()">Batal</button>
+        </div>
     </div>
-    <div class="action-bar">
-        <button onclick="exportToExcel()" class="btn btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export
-        </button>
-        <label class="btn btn-outline" style="cursor: pointer;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Import
-            <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display: none;" onchange="importFromExcel(event)">
-        </label>
-    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item active">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <div class="nav-label">Dashboard</div>
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Dashboard</span>
         </div>
         <div class="nav-item" onclick="window.location.href='admin.html'">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            <div class="nav-label">Kelola Data</div>
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Kelola Data</span>
         </div>
         <div class="nav-item" onclick="logout()">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <div class="nav-label">Keluar</div>
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Keluar</span>
         </div>
     </div>
+
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'login.html'; }
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let allData = [];
+
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast show ' + type;
+            setTimeout(() => { t.className = 'toast'; }, 3000);
         }
-        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>`;
+
+        const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
         const wilayahConfig = [
-            { name: 'Sukamelang', class: 'wilayah-sukamelang' },
-            { name: 'Cibarola', class: 'wilayah-cibarola' },
-            { name: 'Panglejar', class: 'wilayah-panglejar' },
-            { name: 'Perum / Flamboyan', class: 'wilayah-perum' }
+            { name: 'Sukamelang', class: '' }, { name: 'Cibarola', class: '' },
+            { name: 'Panglejar', class: '' }, { name: 'Perum / Flamboyan', class: '' }
         ];
+
+        // === HITUNG DURASI ISOLIR ===
+        function hitungDurasiIsolir(tanggalIsolir) {
+            if (!tanggalIsolir) return null;
+            const tgl = new Date(tanggalIsolir);
+            if (isNaN(tgl)) return null;
+            const hariIni = new Date();
+            const diffTime = Math.abs(hariIni - tgl);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        // === LOAD DASHBOARD ===
         async function loadDashboard() {
             const { data: pelanggan } = await supabaseClient.from('pelanggan').select('*');
             if (!pelanggan) return;
+            
             allData = pelanggan;
             document.getElementById('totalData').textContent = pelanggan.length;
             document.getElementById('totalDiambil').textContent = pelanggan.filter(p => p.status === 'Sudah Diambil').length;
             document.getElementById('totalBelum').textContent = pelanggan.filter(p => p.status === 'Belum Diambil').length;
+            
             const wilayahGrid = document.getElementById('wilayahGrid');
             wilayahGrid.innerHTML = '';
-            wilayahConfig.forEach((w) => {
+            
+            wilayahConfig.forEach((w, index) => {
                 const dataW = pelanggan.filter(p => p.wilayah === w.name);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status === 'Belum Diambil').length;
+                
                 wilayahGrid.innerHTML += `
-                    <div class="wilayah-card ${w.class}" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w.name)}'">
+                    <div class="wilayah-card" style="animation-delay: ${index * 0.1}s" onclick="window.location.href='admin.html?wilayah=${encodeURIComponent(w.name)}'">
                         <div>
-                            <div class="wilayah-icon">${serverIcon}</div>
-                            <div class="wilayah-name">${w.name}</div>
-                            <div class="wilayah-count">${dataW.length} perangkat</div>
+                            <div class="w-icon">${serverIcon}</div>
+                            <div class="w-name">${w.name}</div>
+                            <div class="w-count">${dataW.length} perangkat</div>
                         </div>
-                        <div class="wilayah-stats">
-                            <div class="wilayah-stat">
-                                <div class="wilayah-stat-value">${diambil}</div>
-                                <div class="wilayah-stat-label">Selesai</div>
+                        <div class="w-stats">
+                            <div class="w-stat">
+                                <div class="w-stat-value">${diambil}</div>
+                                <div class="w-stat-label">Selesai</div>
                             </div>
-                            <div class="wilayah-stat">
-                                <div class="wilayah-stat-value">${belum}</div>
-                                <div class="wilayah-stat-label">Pending</div>
+                            <div class="w-stat">
+                                <div class="w-stat-value">${belum}</div>
+                                <div class="w-stat-label">Pending</div>
                             </div>
                         </div>
                     </div>
                 `;
             });
         }
-        function exportToExcel() {
-            if (allData.length === 0) { showToast('Tidak ada data', 'error'); return; }
-            const exportData = allData.map(p => ({ 'Nama Pelanggan': p.nama_pelanggan, 'Perangkat': p.perangkat || 'Router' }));
+
+        // === EXPORT MODAL ===
+        function openExportModal() {
+            const total = allData.length;
+            const taken = allData.filter(p => p.status === 'Sudah Diambil').length;
+            document.getElementById('countAll').textContent = total;
+            document.getElementById('countTaken').textContent = taken;
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function doExport(type) {
+            let dataToExport = allData;
+            let fileName = '';
+            
+            if (type === 'taken') {
+                dataToExport = allData.filter(p => p.status === 'Sudah Diambil');
+                fileName = `Alat_Sudah_Diambil_${new Date().toISOString().split('T')[0]}.xlsx`;
+            } else {
+                fileName = `Semua_Data_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`;
+            }
+            
+            if (dataToExport.length === 0) {
+                showToast('Tidak ada data untuk diexport', 'error');
+                closeExportModal();
+                return;
+            }
+            
+            const exportData = dataToExport.map(p => {
+                const durasi = hitungDurasiIsolir(p.tanggal_isolir);
+                return {
+                    'Nama Pelanggan': p.nama_pelanggan,
+                    'Nomor HP': p.nomor_hp,
+                    'Perangkat': p.perangkat || 'Router',
+                    'Wilayah': p.wilayah,
+                    'Alamat': p.alamat || '',
+                    'Latitude': p.latitude || '',
+                    'Longitude': p.longitude || '',
+                    'Tanggal Isolir': p.tanggal_isolir || '',
+                    'Durasi Isolir (Hari)': durasi !== null ? durasi : '',
+                    'Status': p.status,
+                    'Tanggal Penarikan': p.tanggal_penarikan || '',
+                    'Teknisi': p.teknisi || '',
+                    'Catatan': p.catatan || ''
+                };
+            });
+            
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Laporan');
-            const fileName = `Laporan_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.utils.book_append_sheet(wb, ws, 'Data');
             XLSX.writeFile(wb, fileName);
-            showToast('Export berhasil!', 'success');
+            
+            showToast(`Export ${dataToExport.length} data berhasil!`, 'success');
+            closeExportModal();
         }
-        function importFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                    if (jsonData.length === 0) { showToast('File kosong', 'error'); return; }
-                    const records = jsonData.map(row => ({
-                        nama_pelanggan: row['Nama Pelanggan'] || row['nama_pelanggan'],
-                        nomor_hp: String(row['Nomor HP'] || row['nomor_hp'] || ''),
-                        alamat: row['Alamat'] || row['alamat'] || '',
-                        latitude: row['Latitude'] || row['latitude'] || null,
-                        longitude: row['Longitude'] || row['longitude'] || null,
-                        wilayah: row['Wilayah'] || row['wilayah'] || '',
-                        perangkat: row['Perangkat'] || row['perangkat'] || 'Router',
-                        status: row['Status'] || row['status'] || 'Belum Diambil'
-                    })).filter(r => r.nama_pelanggan);
-                    if (records.length === 0) { showToast('Tidak ada data valid', 'error'); return; }
-                    const { error } = await supabaseClient.from('pelanggan').insert(records);
-                    if (error) showToast('Error: ' + error.message, 'error');
-                    else { showToast(`${records.length} data diimport!`, 'success'); loadDashboard(); }
-                } catch (err) { showToast('Error: ' + err.message, 'error'); }
-            };
-            reader.readAsArrayBuffer(file);
-            event.target.value = '';
-        }
+
         loadDashboard();
     </script>
 </body>
