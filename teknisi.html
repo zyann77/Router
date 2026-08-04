@@ -512,11 +512,16 @@
             const container = document.getElementById('customerList');
             
             // Filter berdasarkan tab
-            let filtered = allCustomers.filter(p => {
-                if (currentTab === 'belum') return p.status === 'Belum Diambil';
-                if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
-                return true;
-            });
+let filtered = allCustomers.filter(p => {
+    if (currentTab === 'belum') return p.status === 'Belum Diambil';
+    if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
+    return true;
+});
+
+// Filter berdasarkan wilayah
+if (currentWilayahFilter !== 'all') {
+    filtered = filtered.filter(p => p.wilayah === currentWilayahFilter);
+}
 
             // Update counter
             const countBelum = allCustomers.filter(p => p.status === 'Belum Diambil').length;
