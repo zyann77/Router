@@ -509,61 +509,67 @@
 
         // === RENDER CUSTOMERS ===
         function renderCustomers() {
-            const container = document.getElementById('customerList');
-            
-            // Filter berdasarkan tab
-let filtered = allCustomers.filter(p => {
-    if (currentTab === 'belum') return p.status === 'Belum Diambil';
-    if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
-    return true;
-});
+    const container = document.getElementById('customerList');
+    
+    // Filter berdasarkan tab
+    let filtered = allCustomers.filter(p => {
+        if (currentTab === 'belum') return p.status === 'Belum Diambil';
+        if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
+        return true;
+    });
 
-// Filter berdasarkan wilayah
-if (currentWilayahFilter !== 'all') {
-    filtered = filtered.filter(p => p.wilayah === currentWilayahFilter);
-}
+    // Filter berdasarkan wilayah
+    if (currentWilayahFilter !== 'all') {
+        filtered = filtered.filter(p => p.wilayah === currentWilayahFilter);
+    }
 
-            // Update counter
-            const countBelum = allCustomers.filter(p => p.status === 'Belum Diambil').length;
-            const countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil').length;
-            document.getElementById('countBelum').textContent = countBelum + ' tugas';
-            document.getElementById('countSudah').textContent = countSudah + ' tugas';
+    // Update counter SESUAI FILTER WILAYAH
+    let countBelum = allCustomers.filter(p => p.status === 'Belum Diambil').length;
+    let countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil').length;
+    
+    if (currentWilayahFilter !== 'all') {
+        countBelum = allCustomers.filter(p => p.status === 'Belum Diambil' && p.wilayah === currentWilayahFilter).length;
+        countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil' && p.wilayah === currentWilayahFilter).length;
+    }
+    
+    document.getElementById('countBelum').textContent = countBelum + ' tugas';
+    document.getElementById('countSudah').textContent = countSudah + ' tugas';
 
-            if (filtered.length === 0) {
-                const emptyMsg = currentTab === 'belum' ? 'Tidak ada tugas pending' : 'Belum ada yang selesai';
-                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div>${emptyMsg}</div></div>`;
-                return;
-            }
+    if (filtered.length === 0) {
+        const emptyMsg = currentTab === 'belum' ? 'Tidak ada tugas pending' : 'Belum ada yang selesai';
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div>${emptyMsg}</div></div>`;
+        return;
+    }
 
-            // Apply sorting
-            filtered = sortData(filtered);
+    // Apply sorting
+    filtered = sortData(filtered);
 
-            container.innerHTML = '';
-            filtered.forEach((p, index) => {
-                const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
-                
-                const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
-                const isolirBadge = getIsolirBadge(durasiIsolir);
-                
-                container.innerHTML += `
-                    <div class="cust-card" style="animation-delay: ${index * 0.03}s">
-                        <div class="cust-info-main">
-                            <div class="cust-name">${p.nama_pelanggan}</div>
-                            <div class="cust-sub">
-                                <span>${p.wilayah}</span>
-                                <span class="dot"></span>
-                                <span>${p.perangkat || 'Router'}</span>
-                            </div>
-                            ${isolirBadge}
-                        </div>
-                        <span class="badge ${badgeClass}">${p.status === 'Sudah Diambil' ? 'Selesai' : 'Pending'}</span>
-                        <button class="more-btn" onclick="showPopup(event, '${p.id}')">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                        </button>
+    container.innerHTML = '';
+    filtered.forEach((p, index) => {
+        const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
+        
+        const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
+        const isolirBadge = getIsolirBadge(durasiIsolir);
+        
+        container.innerHTML += `
+            <div class="cust-card" style="animation-delay: ${index * 0.03}s">
+                <div class="cust-info-main">
+                    <div class="cust-name">${p.nama_pelanggan}</div>
+                    <div class="cust-sub">
+                        <span>${p.wilayah}</span>
+                        <span class="dot"></span>
+                        <span>${p.perangkat || 'Router'}</span>
                     </div>
-                `;
-            });
-        }
+                    ${isolirBadge}
+                </div>
+                <span class="badge ${badgeClass}">${p.status === 'Sudah Diambil' ? 'Selesai' : 'Pending'}</span>
+                <button class="more-btn" onclick="showPopup(event, '${p.id}')">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+            </div>
+        `;
+    });
+}
 
         // === POPUP MENU ===
         function showPopup(event, pelangganId) {
