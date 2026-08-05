@@ -3,375 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="theme-color" content="#0A0A0F">
+    <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Iyann RnB - Network Tools</title>
+    <title>RNB Premium Network</title>
+    
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
-    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Poppins Font for Premium Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --gold: #C9A961;
-            --gold-light: #E5C97A;
-            --gold-dark: #A08340;
-            --bg-dark: #050508;
-            --text-main: #F5F1E8;
-            --text-muted: #A0A0B0;
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(30px);
+            
+            /* Aurora & Neon Colors */
+            --aurora-1: #8B5CF6; /* Purple */
+            --aurora-2: #3B82F6; /* Blue */
+            --accent-gold: #C9A961;
+            --accent-gold-light: #E5C97A;
+            
+            --text-main: #FFFFFF;
+            --text-muted: #A1A1AA;
+            
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --smooth: cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Manrope', system-ui, sans-serif;
-            overflow-x: hidden;
+            font-family: var(--font-main);
+            width: 100vw; height: 100vh;
+            overflow: hidden; /* Prevent scrolling, act like an OS */
             position: relative;
         }
 
-        /* ANIMATED BACKGROUND ORBS */
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.4;
-            animation: floatOrb 10s infinite alternate ease-in-out;
+        /* =========================================
+           1. DYNAMIC BACKGROUND (Aurora & Glow)
+        ========================================= */
+        .bg-layer {
+            position: absolute; inset: 0; z-index: 1; pointer-events: none;
+            overflow: hidden;
         }
-        .orb-1 {
-            top: -10%; left: -10%; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(201, 169, 97, 0.3) 0%, transparent 70%);
+        
+        .aurora-blob {
+            position: absolute; border-radius: 50%; filter: blur(100px);
+            opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out;
+            will-change: transform;
         }
-        .orb-2 {
-            bottom: 10%; right: -10%; width: 250px; height: 250px;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
-            animation-delay: -5s;
-        }
+        
+        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
 
-        @keyframes floatOrb {
+        @keyframes floatBlob {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
+            50% { transform: translate(50px, 80px) scale(1.2); }
+            100% { transform: translate(-30px, -50px) scale(0.9); }
         }
 
-        /* HEADER */
-        .top-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(5, 5, 8, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* Interactive Touch/Mouse Glow */
+        .cursor-glow {
+            position: absolute; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 2; opacity: 0; transition: opacity 0.3s ease; mix-blend-mode: screen;
         }
-        .nav-buttons { display: flex; gap: 10px; }
-        .nav-btn {
-            width: 40px; height: 40px; border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.3s ease;
+
+        /* =========================================
+           2. LOCK SCREEN
+        ========================================= */
+        .lock-screen {
+            position: absolute; inset: 0; z-index: 100;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            padding: 80px 20px 40px;
+            background: rgba(5, 5, 5, 0.4);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: all 0.8s var(--smooth);
         }
-        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
-        .nav-btn svg { width: 20px; height: 20px; stroke: var(--gold); stroke-width: 2; fill: none; }
-        .nav-btn.home-btn { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border: none; }
-        .nav-btn.home-btn svg { stroke: #000; }
+
+        .lock-screen.unlocked {
+            transform: translateY(-100%);
+            opacity: 0; pointer-events: none;
+        }
+
+        .ls-header { text-align: center; }
+        .ls-clock { font-size: 80px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 5px; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .ls-date { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); }
         
-        .header-title-container { text-align: center; flex: 1; }
-        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
-        .header-title { font-size: 18px; font-weight: 700; color: white; margin: 0; }
+        .ls-brand { text-align: center; margin-top: 40px; animation: pulseGlow 3s infinite alternate; }
+        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--text-main), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .ls-brand p { font-size: 10px; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold-light); text-transform: uppercase; margin-top: 4px; }
 
-        /* MAIN CONTAINER */
-        .menu-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 100px;
+        .ls-action {
+            display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer;
+            padding: 20px; animation: bounceFloat 2s infinite ease-in-out;
         }
+        .ls-action span { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
+        .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; }
 
-        /* LOGO SECTION */
-        .app-header {
-            text-align: center;
-            margin: 30px 0 40px;
-            animation: fadeInDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-        .app-logo {
-            width: 80px; height: 80px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border-radius: 24px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.3);
-            animation: floatLogo 4s infinite ease-in-out;
-            position: relative;
-        }
-        .app-logo::after {
-            content: ''; position: absolute; inset: -2px;
-            border-radius: 26px;
-            background: linear-gradient(135deg, var(--gold), transparent);
-            z-index: -1; filter: blur(10px); opacity: 0.5;
-        }
-        .app-logo svg { width: 40px; height: 40px; stroke: #000; stroke-width: 2; fill: none; }
-        
-        .app-title {
-            font-size: 32px; font-weight: 800; margin: 0 0 8px;
-            background: linear-gradient(to right, #fff, var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-        .app-subtitle { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; }
+        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
+        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        @keyframes floatLogo {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* =========================================
+           3. HOME SCREEN (OS Launcher)
+        ========================================= */
+        .home-screen {
+            position: absolute; inset: 0; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 60px 20px 100px; /* Padding bottom for dock */
+            opacity: 0; transform: scale(1.1); pointer-events: none;
+            transition: all 0.8s var(--spring);
         }
 
-        /* MENU CARDS */
-        .menu-list { display: flex; flex-direction: column; gap: 16px; }
-        
-        .menu-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex; align-items: center; gap: 16px;
-            text-decoration: none; color: white;
+        .home-screen.active {
+            opacity: 1; transform: scale(1); pointer-events: all;
+        }
+
+        .home-container {
+            width: 100%; max-width: 480px; height: 100%;
+            display: flex; flex-direction: column; gap: 30px;
+        }
+
+        /* WIDGET PANEL */
+        .widget-panel {
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 28px;
+            padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
             position: relative; overflow: hidden;
-            opacity: 0; /* Hidden initially for animation */
-            animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .widget-panel::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: rotate(45deg); animation: shineGlow 6s infinite linear; pointer-events: none;
+        }
+        
+        .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #10B981; font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
+        .w-status .dot { width: 6px; height: 6px; background: #10B981; border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
+        .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
+        .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+        
+        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
+        .sg-box { text-align: center; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
+        .sg-val { font-size: 18px; font-weight: 600; color: white; }
+        .sg-lbl { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+        .sg-val.online { color: #10B981; } .sg-val.pending { color: #F59E0B; } .sg-val.offline { color: #EF4444; }
+
+        /* APP GRID LAUNCHER */
+        .app-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 15px;
+            justify-items: center; padding-top: 10px;
         }
 
-        /* Staggered Animation Delays */
-        .menu-card:nth-child(1) { animation-delay: 0.2s; }
-        .menu-card:nth-child(2) { animation-delay: 0.3s; }
-        .menu-card:nth-child(3) { animation-delay: 0.4s; }
-        .menu-card:nth-child(4) { animation-delay: 0.5s; }
-
-        .menu-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--gold); opacity: 0; transition: opacity 0.3s;
+        .app-icon-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            cursor: pointer; text-decoration: none; width: 100%;
         }
 
-        .menu-card:active {
-            transform: scale(0.96);
-            background: rgba(201, 169, 97, 0.1);
-            border-color: var(--gold);
-            box-shadow: 0 0 25px rgba(201, 169, 97, 0.15);
-        }
-        .menu-card:active::before { opacity: 1; }
-
-        .menu-icon {
-            width: 50px; height: 50px; flex-shrink: 0;
-            background: rgba(201, 169, 97, 0.1);
-            border-radius: 14px;
+        /* Efek Interaksi Icon */
+        .app-squircle {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            border-radius: 22.5%; /* Khas iOS Squircle */
             display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            transition: all 0.3s;
-        }
-        .menu-card:active .menu-icon {
-            background: var(--gold);
-            transform: rotate(-5deg);
-        }
-        .menu-icon svg { width: 24px; height: 24px; stroke: var(--gold); stroke-width: 2; fill: none; transition: stroke 0.3s; }
-        .menu-card:active .menu-icon svg { stroke: #000; }
-
-        .menu-text { flex: 1; }
-        .menu-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: white; }
-        .menu-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
-
-        .menu-arrow { color: var(--gold); opacity: 0.3; transition: all 0.3s; }
-        .menu-card:active .menu-arrow { opacity: 1; transform: translateX(5px); }
-
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.1);
+            position: relative; overflow: hidden;
+            transition: all 0.4s var(--spring);
         }
 
-        /* FOOTER */
-        .footer {
-            text-align: center; margin-top: 50px;
-            font-size: 11px; color: var(--text-muted); opacity: 0.5;
-            animation: fadeIn 1s 0.8s forwards; opacity: 0;
+        .app-icon-wrapper:hover .app-squircle {
+            transform: scale(1.08); border-color: var(--accent-gold);
+            box-shadow: 0 15px 30px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2);
         }
-        @keyframes fadeIn { to { opacity: 0.5; } }
 
-        /* INSTALL BANNER */
-        .install-banner {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #000; padding: 12px 24px; border-radius: 50px;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.4);
-            cursor: pointer; z-index: 999; font-weight: 700; font-size: 14px;
-            opacity: 0; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        .app-icon-wrapper:active .app-squircle {
+            transform: scale(0.9); transition: transform 0.1s var(--smooth);
         }
-        .install-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .install-banner:active { transform: translateX(-50%) scale(0.95); }
-        .install-banner svg { width: 18px; height: 18px; stroke: #000; stroke-width: 2.5; fill: none; }
-        .close-install {
-            position: absolute; top: -8px; right: -8px;
-            background: #EF4444; color: white; width: 22px; height: 22px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 12px; border: 2px solid var(--bg-dark);
+
+        .app-squircle svg {
+            width: 30px; height: 30px; stroke: var(--text-main); stroke-width: 1.5; fill: none; transition: stroke 0.3s;
+        }
+        .app-icon-wrapper:hover .app-squircle svg { stroke: var(--accent-gold); }
+
+        .app-label {
+            font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; letter-spacing: 0.3px;
+        }
+
+        /* Premium Glow pada Ikon Tertentu */
+        .app-squircle.gold-glow { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border-color: rgba(201,169,97,0.4); }
+        .app-squircle.gold-glow svg { stroke: var(--accent-gold-light); }
+        .app-squircle.blue-glow { background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border-color: rgba(59,130,246,0.4); }
+        .app-squircle.blue-glow svg { stroke: #93C5FD; }
+
+        /* =========================================
+           4. FLOATING DOCK
+        ========================================= */
+        .dock-container {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 15px; padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
+            z-index: 50;
+        }
+
+        .dock-item {
+            width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; transition: all 0.3s var(--spring);
+        }
+
+        .dock-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-8px) scale(1.1); }
+        .dock-item:active { transform: scale(0.9); }
+        
+        .dock-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; transition: stroke 0.3s; }
+        .dock-item:hover svg { stroke: var(--text-main); }
+        .dock-item.active svg { stroke: var(--accent-gold); }
+        .dock-item.active::after { content: ''; position: absolute; bottom: -6px; width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.3);
+            transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(3); opacity: 0; } }
+
+        /* Smooth Page Transition Overlay */
+        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--smooth); }
+        .page-transit.active { opacity: 1; pointer-events: all; }
+
+        /* Responsive Fix untuk Desktop */
+        @media (min-width: 768px) {
+            .app-grid { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+            .app-squircle { width: 80px; height: 80px; }
+            .app-squircle svg { width: 36px; height: 36px; }
+            .app-label { font-size: 13px; margin-top: 4px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Orbs -->
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-
-    <!-- Header -->
-    <div class="top-header">
-        <div class="nav-buttons">
-            <button class="nav-btn" onclick="history.back()">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <a href="index.html" class="nav-btn home-btn">
-                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            </a>
-        </div>
-        <div class="header-title-container">
-            <div class="header-subtitle">Selamat Datang</div>
-            <h2 class="header-title">Menu Utama</h2>
-        </div>
-        <div style="width: 90px;"></div> <!-- Spacer for balance -->
+    <!-- LAYER 1: Background & Glow -->
+    <div class="bg-layer">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+        <div class="cursor-glow" id="cursorGlow"></div>
     </div>
 
-    <!-- Main Content -->
-    <div class="menu-container">
-        <div class="app-header">
-            <div class="app-logo">
-                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    <!-- LAYER 2: Page Transition Overlay -->
+    <div class="page-transit" id="pageTransit"></div>
+
+    <!-- LAYER 3: LOCK SCREEN -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="ls-header">
+            <div class="ls-clock" id="lsClock">00:00</div>
+            <div class="ls-date" id="lsDate">Memuat tanggal...</div>
+        </div>
+        
+        <div class="ls-brand">
+            <h1>RNB NETWORK</h1>
+            <p>Premium Network System</p>
+        </div>
+
+        <div class="ls-action" id="unlockBtn">
+            <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            <span>Swipe Up to Unlock</span>
+        </div>
+    </div>
+
+    <!-- LAYER 4: HOME SCREEN -->
+    <div class="home-screen" id="homeScreen">
+        <div class="home-container">
+            
+            <!-- WIDGET ATAS -->
+            <div class="widget-panel">
+                <div class="widget-header">
+                    <div class="w-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        System Overview
+                    </div>
+                    <div class="w-status"><div class="dot"></div> Online</div>
+                </div>
+                
+                <div class="widget-stat">
+                    <div class="stat-val" data-target="1254" id="countPelanggan">0</div>
+                    <div class="stat-lbl">Total Pelanggan</div>
+                </div>
+                <div class="widget-stat">
+                    <div class="stat-val" style="color:white;" id="hsClock">00:00</div>
+                    <div class="stat-lbl" id="hsDate">Hari ini</div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="sg-box"><div class="sg-val online" data-target="48" id="cOnline">0</div><div class="sg-lbl">Online</div></div>
+                    <div class="sg-box"><div class="sg-val pending" data-target="12" id="cPending">0</div><div class="sg-lbl">Pending</div></div>
+                    <div class="sg-box"><div class="sg-val offline" data-target="3" id="cOffline">0</div><div class="sg-lbl">Offline</div></div>
+                </div>
             </div>
-            <h1 class="app-title">Iyann RnB</h1>
-            <div class="app-subtitle">NETWORK MANAGEMENT TOOLS</div>
+
+            <!-- APP GRID LAUNCHER -->
+            <div class="app-grid">
+                <!-- 1. Penarikan -->
+                <a href="login.html" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle gold-glow">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <div class="app-label">Penarikan</div>
+                </a>
+                
+                <!-- 2. Redaman -->
+                <a href="https://bot-production-ee35.up.railway.app/" target="_blank" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle blue-glow">
+                        <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+                    </div>
+                    <div class="app-label">Redaman</div>
+                </a>
+
+                <!-- 3. Kalkulator -->
+                <a href="https://ratioredaman.netlify.app/" target="_blank" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+                    </div>
+                    <div class="app-label">Kalkulator</div>
+                </a>
+
+                <!-- 4. Router -->
+                <a href="https://generatorwan.netlify.app/" target="_blank" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg>
+                    </div>
+                    <div class="app-label">Router</div>
+                </a>
+
+                <!-- 5. Pelanggan (Admin) -->
+                <a href="admin.html" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="app-label">Pelanggan</div>
+                </a>
+
+                <!-- 6. Dashboard -->
+                <a href="dashboard.html" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <div class="app-label">Dashboard</div>
+                </a>
+
+                <!-- 7. Monitoring (Placeholder) -->
+                <a href="#" class="app-icon-wrapper">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="app-label">Monitoring</div>
+                </a>
+
+                <!-- 8. Profil (Placeholder) -->
+                <a href="#" class="app-icon-wrapper">
+                    <div class="app-squircle">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="app-label">Profil</div>
+                </a>
+            </div>
         </div>
-
-        <div class="menu-list">
-            <!-- 1. Penarikan Perangkat -->
-            <a href="login.html" class="menu-card">
-                <div class="menu-icon">
-                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                </div>
-                <div class="menu-text">
-                    <div class="menu-title">Penarikan Perangkat</div>
-                    <div class="menu-desc">Kelola data isolir & penarikan router/STB</div>
-                </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-
-            <!-- 2. Cek Redaman Pelanggan -->
-            <a href="https://bot-production-ee35.up.railway.app/" class="menu-card" target="_blank">
-                <div class="menu-icon">
-                    <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-                </div>
-                <div class="menu-text">
-                    <div class="menu-title">Cek Redaman Pelanggan</div>
-                    <div class="menu-desc">Monitoring kualitas sinyal & redaman ODP</div>
-                </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-
-            <!-- 3. Kalkulator Redaman -->
-            <a href="https://ratioredaman.netlify.app/" class="menu-card" target="_blank">
-                <div class="menu-icon">
-                    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
-                </div>
-                <div class="menu-text">
-                    <div class="menu-title">Kalkulator Redaman</div>
-                    <div class="menu-desc">Hitung redaman fiber optik & loss budget</div>
-                </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-
-            <!-- 4. Setting Router HG8145V5 -->
-            <a href="https://generatorwan.netlify.app/" class="menu-card" target="_blank">
-                <div class="menu-icon">
-                    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-                </div>
-                <div class="menu-text">
-                    <div class="menu-title">Setting Router HG8145V5</div>
-                    <div class="menu-desc">Tools konfigurasi & generator WAN ONU</div>
-                </div>
-                <svg class="menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-        </div>
-
-        <div class="footer">v2.3 • Iyann RnB Network</div>
     </div>
 
-    <!-- Install Banner -->
-    <div id="installBanner" class="install-banner" onclick="installApp()">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Install Aplikasi</span>
-        <div class="close-install" onclick="event.stopPropagation(); hideInstallBanner()">×</div>
+    <!-- LAYER 5: FLOATING DOCK -->
+    <div class="dock-container" id="dock" style="opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.5s;">
+        <div class="dock-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="dock-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="dock-item"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="dock-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <div class="dock-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
     </div>
 
+    <!-- PURE JAVASCRIPT LOGIC -->
     <script>
-        let deferredPrompt;
-        const installBanner = document.getElementById('installBanner');
+        // --- 1. CLOCK & DATE LOGIC ---
+        function updateClocks() {
+            const now = new Date();
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
 
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            console.log('App is already installed');
-        } else {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                setTimeout(() => { installBanner.classList.add('show'); }, 1500);
+            document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
+            document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
+            document.getElementById('lsDate').textContent = dateStr;
+            document.getElementById('hsDate').textContent = dateStr;
+        }
+        setInterval(updateClocks, 1000);
+        updateClocks();
+
+        // --- 2. UNLOCK ANIMATION ---
+        const lockScreen = document.getElementById('lockScreen');
+        const homeScreen = document.getElementById('homeScreen');
+        const dock = document.getElementById('dock');
+        let unlocked = false;
+
+        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+        
+        // Support swipe up
+        let touchStartY = 0;
+        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+        lockScreen.addEventListener('touchend', e => {
+            if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock();
+        });
+
+        function doUnlock() {
+            if(unlocked) return;
+            unlocked = true;
+            
+            // Slide up & fade out lock screen
+            lockScreen.classList.add('unlocked');
+            
+            // Pop in home screen & dock
+            homeScreen.classList.add('active');
+            dock.style.opacity = '1';
+            dock.style.pointerEvents = 'all';
+
+            // Start counter animation when unlocked
+            setTimeout(animateCounters, 300);
+        }
+
+        // --- 3. COUNTER ANIMATION (WIDGET) ---
+        function animateCounters() {
+            const counters = [
+                document.getElementById('countPelanggan'),
+                document.getElementById('cOnline'),
+                document.getElementById('cPending'),
+                document.getElementById('cOffline')
+            ];
+
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 1500; // ms
+                const start = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // easeOutQuart
+                    const ease = 1 - Math.pow(1 - progress, 4);
+                    
+                    counter.innerText = Math.floor(ease * target).toLocaleString('id-ID');
+                    
+                    if (progress < 1) requestAnimationFrame(update);
+                    else counter.innerText = target.toLocaleString('id-ID');
+                }
+                requestAnimationFrame(update);
             });
-            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                setTimeout(() => {
-                    installBanner.querySelector('span').textContent = 'Add to Home Screen (+)';
-                    installBanner.classList.add('show');
-                }, 1500);
-            }
         }
 
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') console.log('User accepted');
-                    deferredPrompt = null;
-                    hideInstallBanner();
-                });
-            } else {
-                alert('Untuk menginstall:\n1. Klik tombol "Share" di Safari\n2. Pilih "Add to Home Screen"');
-                hideInstallBanner();
-            }
+        // --- 4. TOUCH / MOUSE GLOW (LIQUID EFFECT) ---
+        const cursorGlow = document.getElementById('cursorGlow');
+        function moveGlow(x, y) {
+            cursorGlow.style.opacity = '1';
+            cursorGlow.style.left = x + 'px';
+            cursorGlow.style.top = y + 'px';
         }
+        
+        // Desktop
+        document.addEventListener('mousemove', e => moveGlow(e.clientX, e.clientY));
+        document.addEventListener('mouseleave', () => cursorGlow.style.opacity = '0');
+        // Mobile
+        document.addEventListener('touchmove', e => moveGlow(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        document.addEventListener('touchend', () => cursorGlow.style.opacity = '0');
 
-        function hideInstallBanner() {
-            installBanner.classList.remove('show');
-            localStorage.setItem('installBannerClosed', 'true');
-        }
+        // --- 5. RIPPLE ANIMATION ON APP ICONS ---
+        document.querySelectorAll('.app-icon-wrapper, .dock-item').forEach(el => {
+            const addRipple = function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height) * 2;
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${x - size/2}px`;
+                ripple.style.top = `${y - size/2}px`;
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            };
+            el.addEventListener('mousedown', addRipple);
+            el.addEventListener('touchstart', addRipple, {passive: true});
+        });
 
-        if (localStorage.getItem('installBannerClosed') === 'true') {
-            installBanner.style.display = 'none';
-        }
+        // --- 6. SMOOTH PAGE TRANSITION ---
+        const pageTransit = document.getElementById('pageTransit');
+        document.querySelectorAll('.transit-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if(this.getAttribute('target') === '_blank') return; // Abaikan jika open di tab baru
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                
+                // Fade to black
+                pageTransit.classList.add('active');
+                setTimeout(() => window.location.href = href, 400);
+            });
+        });
+        
+        // Handle Safari back button cache
+        window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
 
+        // --- 7. PWA SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('SW registered'))
-                    .catch((err) => console.log('SW failed', err));
+                    .catch(err => console.log('SW fail:', err));
             });
         }
     </script>
