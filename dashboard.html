@@ -48,7 +48,7 @@
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
         /* Stats Main Card */
-        .stats-main { background: linear-gradient(135deg, rgba(201,169,97,0.2), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.3); border-radius: 28px; padding: 30px; text-align: center; position: relative; overflow: hidden; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: slideUp 0.6s var(--spring); }
+        .stats-main { background: linear-gradient(135deg, rgba(201,169,97,0.2), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.3); border-radius: 28px; padding: 30px; text-align: center; position: relative; overflow: hidden; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: slideUp 0.6s var(--spring) forwards; }
         .stats-main::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent); transform: rotate(45deg); animation: shineGlow 6s infinite linear; pointer-events: none; }
         .stats-label { font-size: 12px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 10px; }
         .stats-val-big { font-size: 64px; font-weight: 800; line-height: 1; color: var(--accent-gold); text-shadow: 0 10px 20px rgba(201,169,97,0.3); margin-bottom: 25px; }
@@ -61,7 +61,10 @@
         /* Wilayah Grid */
         .section-title { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px; padding-left: 5px; }
         .wilayah-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .w-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; cursor: pointer; transition: all 0.4s var(--spring); animation: slideUp 0.8s var(--spring) backwards; opacity: 0; display: flex; flex-direction: column; }
+        
+        /* DIPERBAIKI: animation-fill-mode dirubah menjadi "forwards" agar card tetap terlihat */
+        .w-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; cursor: pointer; transition: all 0.4s var(--spring); animation: slideUp 0.8s var(--spring) forwards; opacity: 0; display: flex; flex-direction: column; text-decoration: none; }
+        
         .w-card:nth-child(1) { animation-delay: 0.1s; } .w-card:nth-child(2) { animation-delay: 0.2s; } .w-card:nth-child(3) { animation-delay: 0.3s; } .w-card:nth-child(4) { animation-delay: 0.4s; }
         .w-card:hover { transform: translateY(-5px) scale(1.02); border-color: rgba(201,169,97,0.4); background: rgba(201,169,97,0.05); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
         .w-card:active { transform: scale(0.95); }
@@ -272,7 +275,6 @@
         const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="2"/><rect x="2" y="15" width="20" height="6" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
         const wilayahConfig = [{ name: 'Sukamelang' }, { name: 'Cibarola' }, { name: 'Panglejar' }, { name: 'Perum / Flamboyan' }];
 
-        // Animasi konter sederhana
         function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
             const step = (timestamp) => {
@@ -298,8 +300,10 @@
                 const dataW = pelanggan.filter(p => p.wilayah === w.name);
                 const diambil = dataW.filter(p => p.status === 'Sudah Diambil').length;
                 const belum = dataW.filter(p => p.status === 'Belum Diambil').length;
+                
+                // Elemen ini dirender secara dinamis
                 wilayahGrid.innerHTML += `
-                    <div class="w-card transit-link" href="admin.html?wilayah=${encodeURIComponent(w.name)}">
+                    <a class="w-card transit-link" href="admin.html?wilayah=${encodeURIComponent(w.name)}" style="animation-delay: ${index * 0.1}s">
                         <div class="w-icon">${serverIcon}</div>
                         <div class="w-name">${w.name}</div>
                         <div class="w-total">${dataW.length} Unit Total</div>
@@ -307,10 +311,9 @@
                             <div class="w-sub"><div class="w-sub-val done">${diambil}</div><div class="w-sub-lbl">Selesai</div></div>
                             <div class="w-sub"><div class="w-sub-val pend">${belum}</div><div class="w-sub-lbl">Pending</div></div>
                         </div>
-                    </div>`;
+                    </a>`;
             });
             
-            // Re-bind transit links for new dynamic elements
             bindTransitLinks();
         }
 
@@ -318,7 +321,6 @@
         function bindTransitLinks() {
             const pageTransit = document.getElementById('pageTransit');
             document.querySelectorAll('.transit-link').forEach(link => {
-                // remove existing listener to avoid duplicates
                 const newLink = link.cloneNode(true);
                 link.parentNode.replaceChild(newLink, link);
                 
@@ -335,7 +337,6 @@
         window.addEventListener('pageshow', e => { if(e.persisted) document.getElementById('pageTransit').classList.remove('active'); });
 
         loadDashboard();
-        bindTransitLinks();
     </script>
 </body>
 </html>
