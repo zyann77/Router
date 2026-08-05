@@ -847,6 +847,24 @@
             closeExportModal();
         }
 
+        // [TAMBAHAN BARU] Listener Realtime untuk Notifikasi Admin
+supabaseClient
+    .channel('pelanggan-admin-channel')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+        const oldData = payload.old;
+        const newData = payload.new;
+        
+        // Cek apakah status berubah menjadi 'Sudah Diambil'
+        if (newData.status === 'Sudah Diambil' && oldData.status !== 'Sudah Diambil') {
+            // Tampilkan Notifikasi Toast
+            showToast(`🔔 Perangkat pelanggan ${newData.nama_pelanggan} sudah diambil!`, 'success');
+            
+            // Refresh tabel agar data terbaru langsung muncul
+            loadTable(); 
+        }
+    })
+    .subscribe();
+
         // Start
         loadTable();
     </script>
