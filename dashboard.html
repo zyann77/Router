@@ -204,27 +204,36 @@
         }
 
         // ==========================================
-        // NOTIFIKASI REALTIME 
-        // ==========================================
-        const processedNotifs = new Set();
-        supabaseClient
-            .channel('dashboard-notif-channel')
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
-                const newData = payload.new;
-                
-                if (newData.status === 'Sudah Diambil') {
-                    const notifKey = newData.id + '_selesai';
-                    if (!processedNotifs.has(notifKey)) {
-                        processedNotifs.add(notifKey);
-                        showToast(`🔔 Perangkat ${newData.nama_pelanggan} sudah diambil!`, 'success');
-                        document.getElementById('notifBadge').classList.add('active');
-                        
-                        // Update angka di dashboard
-                        loadDashboard();
-                    }
-                }
-            })
-            .subscribe();
+// NOTIFIKASI REALTIME (Mode Debugging)
+// ==========================================
+const processedNotifs = new Set();
+const adminChannel = supabaseClient.channel('admin-notif-channel');
+
+adminChannel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+    // 🔴 Ini akan muncul di Console jika ada data masuk
+    console.log('🔔 SINYAL REALTIME DITERIMA:', payload);
+    
+    const newData = payload.new;
+    
+    if (newData && newData.status === 'Sudah Diambil') {
+        const notifKey = newData.id + '_selesai';
+        
+        if (!processedNotifs.has(notifKey)) {
+            processedNotifs.add(notifKey);
+            showToast(`🔔 Perangkat ${newData.nama_pelanggan || 'Pelanggan'} sudah diambil!`, 'success');
+            document.getElementById('notifBadge').classList.add('active');
+            loadTable();
+        } else {
+            console.log('Notifikasi sudah pernah ditampilkan untuk ID:', newData.id);
+        }
+    }
+}).subscribe((status) => {
+    // 🔴 Mengecek apakah website berhasil nyambung ke satelit Supabase
+    console.log('📡 Status Koneksi Realtime:', status);
+    if (status === 'SUBSCRIBED') {
+        console.log('✅ Realtime BERHASIL terhubung dan siap memantau!');
+    }
+});
 
         const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
         const wilayahConfig = [{ name: 'Sukamelang' }, { name: 'Cibarola' }, { name: 'Panglejar' }, { name: 'Perum / Flamboyan' }];
