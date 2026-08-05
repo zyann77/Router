@@ -4,123 +4,273 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0F">
-<title>Iyann RnB - Network Tools</title>
-<link rel="manifest" href="manifest.json">
+<title>Tugas Teknisi - Iyann RnB</title>
 <link rel="stylesheet" href="assets/css/style.css">
-<style>
-.menu-container{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--spacing-xl);}
-.app-header{text-align:center;margin:32px 0;}
-.app-logo{width:80px;height:80px;margin:0 auto 16px;border-radius:20px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);display:flex;align-items:center;justify-content:center;}
-.app-logo svg{width:40px;height:40px;stroke:var(--leather-dark);stroke-width:2;fill:none;}
-.app-title{font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--cream);}
-.app-subtitle{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;margin-top:6px;}
-.welcome-label{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;}
-.menu-section-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream);margin-bottom:var(--spacing-lg);}
-.menu-list{width:100%;max-width:420px;display:flex;flex-direction:column;gap:16px;}
-.menu-card{background:var(--bg-card);border:1px solid rgba(201,169,97,0.2);border-radius:18px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;text-decoration:none;position:relative;overflow:hidden;}
-.menu-card:active{transform:scale(0.97);border-color:var(--gold);}
-.menu-icon{width:48px;height:48px;border-radius:12px;background:rgba(201,169,97,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.menu-icon svg{width:24px;height:24px;stroke:var(--gold);stroke-width:2;fill:none;}
-.menu-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--cream);margin-bottom:2px;}
-.menu-desc{font-size:12px;color:var(--cream-dark);opacity:0.7;}
-.footer{margin-top:40px;font-family:var(--font-mono);font-size:11px;color:var(--cream-dark);opacity:0.5;text-align:center;}
-.install-banner{position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--gold);color:var(--leather-dark);padding:14px 24px;border-radius:30px;display:none;align-items:center;gap:8px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 24px rgba(201,169,97,0.4);z-index:100;}
-.install-banner.show{display:flex;}
-.install-banner svg{width:20px;height:20px;stroke:var(--leather-dark);stroke-width:2;fill:none;}
-</style>
 </head>
 <body>
-<div class="menu-container">
-  <div class="app-header">
-    <div class="app-logo">
-      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+
+<!-- HEADER -->
+<div class="top-header">
+  <div class="header-content">
+    <div>
+      <div class="header-title">Tugas Teknisi</div>
+      <div class="header-subtitle">Lapangan Hari Ini</div>
     </div>
-    <div class="app-title">Iyann RnB</div>
-    <div class="app-subtitle">Network Management Tools</div>
+    <div class="header-icon">T</div>
   </div>
-
-  <div style="width:100%;max-width:420px;">
-    <div class="welcome-label">Selamat Datang</div>
-    <div class="menu-section-title">Menu Utama</div>
-  </div>
-
-  <div class="menu-list">
-    <a href="login.html" class="menu-card">
-      <div class="menu-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3h-8l-2 4h12z"/></svg></div>
-      <div>
-        <div class="menu-title">Penarikan Perangkat</div>
-        <div class="menu-desc">Kelola data isolir & penarikan router/STB</div>
-      </div>
-    </a>
-
-    <div class="menu-card" onclick="comingSoon('Cek Redaman')">
-      <div class="menu-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-      <div>
-        <div class="menu-title">Cek Redaman Pelanggan</div>
-        <div class="menu-desc">Monitoring kualitas sinyal & redaman ODP</div>
-      </div>
-    </div>
-
-    <div class="menu-card" onclick="comingSoon('Kalkulator Redaman')">
-      <div class="menu-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg></div>
-      <div>
-        <div class="menu-title">Kalkulator Redaman</div>
-        <div class="menu-desc">Hitung redaman fiber optik & loss budget</div>
-      </div>
-    </div>
-
-    <div class="menu-card" onclick="comingSoon('Setting Router')">
-      <div class="menu-icon"><svg viewBox="0 0 24 24"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 18h.01"/><path d="M10 18h.01"/><path d="M12 14v-4"/><path d="M7 10a5 5 0 0 1 10 0"/></svg></div>
-      <div>
-        <div class="menu-title">Setting Router HG8145V5</div>
-        <div class="menu-desc">Tools konfigurasi & generator WAN ONU</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">v2.3 • Iyann RnB Network</div>
 </div>
 
-<div class="install-banner" id="installBanner" onclick="installApp()">
-  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  Install Aplikasi
+<!-- STATISTIK -->
+<div class="hero-section">
+  <div class="hero-card">
+    <div class="hero-label">Tugas Teknisi</div>
+    <div class="hero-value" id="totalTugas">0</div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-value" id="belumDiambil">0</div>
+        <div class="hero-stat-label">Belum Diambil</div>
+      </div>
+      <div>
+        <div class="hero-stat-value" id="sudahDiambil">0</div>
+        <div class="hero-stat-label">Sudah Diambil</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SORT CHIPS -->
+<div class="filter-chips">
+  <div class="chip active" data-sort="terlama" onclick="setSort(this)">🔴 Isolir Terlama</div>
+  <div class="chip" data-sort="terbaru" onclick="setSort(this)">🔵 Isolir Terbaru</div>
+  <div class="chip" data-sort="az" onclick="setSort(this)">A-Z (Nama)</div>
+  <div class="chip" data-sort="za" onclick="setSort(this)">Z-A (Nama)</div>
+</div>
+
+<!-- WILAYAH CHIPS -->
+<div class="filter-chips">
+  <div class="chip active" data-wilayah="" onclick="setWilayah(this)">📍 Semua Wilayah</div>
+  <div class="chip" data-wilayah="Sukamelang" onclick="setWilayah(this)">Sukamelang</div>
+  <div class="chip" data-wilayah="Cibarola" onclick="setWilayah(this)">Cibarola</div>
+  <div class="chip" data-wilayah="Panglejar" onclick="setWilayah(this)">Panglejar</div>
+  <div class="chip" data-wilayah="Perum / Flamboyan" onclick="setWilayah(this)">Perum / Flamboyan</div>
+</div>
+
+<!-- LIST TUGAS -->
+<div id="taskList"></div>
+
+<!-- MODAL KONFIRMASI PENYELESAIAN -->
+<div class="modal-overlay" id="modalSelesai">
+  <div class="modal-content">
+    <div class="modal-title">✅ Konfirmasi Penyelesaian</div>
+    <div class="input-group">
+      <label class="input-label">Tanggal Penarikan</label>
+      <input type="date" class="input-field" id="tanggalPenarikan">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Catatan (Opsional)</label>
+      <input type="text" class="input-field" id="catatanPenarikan" placeholder="Catatan...">
+    </div>
+    <div class="modal-buttons">
+      <button class="btn btn-outline" onclick="closeModal('modalSelesai')">Batal</button>
+      <button class="btn btn-success" onclick="simpanSelesai()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LANJUT BERLANGGANAN -->
+<div class="modal-overlay" id="modalLanjut">
+  <div class="modal-content">
+    <div class="modal-title">⚠️ Lanjut Berlangganan?</div>
+    <p style="text-align:center;font-size:14px;color:var(--cream-dark);margin-bottom:var(--spacing-lg);position:relative;">
+      Pelanggan memutuskan untuk tetap berlangganan.<br>Data ini akan dihapus dari daftar isolir.
+    </p>
+    <div class="input-group">
+      <label class="input-label">Catatan (Opsional)</label>
+      <input type="text" class="input-field" id="catatanLanjut" placeholder="Catatan...">
+    </div>
+    <div class="modal-buttons">
+      <button class="btn btn-outline" onclick="closeModal('modalLanjut')">Batal</button>
+      <button class="btn btn-danger" onclick="hapusData()">Ya, Hapus Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    <span class="nav-label">Teknisi</span>
+  </div>
+  <div class="nav-item" onclick="keluar()">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    <span class="nav-label">Keluar</span>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script>
-// Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allData = [];
+let currentSort = 'terlama';
+let currentWilayah = '';
+let selectedId = null;
+
+// ============ LOAD DATA ============
+async function loadData() {
+  const { data, error } = await db.from(TABLE_PENARIKAN).select('*');
+  if (error) { showToast('Gagal memuat data', 'error'); return; }
+  allData = data || [];
+  renderStats();
+  renderList();
 }
 
-// Install PWA
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('installBanner').classList.add('show');
-});
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(() => {
-      deferredPrompt = null;
-      document.getElementById('installBanner').classList.remove('show');
-    });
+function renderStats() {
+  const aktif = allData.filter(d => d.status !== 'selesai');
+  const selesai = allData.filter(d => d.status === 'selesai');
+  document.getElementById('totalTugas').textContent = aktif.length;
+  document.getElementById('belumDiambil').textContent = aktif.length + ' tugas';
+  document.getElementById('sudahDiambil').textContent = selesai.length + ' tugas';
+}
+
+function getFiltered() {
+  let list = [...allData];
+  if (currentWilayah) list = list.filter(d => d.wilayah === currentWilayah);
+  // Tampilkan yang belum selesai dulu
+  list = list.filter(d => d.status !== 'selesai');
+  switch (currentSort) {
+    case 'terlama': list.sort((a,b) => new Date(a.tanggal_isolir) - new Date(b.tanggal_isolir)); break;
+    case 'terbaru': list.sort((a,b) => new Date(b.tanggal_isolir) - new Date(a.tanggal_isolir)); break;
+    case 'az': list.sort((a,b) => (a.nama_pelanggan||'').localeCompare(b.nama_pelanggan||'')); break;
+    case 'za': list.sort((a,b) => (b.nama_pelanggan||'').localeCompare(a.nama_pelanggan||'')); break;
+  }
+  return list;
+}
+
+function renderList() {
+  const list = getFiltered();
+  const container = document.getElementById('taskList');
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">Tidak ada tugas</div><p class="empty-subtitle">Semua perangkat sudah ditangani</p></div>`;
+    return;
+  }
+  container.innerHTML = list.map(d => `
+    <div class="modern-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">${esc(d.nama_pelanggan)}</div>
+          <div class="card-subtitle">${esc(d.wilayah||'-')}</div>
+        </div>
+        <span class="card-badge badge-warning">${esc(d.jenis_perangkat||'Router')}</span>
+      </div>
+      <div class="card-info">📅 Isolir: ${formatTgl(d.tanggal_isolir)}</div>
+      ${d.nomor_hp ? `<div class="card-info">📞 ${esc(d.nomor_hp)}</div>` : ''}
+      ${d.alamat ? `<div class="card-info">📍 ${esc(d.alamat)}</div>` : ''}
+      <div class="card-actions">
+        ${d.nomor_hp ? `<a class="btn btn-whatsapp btn-small" href="https://wa.me/${d.nomor_hp.replace(/\D/g,'')}" target="_blank">WhatsApp</a>` : '<span></span>'}
+        ${d.koordinat ? `<a class="btn btn-map btn-small" href="https://maps.google.com/?q=${d.koordinat}" target="_blank">Maps</a>` : '<span></span>'}
+        <button class="btn btn-outline btn-small" onclick="bukaLanjut(${d.id})">Lanjut Langganan</button>
+        <button class="btn btn-success btn-small" onclick="bukaSelesai(${d.id})">✅ Selesai</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============ SORT & FILTER ============
+function setSort(el) {
+  document.querySelectorAll('[data-sort]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentSort = el.dataset.sort;
+  renderList();
+}
+function setWilayah(el) {
+  document.querySelectorAll('[data-wilayah]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentWilayah = el.dataset.wilayah;
+  renderList();
+}
+
+// ============ SELESAI ============
+function bukaSelesai(id) {
+  selectedId = id;
+  document.getElementById('tanggalPenarikan').value = new Date().toISOString().split('T')[0];
+  document.getElementById('catatanPenarikan').value = '';
+  document.getElementById('modalSelesai').classList.add('active');
+}
+
+async function simpanSelesai() {
+  const item = allData.find(d => d.id === selectedId);
+  if (!item) return;
+
+  const tgl = document.getElementById('tanggalPenarikan').value;
+  const catatan = document.getElementById('catatanPenarikan').value.trim();
+
+  // 1. Update status data jadi selesai
+  const { error } = await db.from(TABLE_PENARIKAN)
+    .update({ status: 'selesai', tanggal_penarikan: tgl, catatan: catatan || null })
+    .eq('id', selectedId);
+
+  if (error) { showToast('Gagal menyimpan', 'error'); return; }
+
+  // 2. KIRIM NOTIFIKASI KE ADMIN (hanya nama pelanggan)
+  await kirimNotifikasiSelesai({ nama_pelanggan: item.nama_pelanggan });
+
+  closeModal('modalSelesai');
+  showToast('✅ Penarikan berhasil disimpan');
+  loadData();
+}
+
+// ============ NOTIFIKASI KE ADMIN ============
+async function kirimNotifikasiSelesai(dataPenarikan) {
+  try {
+    const { error } = await db
+      .from(TABLE_NOTIFIKASI)
+      .insert([{ nama_pelanggan: dataPenarikan.nama_pelanggan }]);
+
+    if (error) console.error('Gagal kirim notif:', error.message);
+    else console.log('Notifikasi terkirim ke admin');
+  } catch (e) {
+    console.error('Error notif:', e);
   }
 }
 
-function comingSoon(feature) {
-  showToast('🚧 ' + feature + ' segera hadir');
+// ============ LANJUT BERLANGGANAN ============
+function bukaLanjut(id) {
+  selectedId = id;
+  document.getElementById('catatanLanjut').value = '';
+  document.getElementById('modalLanjut').classList.add('active');
 }
 
-function showToast(msg) {
+async function hapusData() {
+  const { error } = await db.from(TABLE_PENARIKAN).delete().eq('id', selectedId);
+  if (error) { showToast('Gagal menghapus', 'error'); return; }
+  closeModal('modalLanjut');
+  showToast('Data dihapus, pelanggan lanjut berlangganan');
+  loadData();
+}
+
+// ============ HELPERS ============
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function keluar() { localStorage.removeItem('role'); window.location.href = 'login.html'; }
+function formatTgl(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show';
+  t.className = 'toast show ' + (type || '');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+loadData();
 </script>
 </body>
 </html>
