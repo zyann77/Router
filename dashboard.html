@@ -319,6 +319,24 @@
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let allData = [];
+        
+        // [TAMBAHAN BARU] Listener Realtime untuk Notifikasi Dashboard
+supabaseClient
+    .channel('pelanggan-dashboard-channel')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+        const oldData = payload.old;
+        const newData = payload.new;
+        
+        // Cek apakah status berubah menjadi 'Sudah Diambil'
+        if (newData.status === 'Sudah Diambil' && oldData.status !== 'Sudah Diambil') {
+            // Tampilkan Notifikasi Toast
+            showToast(`🔔 Perangkat pelanggan ${newData.nama_pelanggan} sudah diambil!`, 'success');
+            
+            // Refresh angka statistik di dashboard otomatis
+            loadDashboard();
+        }
+    })
+    .subscribe();
 
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
         function showToast(msg, type) {
