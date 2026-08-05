@@ -15,6 +15,7 @@
         :root { --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340; --bg-dark: #050508; --bg-card: rgba(255, 255, 255, 0.03); --text-main: #F5F1E8; --text-muted: #A0A0B0; --success: #10B981; --warning: #F59E0B; --danger: #EF4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Manrope', system-ui, sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; position: relative; padding-bottom: 80px; }
+        
         .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
         .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
         .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
@@ -29,7 +30,7 @@
         .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
         .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
         
-        /* NOTIFICATION ICON STYLES */
+        /* NOTIFICATION STYLES */
         .header-icon {
             width: 38px; height: 38px; border-radius: 12px;
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -49,6 +50,39 @@
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
+
+        /* DROPDOWN NOTIFIKASI */
+        .notif-popup {
+            position: absolute; top: 50px; right: 0; width: 280px;
+            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 16px; padding: 0; display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); z-index: 1000;
+            cursor: default; overflow: hidden; text-align: left;
+            animation: scaleUp 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .notif-popup.active { display: block; }
+        .notif-popup-header {
+            padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 700; color: white;
+        }
+        .clear-all { color: var(--gold); font-size: 11px; cursor: pointer; transition: all 0.2s; }
+        .clear-all:active { opacity: 0.5; }
+        .notif-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold) #121218; }
+        .notif-item {
+            padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item-icon {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(16, 185, 129, 0.15);
+            color: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            font-size: 14px; border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .notif-item-content { flex: 1; }
+        .notif-item-title { font-size: 13px; font-weight: 700; color: white; margin-bottom: 2px; }
+        .notif-item-time { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+        .notif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
@@ -132,10 +166,22 @@
             <div class="header-subtitle">Panel Administrasi</div>
             <div class="header-title">Dashboard</div>
         </div>
-        <!-- IKON NOTIFIKASI BARU -->
-        <div class="header-icon" onclick="clearNotifBadge()">
+        
+        <!-- IKON NOTIFIKASI BESERTA DROPDOWN LIST -->
+        <div class="header-icon" id="notifBtn" onclick="toggleNotifPopup(event)">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             <div class="notif-badge" id="notifBadge"></div>
+            
+            <!-- Elemen Popup List Pelanggan -->
+            <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
+                <div class="notif-popup-header">
+                    <span>Notifikasi Baru</span>
+                    <span class="clear-all" onclick="clearAllNotifs(event)">Bersihkan</span>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty">Belum ada notifikasi baru hari ini.</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -198,42 +244,92 @@
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
 
-        function clearNotifBadge() {
-            document.getElementById('notifBadge').classList.remove('active');
-            showToast('Riwayat notifikasi bersih.', 'success');
+        // ==========================================
+        // LOGIKA LIST NOTIFIKASI
+        // ==========================================
+        let sessionNotifs = [];
+
+        function toggleNotifPopup(event) {
+            event.stopPropagation();
+            const popup = document.getElementById('notifPopup');
+            popup.classList.toggle('active');
+            
+            // Hapus badge merah saat popup dibuka
+            if (popup.classList.contains('active')) {
+                document.getElementById('notifBadge').classList.remove('active');
+            }
+        }
+
+        // Menutup popup jika klik di area mana saja selain tombol lonceng
+        document.addEventListener('click', function(event) {
+            const popup = document.getElementById('notifPopup');
+            const btn = document.getElementById('notifBtn');
+            if (popup && popup.classList.contains('active') && !btn.contains(event.target)) {
+                popup.classList.remove('active');
+            }
+        });
+
+        function clearAllNotifs(event) {
+            event.stopPropagation();
+            sessionNotifs = []; // Kosongkan riwayat
+            updateNotifUI(); // Render ulang ke kosong
+            document.getElementById('notifPopup').classList.remove('active');
+            showToast('Riwayat notifikasi dibersihkan', 'success');
+        }
+
+        function updateNotifUI() {
+            const list = document.getElementById('notifList');
+            if (sessionNotifs.length === 0) {
+                list.innerHTML = '<div class="notif-empty">Belum ada notifikasi baru hari ini.</div>';
+                return;
+            }
+            
+            // Merender ulang elemen DOM HTML popup dropdown berdasarkan data baru
+            list.innerHTML = sessionNotifs.map(n => `
+                <div class="notif-item">
+                    <div class="notif-item-icon">✅</div>
+                    <div class="notif-item-content">
+                        <div class="notif-item-title">${n.nama}</div>
+                        <div class="notif-item-time">Diambil pkl ${n.waktu} • ${n.wilayah}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // ==========================================
-// NOTIFIKASI REALTIME (Mode Debugging)
-// ==========================================
-const processedNotifs = new Set();
-const adminChannel = supabaseClient.channel('admin-notif-channel');
+        // NOTIFIKASI REALTIME
+        // ==========================================
+        const processedNotifs = new Set();
+        supabaseClient
+            .channel('dashboard-notif-channel')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+                const newData = payload.new;
+                
+                if (newData.status === 'Sudah Diambil') {
+                    const notifKey = newData.id + '_selesai';
+                    if (!processedNotifs.has(notifKey)) {
+                        processedNotifs.add(notifKey);
+                        
+                        // 1. Simpan history notifikasi
+                        sessionNotifs.unshift({
+                            nama: newData.nama_pelanggan,
+                            wilayah: newData.wilayah,
+                            waktu: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})
+                        });
+                        
+                        // 2. Refresh UI list notifikasi
+                        updateNotifUI();
 
-adminChannel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
-    // 🔴 Ini akan muncul di Console jika ada data masuk
-    console.log('🔔 SINYAL REALTIME DITERIMA:', payload);
-    
-    const newData = payload.new;
-    
-    if (newData && newData.status === 'Sudah Diambil') {
-        const notifKey = newData.id + '_selesai';
-        
-        if (!processedNotifs.has(notifKey)) {
-            processedNotifs.add(notifKey);
-            showToast(`🔔 Perangkat ${newData.nama_pelanggan || 'Pelanggan'} sudah diambil!`, 'success');
-            document.getElementById('notifBadge').classList.add('active');
-            loadTable();
-        } else {
-            console.log('Notifikasi sudah pernah ditampilkan untuk ID:', newData.id);
-        }
-    }
-}).subscribe((status) => {
-    // 🔴 Mengecek apakah website berhasil nyambung ke satelit Supabase
-    console.log('📡 Status Koneksi Realtime:', status);
-    if (status === 'SUBSCRIBED') {
-        console.log('✅ Realtime BERHASIL terhubung dan siap memantau!');
-    }
-});
+                        // 3. Tampilkan peringatan visual
+                        showToast(`🔔 ${newData.nama_pelanggan} sudah diambil!`, 'success');
+                        document.getElementById('notifBadge').classList.add('active');
+                        
+                        // 4. Update angka metrik di dashboard
+                        loadDashboard();
+                    }
+                }
+            })
+            .subscribe();
 
         const serverIcon = `<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`;
         const wilayahConfig = [{ name: 'Sukamelang' }, { name: 'Cibarola' }, { name: 'Panglejar' }, { name: 'Perum / Flamboyan' }];
