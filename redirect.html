@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting - RNB Network</title>
+    <style>
+        body { background-color: #050505; color: #fff; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .loader { text-align: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(201,169,97,0.2); border-top-color: #C9A961; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <p style="font-size: 13px; color: #A1A1AA; letter-spacing: 1px;">MEMVALIDASI AKSES MENU UTAMA...</p>
+    </div>
+
+    <script>
+        // Cek apakah user datang dari domain/halaman internal aplikasi kita
+        const referrer = document.referrer;
+        const targetUrl = "https://bot-production-ee35.up.railway.app/";
+
+        // Validasi: Harus berasal dari index.html milik aplikasi sendiri
+        if (referrer && (referrer.includes('index.html') || referrer.endsWith('/'))) {
+            // Jika valid, arahkan ke target eksternal
+            window.location.replace(targetUrl);
+        } else {
+            // Jika diketik langsung atau dari luar, tolak dan kembalikan ke menu utama
+            alert("Akses ditolak! Anda wajib mengakses fitur ini melalui Menu Utama.");
+            window.location.replace('index.html');
+        }
+    </script>
+</body>
+</html>
