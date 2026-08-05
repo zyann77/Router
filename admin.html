@@ -371,34 +371,36 @@
         }
 
         // ==========================================
-        // NOTIFIKASI REALTIME (Diperbarui & Stabil)
-        // ==========================================
-        const processedNotifs = new Set();
-        supabaseClient
-            .channel('admin-notif-channel')
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
-                const newData = payload.new;
-                
-                // Jika teknisi menandai sebagai "Sudah Diambil"
-                if (newData.status === 'Sudah Diambil') {
-                    // Buat ID unik untuk mencegah notifikasi spam/berulang di sesi yang sama
-                    const notifKey = newData.id + '_selesai';
-                    
-                    if (!processedNotifs.has(notifKey)) {
-                        processedNotifs.add(notifKey);
-                        
-                        // Tampilkan Toast
-                        showToast(`🔔 Perangkat ${newData.nama_pelanggan} sudah diambil!`, 'success');
-                        
-                        // Nyalakan badge lonceng merah
-                        document.getElementById('notifBadge').classList.add('active');
-                        
-                        // Refresh data tabel agar otomatis ter-update di layar Admin
-                        loadTable();
-                    }
-                }
-            })
-            .subscribe();
+// NOTIFIKASI REALTIME (Mode Debugging)
+// ==========================================
+const processedNotifs = new Set();
+const adminChannel = supabaseClient.channel('admin-notif-channel');
+
+adminChannel.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+    // 🔴 Ini akan muncul di Console jika ada data masuk
+    console.log('🔔 SINYAL REALTIME DITERIMA:', payload);
+    
+    const newData = payload.new;
+    
+    if (newData && newData.status === 'Sudah Diambil') {
+        const notifKey = newData.id + '_selesai';
+        
+        if (!processedNotifs.has(notifKey)) {
+            processedNotifs.add(notifKey);
+            showToast(`🔔 Perangkat ${newData.nama_pelanggan || 'Pelanggan'} sudah diambil!`, 'success');
+            document.getElementById('notifBadge').classList.add('active');
+            loadTable();
+        } else {
+            console.log('Notifikasi sudah pernah ditampilkan untuk ID:', newData.id);
+        }
+    }
+}).subscribe((status) => {
+    // 🔴 Mengecek apakah website berhasil nyambung ke satelit Supabase
+    console.log('📡 Status Koneksi Realtime:', status);
+    if (status === 'SUBSCRIBED') {
+        console.log('✅ Realtime BERHASIL terhubung dan siap memantau!');
+    }
+});
 
         // SISANYA FUNGSI LAMA ADMIN
         function selectPerangkat(value, el) { document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('perangkat').value = value; }
