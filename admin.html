@@ -51,79 +51,52 @@
         .header-info { text-align: center; flex: 1; }
         .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
         .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
+        
+        /* NOTIFICATION ICON STYLES */
         .header-icon {
             width: 38px; height: 38px; border-radius: 12px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; justify-content: center;
-            color: #000; font-weight: 800; font-size: 16px;
+            cursor: pointer; position: relative; transition: all 0.3s;
+        }
+        .header-icon:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .header-icon svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .notif-badge {
+            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+            background: var(--danger); border-radius: 50%; display: none;
+            box-shadow: 0 0 0 2px var(--bg-dark);
+        }
+        .notif-badge.active { display: block; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        /* EXPORT BUTTONS */
-        .export-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .export-btn {
-            padding: 14px;
-            border-radius: 14px;
-            border: 1px solid rgba(201, 169, 97, 0.3);
-            background: rgba(201, 169, 97, 0.05);
-            color: var(--gold);
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
+        .export-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .export-btn { padding: 14px; border-radius: 14px; border: 1px solid rgba(201, 169, 97, 0.3); background: rgba(201, 169, 97, 0.05); color: var(--gold); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; font-family: inherit; }
         .export-btn:active { transform: scale(0.95); background: rgba(201, 169, 97, 0.15); }
         .export-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
         .export-btn.primary { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; border: none; }
 
-        /* SEARCH */
-        .search-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
-            margin-bottom: 24px; transition: all 0.3s;
-        }
+        .search-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; transition: all 0.3s; }
         .search-box:focus-within { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
         .search-box svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
         .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
         .search-box input::placeholder { color: var(--text-muted); }
 
-        /* FILTER BULAN */
         .filter-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
         .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; scrollbar-width: none; }
         .chips-container::-webkit-scrollbar { display: none; }
-        .chip {
-            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s;
-        }
+        .chip { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s; }
         .chip:active { transform: scale(0.95); }
         .chip.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3); }
 
-        /* CUSTOMER CARDS */
         .customer-list { display: flex; flex-direction: column; gap: 10px; }
-        .cust-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 16px;
-            position: relative;
-            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
-            transition: all 0.2s;
-        }
+        .cust-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; position: relative; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transition: all 0.2s; }
         .cust-card:active { background: rgba(201, 169, 97, 0.05); }
-        
         .cust-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .cust-name { font-size: 16px; font-weight: 700; color: white; margin-bottom: 3px; }
         .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -137,17 +110,7 @@
         .cust-info svg { width: 14px; height: 14px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
         .cust-info a { color: var(--gold); text-decoration: none; font-weight: 600; }
 
-        /* Isolir Badge */
-        .isolir-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
+        .isolir-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-top: 8px; }
         .isolir-badge svg { width: 12px; height: 12px; stroke-width: 2; fill: none; }
         .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
         .isolir-short svg { stroke: #60A5FA; }
@@ -157,11 +120,7 @@
         .isolir-critical svg { stroke: var(--danger); }
 
         .cust-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-        .btn-action {
-            padding: 8px 14px; border-radius: 10px; border: none; font-size: 12px; font-weight: 700;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: all 0.2s; text-decoration: none; font-family: inherit;
-        }
+        .btn-action { padding: 8px 14px; border-radius: 10px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; text-decoration: none; font-family: inherit; }
         .btn-action:active { transform: scale(0.95); }
         .btn-map { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
         .btn-edit { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -173,99 +132,45 @@
         .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* FAB */
-        .fab {
-            position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 20px;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            border: none; color: #000; cursor: pointer;
-            box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4);
-            z-index: 99; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .fab { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border: none; color: #000; cursor: pointer; box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4); z-index: 99; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .fab:active { transform: scale(0.9); }
         .fab svg { width: 24px; height: 24px; stroke: #000; stroke-width: 2.5; fill: none; }
 
-        /* BOTTOM SHEET */
         .bottom-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 200; }
         .bottom-sheet-overlay.active { display: block; }
-        .bottom-sheet {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #121218;
-            border-radius: 24px 24px 0 0;
-            padding: 20px;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
-            z-index: 201;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 90vh; overflow-y: auto;
-        }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #121218; border-radius: 24px 24px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 201; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 90vh; overflow-y: auto; }
         .bottom-sheet.active { transform: translateY(0); }
         .bottom-sheet-handle { width: 40px; height: 4px; background: var(--gold); border-radius: 2px; margin: 0 auto 16px; opacity: 0.5; }
         .bottom-sheet-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: white; }
 
         .input-group { margin-bottom: 16px; }
         .input-label { display: block; font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
-        .input-field {
-            width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
-            color: white; font-size: 14px; font-family: inherit; outline: none; transition: all 0.3s;
-        }
+        .input-field { width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 14px; font-family: inherit; outline: none; transition: all 0.3s; }
         .input-field:focus { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
         .input-field::placeholder { color: var(--text-muted); }
         textarea.input-field { min-height: 80px; resize: vertical; }
 
-        /* Perangkat Selector */
         .perangkat-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .perangkat-option {
-            padding: 12px; background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
-            text-align: center; cursor: pointer; transition: all 0.2s;
-            font-size: 12px; font-weight: 600; color: var(--text-muted);
-        }
+        .perangkat-option { padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 12px; font-weight: 600; color: var(--text-muted); }
         .perangkat-option:active { transform: scale(0.95); }
         .perangkat-option.selected { background: var(--gold); color: #000; border-color: var(--gold); }
 
-        /* Map */
         .map-container { width: 100%; height: 220px; border-radius: 14px; overflow: hidden; margin: 8px 0; border: 1px solid rgba(201, 169, 97, 0.3); position: relative; }
         .map-container::before { content: ' Klik peta untuk pilih lokasi'; position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: var(--gold); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-family: var(--font-mono); z-index: 500; pointer-events: none; }
         #map-picker { width: 100%; height: 100%; }
         .coord-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .coord-input {
-            width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
-            color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;
-        }
+        .coord-input { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; }
         .coord-input:focus { outline: none; border-color: var(--gold); }
 
-        .btn-submit {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #000; font-size: 15px; font-weight: 700; cursor: pointer;
-            margin-top: 16px; font-family: inherit; transition: all 0.2s;
-        }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 14px; border: none; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 16px; font-family: inherit; transition: all 0.2s; }
         .btn-submit:active { transform: scale(0.97); }
 
-        /* Toast */
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 14px 20px; border-radius: 12px; z-index: 2000;
-            font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #121218; border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px 20px; border-radius: 12px; z-index: 2000; font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
         .toast.show { transform: translateX(-50%) translateY(0); }
         .toast.success { border-color: var(--success); color: var(--success); }
         .toast.error { border-color: var(--danger); color: var(--danger); }
 
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-            display: flex; justify-content: space-around; z-index: 100;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
         .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
         .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
@@ -273,34 +178,15 @@
         .nav-item.active span { color: var(--gold); }
         .nav-item:active { transform: scale(0.9); }
 
-        /* EXPORT MODAL */
-        .export-modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
-        }
+        .export-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .export-modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
-        .export-modal {
-            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
-            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
-            animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+        .export-modal { background: #121218; border: 1px solid rgba(201, 169, 97, 0.2); border-radius: 24px; padding: 24px; width: 100%; max-width: 360px; animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .export-modal-title { font-size: 20px; font-weight: 700; color: white; text-align: center; margin-bottom: 8px; }
         .export-modal-sub { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
-        .export-option {
-            display: flex; align-items: center; gap: 14px;
-            padding: 16px; border-radius: 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
-            width: 100%; text-align: left; color: white;
-            font-family: inherit;
-        }
+        .export-option { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 10px; cursor: pointer; transition: all 0.2s; width: 100%; text-align: left; color: white; font-family: inherit; }
         .export-option:active { transform: scale(0.97); background: rgba(201, 169, 97, 0.1); border-color: var(--gold); }
-        .export-option-icon {
-            width: 44px; height: 44px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
+        .export-option-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .export-option-icon svg { width: 22px; height: 22px; stroke-width: 2; fill: none; }
         .export-option-icon.all { background: rgba(201, 169, 97, 0.15); }
         .export-option-icon.all svg { stroke: var(--gold); }
@@ -310,12 +196,7 @@
         .export-option-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
         .export-option-desc { font-size: 11px; color: var(--text-muted); }
         .export-option-count { font-size: 18px; font-weight: 800; color: var(--gold); }
-        .export-close {
-            width: 100%; padding: 14px; border-radius: 12px; border: none;
-            background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
-            font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
-            font-family: inherit;
-        }
+        .export-close { width: 100%; padding: 14px; border-radius: 12px; border: none; background: rgba(255, 255, 255, 0.05); color: var(--text-muted); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; font-family: inherit; }
         .export-close:active { background: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
@@ -337,11 +218,14 @@
             <div class="header-subtitle">Panel Administrasi</div>
             <div class="header-title">Kelola Data</div>
         </div>
-        <div class="header-icon">A</div>
+        <!-- IKON NOTIFIKASI BARU -->
+        <div class="header-icon" onclick="clearNotifBadge()">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <div class="notif-badge" id="notifBadge"></div>
+        </div>
     </div>
 
     <div class="container">
-        <!-- EXPORT BUTTONS (No Import) -->
         <div class="export-section">
             <button class="export-btn primary" onclick="openExportModal()">
                 <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -353,44 +237,36 @@
             </button>
         </div>
 
-        <!-- Search -->
         <div class="search-box">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchTable" placeholder="Cari pelanggan...">
         </div>
 
-        <!-- Filter Bulan -->
         <div class="filter-label">Filter Bulan Penarikan</div>
         <div class="chips-container" id="bulanChips"></div>
 
-        <!-- Customer List -->
         <div class="customer-list" id="tableContainer"></div>
     </div>
 
-    <!-- FAB -->
     <button class="fab" onclick="openBottomSheet()">
         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
 
-    <!-- Bottom Sheet Form -->
+    <!-- FORM BOTTOM SHEET, TOAST, & MODAL TETAP SAMA -->
     <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
     <div id="bottomSheet" class="bottom-sheet">
         <div class="bottom-sheet-handle"></div>
         <div class="bottom-sheet-title" id="formTitle">Tambah Data Baru</div>
-        
         <form id="formPelanggan">
             <input type="hidden" id="editId">
-            
             <div class="input-group">
                 <label class="input-label">Nama Pelanggan *</label>
                 <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Nomor HP *</label>
                 <input type="text" id="nomor_hp" class="input-field" placeholder="08xxxxxxxxxx" required>
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Wilayah *</label>
                 <select id="wilayah" class="input-field" required>
@@ -401,7 +277,6 @@
                     <option value="Perum / Flamboyan">Perum / Flamboyan</option>
                 </select>
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Jenis Perangkat</label>
                 <div class="perangkat-selector">
@@ -411,17 +286,14 @@
                 </div>
                 <input type="hidden" id="perangkat" value="Router">
             </div>
-
             <div class="input-group">
                 <label class="input-label">Tanggal Isolir</label>
                 <input type="date" id="tanggal_isolir" class="input-field">
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Alamat (Opsional)</label>
                 <textarea id="alamat" class="input-field" placeholder="Contoh: Jl. Merdeka No. 10"></textarea>
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Titik Koordinat (Opsional)</label>
                 <div class="map-container">
@@ -436,47 +308,30 @@
                     Gunakan GPS Saya
                 </button>
             </div>
-            
             <button type="submit" class="btn-submit">Simpan Data</button>
         </form>
     </div>
 
-    <!-- Export Modal -->
     <div id="exportModal" class="export-modal-overlay">
         <div class="export-modal">
             <div class="export-modal-title">Pilih Export</div>
             <div class="export-modal-sub">Data akan diexport ke format Excel</div>
-            
             <button class="export-option" onclick="doExport('all')">
-                <div class="export-option-icon all">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="export-option-text">
-                    <div class="export-option-title">Export Semua Data</div>
-                    <div class="export-option-desc">Semua pelanggan (aktif & selesai)</div>
-                </div>
+                <div class="export-option-icon all"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="export-option-text"><div class="export-option-title">Export Semua Data</div><div class="export-option-desc">Semua pelanggan (aktif & selesai)</div></div>
                 <div class="export-option-count" id="countAll">0</div>
             </button>
-            
             <button class="export-option" onclick="doExport('taken')">
-                <div class="export-option-icon taken">
-                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="export-option-text">
-                    <div class="export-option-title">Alat Sudah Diambil</div>
-                    <div class="export-option-desc">Hanya yang status Selesai</div>
-                </div>
+                <div class="export-option-icon taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="export-option-text"><div class="export-option-title">Alat Sudah Diambil</div><div class="export-option-desc">Hanya yang status Selesai</div></div>
                 <div class="export-option-count" id="countTaken">0</div>
             </button>
-            
             <button class="export-close" onclick="closeExportModal()">Batal</button>
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="window.location.href='dashboard.html'">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -500,372 +355,151 @@
         let map, marker;
         let currentBulan = 'all';
         let allData = [];
-
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        
         function showToast(msg, type) {
             const t = document.getElementById('toast');
             t.textContent = msg; t.className = 'toast show ' + type;
             setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        function selectPerangkat(value, el) {
-            document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            document.getElementById('perangkat').value = value;
+        function clearNotifBadge() {
+            document.getElementById('notifBadge').classList.remove('active');
+            showToast('Riwayat notifikasi bersih.', 'success');
         }
 
-        // === HITUNG DURASI ISOLIR ===
-        function hitungDurasiIsolir(tanggalIsolir) {
-            if (!tanggalIsolir) return null;
-            const tgl = new Date(tanggalIsolir);
-            if (isNaN(tgl)) return null;
-            const hariIni = new Date();
-            const diffTime = Math.abs(hariIni - tgl);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
-        }
+        // ==========================================
+        // NOTIFIKASI REALTIME (Diperbarui & Stabil)
+        // ==========================================
+        const processedNotifs = new Set();
+        supabaseClient
+            .channel('admin-notif-channel')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+                const newData = payload.new;
+                
+                // Jika teknisi menandai sebagai "Sudah Diambil"
+                if (newData.status === 'Sudah Diambil') {
+                    // Buat ID unik untuk mencegah notifikasi spam/berulang di sesi yang sama
+                    const notifKey = newData.id + '_selesai';
+                    
+                    if (!processedNotifs.has(notifKey)) {
+                        processedNotifs.add(notifKey);
+                        
+                        // Tampilkan Toast
+                        showToast(`🔔 Perangkat ${newData.nama_pelanggan} sudah diambil!`, 'success');
+                        
+                        // Nyalakan badge lonceng merah
+                        document.getElementById('notifBadge').classList.add('active');
+                        
+                        // Refresh data tabel agar otomatis ter-update di layar Admin
+                        loadTable();
+                    }
+                }
+            })
+            .subscribe();
 
-        function getIsolirBadge(days) {
-            if (days === null) return '';
-            let className = 'isolir-short';
-            let icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-            if (days >= 30) {
-                className = 'isolir-critical';
-                icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-            } else if (days >= 14) {
-                className = 'isolir-long';
-                icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-            }
-            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`;
-        }
-
-        // === RENDER BULAN ===
-        function renderBulanChips() {
-            const container = document.getElementById('bulanChips');
-            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`;
-            const bulanSet = new Set();
-            allData.forEach(p => {
-                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }
-            });
-            bulanSet.add(new Date().getMonth());
-            Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => {
-                const count = allData.filter(p => {
-                    if (!p.tanggal_penarikan) return false;
-                    const d = new Date(p.tanggal_penarikan);
-                    return !isNaN(d) && d.getMonth() === m;
-                }).length;
-                container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`;
-            });
-        }
-
-        function filterByBulan(b, el) {
-            currentBulan = b;
-            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            loadTable();
-        }
-
-        // === LOAD TABLE ===
+        // SISANYA FUNGSI LAMA ADMIN
+        function selectPerangkat(value, el) { document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('perangkat').value = value; }
+        function hitungDurasiIsolir(tanggalIsolir) { if (!tanggalIsolir) return null; const tgl = new Date(tanggalIsolir); if (isNaN(tgl)) return null; const diffDays = Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); return diffDays; }
+        function getIsolirBadge(days) { if (days === null) return ''; let className = days >= 30 ? 'isolir-critical' : (days >= 14 ? 'isolir-long' : 'isolir-short'); let icon = days >= 30 ? '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`; }
+        function renderBulanChips() { const container = document.getElementById('bulanChips'); container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua</div>`; const bulanSet = new Set(); allData.forEach(p => { if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }}); bulanSet.add(new Date().getMonth()); Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => { const count = allData.filter(p => { if (!p.tanggal_penarikan) return false; const d = new Date(p.tanggal_penarikan); return !isNaN(d) && d.getMonth() === m; }).length; container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`; }); }
+        function filterByBulan(b, el) { currentBulan = b; el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); loadTable(); }
+        
         async function loadTable() {
             const { data } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
-            allData = data || [];
-            renderBulanChips();
-            
+            allData = data || []; renderBulanChips();
             let filtered = allData;
-            if (currentBulan !== 'all') {
-                filtered = filtered.filter(p => {
-                    if (!p.tanggal_penarikan) return false;
-                    const d = new Date(p.tanggal_penarikan);
-                    return !isNaN(d) && String(d.getMonth()) === currentBulan;
-                });
-            }
-
+            if (currentBulan !== 'all') { filtered = filtered.filter(p => { if (!p.tanggal_penarikan) return false; const d = new Date(p.tanggal_penarikan); return !isNaN(d) && String(d.getMonth()) === currentBulan; }); }
             const container = document.getElementById('tableContainer');
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>Belum ada data</div></div>';
-                return;
-            }
-
+            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>Belum ada data</div></div>'; return; }
             container.innerHTML = '';
             filtered.forEach((p, index) => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
-                
-                const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
-                const isolirBadge = getIsolirBadge(durasiIsolir);
-                
+                const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir));
                 let tanggalInfo = '';
-                if (p.tanggal_penarikan) {
-                    const d = new Date(p.tanggal_penarikan);
-                    if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diambil: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
-                }
-
+                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diambil: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`; }
                 container.innerHTML += `
                     <div class="cust-card" style="animation-delay: ${index * 0.03}s">
                         <div class="cust-header">
-                            <div>
-                                <div class="cust-name">${p.nama_pelanggan}</div>
-                                <div class="cust-sub">
-                                    <span>${p.wilayah}</span>
-                                    <span class="dot"></span>
-                                    <span>${p.perangkat || 'Router'}</span>
-                                    <span class="dot"></span>
-                                    <span>${p.nomor_hp}</span>
-                                </div>
-                            </div>
+                            <div><div class="cust-name">${p.nama_pelanggan}</div><div class="cust-sub"><span>${p.wilayah}</span><span class="dot"></span><span>${p.perangkat || 'Router'}</span><span class="dot"></span><span>${p.nomor_hp}</span></div></div>
                             <span class="badge ${badgeClass}">${p.status}</span>
                         </div>
-                        ${isolirBadge}
-                        ${tanggalInfo}
+                        ${isolirBadge}${tanggalInfo}
                         ${p.alamat ? `<div class="cust-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${p.alamat}</div>` : ''}
                         <div class="cust-actions">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn-action btn-map">🗺️ Maps</a>` : ''}
                             <button class="btn-action btn-edit" onclick="editData('${p.id}')">✏️ Edit</button>
                             <button class="btn-action btn-delete" onclick="deleteData('${p.id}')">️ Hapus</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
-        // === SEARCH ===
-        document.getElementById('searchTable').addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase();
-            document.querySelectorAll('.cust-card').forEach(card => {
-                card.style.display = card.textContent.toLowerCase().includes(keyword) ? 'block' : 'none';
-            });
-        });
+        document.getElementById('searchTable').addEventListener('input', (e) => { const keyword = e.target.value.toLowerCase(); document.querySelectorAll('.cust-card').forEach(card => { card.style.display = card.textContent.toLowerCase().includes(keyword) ? 'block' : 'none'; }); });
 
-        // === BOTTOM SHEET ===
         function openBottomSheet(editData = null) {
-            document.getElementById('bottomSheetOverlay').classList.add('active');
-            document.getElementById('bottomSheet').classList.add('active');
-            
+            document.getElementById('bottomSheetOverlay').classList.add('active'); document.getElementById('bottomSheet').classList.add('active');
             if (editData) {
-                document.getElementById('formTitle').textContent = 'Edit Data Pelanggan';
-                document.getElementById('editId').value = editData.id;
-                document.getElementById('nama').value = editData.nama_pelanggan;
-                document.getElementById('nomor_hp').value = editData.nomor_hp;
-                document.getElementById('wilayah').value = editData.wilayah;
-                document.getElementById('alamat').value = editData.alamat || '';
-                document.getElementById('tanggal_isolir').value = editData.tanggal_isolir || '';
-                document.getElementById('perangkat').value = editData.perangkat || 'Router';
-                
-                document.querySelectorAll('.perangkat-option').forEach(el => {
-                    el.classList.remove('selected');
-                    const text = el.textContent.trim().replace(/\s+/g, '');
-                    const val = (editData.perangkat || 'Router').replace(/\s+/g, '');
-                    if (text === val) el.classList.add('selected');
-                });
-                
+                document.getElementById('formTitle').textContent = 'Edit Data Pelanggan'; document.getElementById('editId').value = editData.id; document.getElementById('nama').value = editData.nama_pelanggan; document.getElementById('nomor_hp').value = editData.nomor_hp; document.getElementById('wilayah').value = editData.wilayah; document.getElementById('alamat').value = editData.alamat || ''; document.getElementById('tanggal_isolir').value = editData.tanggal_isolir || ''; document.getElementById('perangkat').value = editData.perangkat || 'Router';
+                document.querySelectorAll('.perangkat-option').forEach(el => { el.classList.remove('selected'); if (el.textContent.trim().replace(/\s+/g, '') === (editData.perangkat || 'Router').replace(/\s+/g, '')) el.classList.add('selected'); });
                 setTimeout(() => { initMap(editData.latitude, editData.longitude); }, 300);
             } else {
-                document.getElementById('formTitle').textContent = 'Tambah Data Baru';
-                document.getElementById('formPelanggan').reset();
-                document.getElementById('editId').value = '';
-                document.getElementById('perangkat').value = 'Router';
-                document.getElementById('tanggal_isolir').value = new Date().toISOString().split('T')[0];
-                document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); });
-                setTimeout(initMap, 300);
+                document.getElementById('formTitle').textContent = 'Tambah Data Baru'; document.getElementById('formPelanggan').reset(); document.getElementById('editId').value = ''; document.getElementById('perangkat').value = 'Router'; document.getElementById('tanggal_isolir').value = new Date().toISOString().split('T')[0]; document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); }); setTimeout(initMap, 300);
             }
         }
-
-        function closeBottomSheet() {
-            document.getElementById('bottomSheetOverlay').classList.remove('active');
-            document.getElementById('bottomSheet').classList.remove('active');
-        }
+        function closeBottomSheet() { document.getElementById('bottomSheetOverlay').classList.remove('active'); document.getElementById('bottomSheet').classList.remove('active'); }
 
         function initMap(lat = -6.9175, lng = 107.6191) {
-            if (map) {
-                map.invalidateSize();
-                if (lat && lng) {
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng], 15);
-                    updateCoordDisplay(lat, lng);
-                }
-                return;
-            }
+            if (map) { map.invalidateSize(); if (lat && lng) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); updateCoordDisplay(lat, lng); } return; }
             map = L.map('map-picker').setView([lat, lng], 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO', maxZoom: 19
-            }).addTo(map);
-            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-            updateCoordDisplay(lat, lng);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map); updateCoordDisplay(lat, lng);
             map.on('click', function(e) { marker.setLatLng(e.latlng); updateCoordDisplay(e.latlng.lat, e.latlng.lng); });
             marker.on('dragend', function(e) { const pos = marker.getLatLng(); updateCoordDisplay(pos.lat, pos.lng); });
         }
-
-        function updateCoordDisplay(lat, lng) {
-            document.getElementById('latitude').value = lat.toFixed(6);
-            document.getElementById('longitude').value = lng.toFixed(6);
-        }
-
-        document.getElementById('latitude').addEventListener('input', function(e) {
-            const lat = parseFloat(e.target.value);
-            const lng = parseFloat(document.getElementById('longitude').value);
-            if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }
-        });
-        document.getElementById('longitude').addEventListener('input', function(e) {
-            const lat = parseFloat(document.getElementById('latitude').value);
-            const lng = parseFloat(e.target.value);
-            if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }
-        });
-
+        function updateCoordDisplay(lat, lng) { document.getElementById('latitude').value = lat.toFixed(6); document.getElementById('longitude').value = lng.toFixed(6); }
+        document.getElementById('latitude').addEventListener('input', function(e) { const lat = parseFloat(e.target.value); const lng = parseFloat(document.getElementById('longitude').value); if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }});
+        document.getElementById('longitude').addEventListener('input', function(e) { const lat = parseFloat(document.getElementById('latitude').value); const lng = parseFloat(e.target.value); if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }});
         function useMyGPS() {
             if (!navigator.geolocation) { showToast('GPS tidak didukung', 'error'); return; }
             showToast('Mencari lokasi...', 'success');
             navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude; const lng = pos.coords.longitude;
-                    if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); }
-                    updateCoordDisplay(lat, lng);
-                    showToast('GPS berhasil!', 'success');
-                },
-                (err) => { showToast('Gagal ambil GPS', 'error'); },
-                { enableHighAccuracy: true, timeout: 10000 }
+                (pos) => { const lat = pos.coords.latitude; const lng = pos.coords.longitude; if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); } updateCoordDisplay(lat, lng); showToast('GPS berhasil!', 'success'); },
+                (err) => { showToast('Gagal ambil GPS', 'error'); }, { enableHighAccuracy: true, timeout: 10000 }
             );
         }
 
-        // === SUBMIT FORM ===
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const editId = document.getElementById('editId').value;
-            const nama = document.getElementById('nama').value.trim();
-            const nomorHp = document.getElementById('nomor_hp').value.trim();
-            const alamat = document.getElementById('alamat').value.trim();
-            const lat = parseFloat(document.getElementById('latitude').value);
-            const lng = parseFloat(document.getElementById('longitude').value);
-            const tanggalIsolir = document.getElementById('tanggal_isolir').value;
-            
+            const editId = document.getElementById('editId').value; const nama = document.getElementById('nama').value.trim(); const nomorHp = document.getElementById('nomor_hp').value.trim(); const alamat = document.getElementById('alamat').value.trim(); const lat = parseFloat(document.getElementById('latitude').value); const lng = parseFloat(document.getElementById('longitude').value); const tanggalIsolir = document.getElementById('tanggal_isolir').value;
             if (!nama || !nomorHp) { showToast('Nama & HP wajib!', 'error'); return; }
-            
-            // Cek duplikat (hanya untuk tambah baru)
             if (!editId) {
-                const { data: existing } = await supabaseClient.from('pelanggan').select('id, nama_pelanggan, nomor_hp, wilayah, status').eq('nama_pelanggan', nama).eq('nomor_hp', nomorHp);
-                if (existing && existing.length > 0) {
-                    if (!confirm(`⚠️ Data duplikat terdeteksi!\n\nNama: ${existing[0].nama_pelanggan}\nHP: ${existing[0].nomor_hp}\nWilayah: ${existing[0].wilayah}\nStatus: ${existing[0].status}\n\nTetap simpan?`)) {
-                        return;
-                    }
-                }
+                const { data: existing } = await supabaseClient.from('pelanggan').select('id').eq('nama_pelanggan', nama).eq('nomor_hp', nomorHp);
+                if (existing && existing.length > 0 && !confirm('⚠️ Data duplikat terdeteksi! Tetap simpan?')) return;
             }
-            
-            const data = {
-                nama_pelanggan: nama,
-                nomor_hp: nomorHp,
-                alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`),
-                latitude: isNaN(lat) ? null : lat,
-                longitude: isNaN(lng) ? null : lng,
-                wilayah: document.getElementById('wilayah').value,
-                perangkat: document.getElementById('perangkat').value,
-                tanggal_isolir: tanggalIsolir || null
-            };
-            
+            const data = { nama_pelanggan: nama, nomor_hp: nomorHp, alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`), latitude: isNaN(lat) ? null : lat, longitude: isNaN(lng) ? null : lng, wilayah: document.getElementById('wilayah').value, perangkat: document.getElementById('perangkat').value, tanggal_isolir: tanggalIsolir || null };
             let error;
-            if (editId) {
-                const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId);
-                error = result.error;
-            } else {
-                data.status = 'Belum Diambil';
-                const result = await supabaseClient.from('pelanggan').insert([data]);
-                error = result.error;
-            }
-            
-            if (!error) {
-                showToast(editId ? 'Data diupdate!' : 'Data disimpan!', 'success');
-                closeBottomSheet();
-                loadTable();
-            } else { showToast('Error: ' + error.message, 'error'); }
+            if (editId) { const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId); error = result.error; } 
+            else { data.status = 'Belum Diambil'; const result = await supabaseClient.from('pelanggan').insert([data]); error = result.error; }
+            if (!error) { showToast(editId ? 'Data diupdate!' : 'Data disimpan!', 'success'); closeBottomSheet(); loadTable(); } else { showToast('Error: ' + error.message, 'error'); }
         });
         
-        async function deleteData(id) {
-            if (!confirm('Yakin hapus data ini?')) return;
-            const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id);
-            if (!error) { showToast('Data dihapus!', 'success'); loadTable(); }
-            else { showToast('Error: ' + error.message, 'error'); }
-        }
+        async function deleteData(id) { if (!confirm('Yakin hapus data ini?')) return; const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id); if (!error) { showToast('Data dihapus!', 'success'); loadTable(); } else { showToast('Error: ' + error.message, 'error'); } }
+        async function editData(id) { const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single(); if (data) openBottomSheet(data); }
 
-        async function editData(id) {
-            const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single();
-            if (data) openBottomSheet(data);
-        }
-
-        // === EXPORT ===
-        function openExportModal() {
-            const total = allData.length;
-            const taken = allData.filter(p => p.status === 'Sudah Diambil').length;
-            document.getElementById('countAll').textContent = total;
-            document.getElementById('countTaken').textContent = taken;
-            document.getElementById('exportModal').classList.add('active');
-        }
+        function openExportModal() { document.getElementById('countAll').textContent = allData.length; document.getElementById('countTaken').textContent = allData.filter(p => p.status === 'Sudah Diambil').length; document.getElementById('exportModal').classList.add('active'); }
         function closeExportModal() { document.getElementById('exportModal').classList.remove('active'); }
-
         function doExport(type) {
-            let dataToExport = allData;
-            let fileName = '';
-            
-            if (type === 'taken') {
-                dataToExport = allData.filter(p => p.status === 'Sudah Diambil');
-                fileName = `Alat_Sudah_Diambil_${new Date().toISOString().split('T')[0]}.xlsx`;
-            } else {
-                fileName = `Semua_Data_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`;
-            }
-            
-            if (dataToExport.length === 0) {
-                showToast('Tidak ada data untuk diexport', 'error');
-                closeExportModal();
-                return;
-            }
-            
-            const exportData = dataToExport.map(p => {
-                const durasi = hitungDurasiIsolir(p.tanggal_isolir);
-                return {
-                    'Nama Pelanggan': p.nama_pelanggan,
-                    'Nomor HP': p.nomor_hp,
-                    'Perangkat': p.perangkat || 'Router',
-                    'Wilayah': p.wilayah,
-                    'Alamat': p.alamat || '',
-                    'Latitude': p.latitude || '',
-                    'Longitude': p.longitude || '',
-                    'Tanggal Isolir': p.tanggal_isolir || '',
-                    'Durasi Isolir (Hari)': durasi !== null ? durasi : '',
-                    'Status': p.status,
-                    'Tanggal Penarikan': p.tanggal_penarikan || '',
-                    'Teknisi': p.teknisi || '',
-                    'Catatan': p.catatan || ''
-                };
-            });
-            
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Data');
-            XLSX.writeFile(wb, fileName);
-            
-            showToast(`Export ${dataToExport.length} data berhasil!`, 'success');
-            closeExportModal();
+            let dataToExport = type === 'taken' ? allData.filter(p => p.status === 'Sudah Diambil') : allData;
+            if (dataToExport.length === 0) { showToast('Tidak ada data untuk diexport', 'error'); closeExportModal(); return; }
+            const exportData = dataToExport.map(p => ({ 'Nama': p.nama_pelanggan, 'HP': p.nomor_hp, 'Perangkat': p.perangkat || 'Router', 'Wilayah': p.wilayah, 'Alamat': p.alamat || '', 'Tanggal Isolir': p.tanggal_isolir || '', 'Status': p.status, 'Tanggal Penarikan': p.tanggal_penarikan || '' }));
+            const ws = XLSX.utils.json_to_sheet(exportData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data');
+            XLSX.writeFile(wb, `Data_Pelanggan_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast(`Export berhasil!`, 'success'); closeExportModal();
         }
-
-        // [TAMBAHAN BARU] Listener Realtime untuk Notifikasi Admin
-supabaseClient
-    .channel('pelanggan-admin-channel')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
-        const oldData = payload.old;
-        const newData = payload.new;
-        
-        // Cek apakah status berubah menjadi 'Sudah Diambil'
-        if (newData.status === 'Sudah Diambil' && oldData.status !== 'Sudah Diambil') {
-            // Tampilkan Notifikasi Toast
-            showToast(`🔔 Perangkat pelanggan ${newData.nama_pelanggan} sudah diambil!`, 'success');
-            
-            // Refresh tabel agar data terbaru langsung muncul
-            loadTable(); 
-        }
-    })
-    .subscribe();
-
-        // Start
         loadTable();
     </script>
 </body>
