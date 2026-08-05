@@ -16,6 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Supabase JS & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
     <style>
         :root {
             --bg-dark: #050505;
@@ -28,6 +32,7 @@
             --aurora-2: #3B82F6; /* Blue */
             --accent-gold: #C9A961;
             --accent-gold-light: #E5C97A;
+            --success: #10B981;
             
             --text-main: #FFFFFF;
             --text-muted: #A1A1AA;
@@ -124,7 +129,7 @@
         .home-screen {
             position: absolute; inset: 0; z-index: 10;
             display: flex; flex-direction: column; align-items: center;
-            padding: 60px 20px 100px; /* Padding bottom for dock */
+            padding: 60px 20px 100px;
             opacity: 0; transform: scale(1.1); pointer-events: none;
             transition: all 0.8s var(--spring);
         }
@@ -154,8 +159,8 @@
         
         .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #10B981; font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
-        .w-status .dot { width: 6px; height: 6px; background: #10B981; border-radius: 50%; animation: blink 1.5s infinite; }
+        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
+        .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
@@ -166,11 +171,11 @@
         .sg-box { text-align: center; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
         .sg-val { font-size: 18px; font-weight: 600; color: white; }
         .sg-lbl { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
-        .sg-val.online { color: #10B981; } .sg-val.pending { color: #F59E0B; } .sg-val.offline { color: #EF4444; }
+        .sg-val.online { color: var(--success); } .sg-val.pending { color: #F59E0B; } .sg-val.offline { color: #EF4444; }
 
         /* APP GRID LAUNCHER */
         .app-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 15px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px;
             justify-items: center; padding-top: 10px;
         }
 
@@ -183,7 +188,7 @@
         .app-squircle {
             width: 64px; height: 64px;
             background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            border-radius: 22.5%; /* Khas iOS Squircle */
+            border-radius: 22.5%;
             display: flex; align-items: center; justify-content: center;
             border: 1px solid rgba(255,255,255,0.15);
             box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.1);
@@ -206,7 +211,7 @@
         .app-icon-wrapper:hover .app-squircle svg { stroke: var(--accent-gold); }
 
         .app-label {
-            font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; letter-spacing: 0.3px;
+            font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; line-height: 1.2; letter-spacing: 0.3px; width: 110%;
         }
 
         /* Premium Glow pada Ikon Tertentu */
@@ -216,36 +221,84 @@
         .app-squircle.blue-glow svg { stroke: #93C5FD; }
 
         /* =========================================
-           4. FLOATING DOCK
+           4. FLOATING DOCK (Hanya Notif)
         ========================================= */
         .dock-container {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 15px; padding: 12px 20px;
+            display: flex; gap: 15px; padding: 12px;
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
-            z-index: 50;
+            z-index: 50; justify-content: center; align-items: center; min-width: 80px;
         }
 
         .dock-item {
-            width: 44px; height: 44px; border-radius: 50%;
+            width: 50px; height: 50px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; position: relative; transition: all 0.3s var(--spring);
         }
 
-        .dock-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-8px) scale(1.1); }
+        .dock-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-5px) scale(1.1); }
         .dock-item:active { transform: scale(0.9); }
         
-        .dock-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; transition: stroke 0.3s; }
-        .dock-item:hover svg { stroke: var(--text-main); }
-        .dock-item.active svg { stroke: var(--accent-gold); }
-        .dock-item.active::after { content: ''; position: absolute; bottom: -6px; width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; }
+        .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); stroke-width: 2; fill: none; transition: stroke 0.3s; }
+        .dock-item:hover svg { stroke: var(--accent-gold); }
+
+        /* NOTIFICATION STYLES */
+        .notif-badge {
+            position: absolute; top: 10px; right: 10px; width: 10px; height: 10px;
+            background: #EF4444; border-radius: 50%; display: none;
+            box-shadow: 0 0 0 2px var(--bg-dark);
+        }
+        .notif-badge.active { display: block; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* DROPDOWN NOTIFIKASI MELAYANG (DI ATAS DOCK) */
+        .notif-popup {
+            position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9);
+            width: 300px; background: rgba(18, 18, 24, 0.85); backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px;
+            padding: 0; display: none; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            z-index: 1000; cursor: default; overflow: hidden; opacity: 0; transition: all 0.3s var(--spring);
+        }
+        .notif-popup.active { display: block; opacity: 1; transform: translateX(-50%) scale(1); }
+        .notif-popup-header {
+            padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 600; color: white;
+        }
+        .clear-all { color: var(--accent-gold); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .clear-all:active { opacity: 0.5; }
+        .notif-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--accent-gold) transparent; }
+        .notif-item { padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; gap: 12px; align-items: flex-start; text-align: left; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item-icon {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(16, 185, 129, 0.15);
+            color: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            font-size: 14px; border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .notif-item-content { flex: 1; }
+        .notif-item-title { font-size: 13px; font-weight: 600; color: white; margin-bottom: 3px; line-height: 1.2; }
+        .notif-item-time { font-size: 10px; color: var(--text-muted); font-weight: 400; }
+        .notif-empty { padding: 30px 20px; text-align: center; color: var(--text-muted); font-size: 12px; }
+
+        /* Toast Popup */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: rgba(18, 18, 24, 0.9); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 20px; border-radius: 14px;
+            z-index: 9999; font-size: 13px; font-weight: 500; color: white;
+            transition: all 0.4s var(--spring); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
 
         /* Ripple Effect */
-        .ripple {
-            position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.3);
-            transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none;
-        }
+        .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none; }
         @keyframes rippleAnim { to { transform: scale(3); opacity: 0; } }
 
         /* Smooth Page Transition Overlay */
@@ -254,10 +307,11 @@
 
         /* Responsive Fix untuk Desktop */
         @media (min-width: 768px) {
-            .app-grid { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+            .app-grid { grid-template-columns: repeat(4, 1fr); gap: 40px 25px; }
             .app-squircle { width: 80px; height: 80px; }
             .app-squircle svg { width: 36px; height: 36px; }
             .app-label { font-size: 13px; margin-top: 4px; }
+            .notif-popup { width: 350px; }
         }
     </style>
 </head>
@@ -324,36 +378,36 @@
 
             <!-- APP GRID LAUNCHER -->
             <div class="app-grid">
-                <!-- 1. Penarikan -->
+                <!-- 1. Penarikan Perangkat -->
                 <a href="login.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle gold-glow">
                         <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                     </div>
-                    <div class="app-label">Penarikan</div>
+                    <div class="app-label">Penarikan<br>Perangkat</div>
                 </a>
                 
-                <!-- 2. Redaman -->
+                <!-- 2. Cek Redaman -->
                 <a href="https://bot-production-ee35.up.railway.app/" target="_blank" class="app-icon-wrapper transit-link">
                     <div class="app-squircle blue-glow">
                         <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
                     </div>
-                    <div class="app-label">Redaman</div>
+                    <div class="app-label">Cek<br>Redaman</div>
                 </a>
 
-                <!-- 3. Kalkulator -->
+                <!-- 3. Kalkulator Redaman -->
                 <a href="https://ratioredaman.netlify.app/" target="_blank" class="app-icon-wrapper transit-link">
                     <div class="app-squircle">
                         <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
                     </div>
-                    <div class="app-label">Kalkulator</div>
+                    <div class="app-label">Kalkulator<br>Redaman</div>
                 </a>
 
-                <!-- 4. Router -->
+                <!-- 4. Setting Router -->
                 <a href="https://generatorwan.netlify.app/" target="_blank" class="app-icon-wrapper transit-link">
                     <div class="app-squircle">
                         <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg>
                     </div>
-                    <div class="app-label">Router</div>
+                    <div class="app-label">Setting<br>Router</div>
                 </a>
 
                 <!-- 5. Pelanggan (Admin) -->
@@ -372,7 +426,7 @@
                     <div class="app-label">Dashboard</div>
                 </a>
 
-                <!-- 7. Monitoring (Placeholder) -->
+                <!-- 7. Monitoring -->
                 <a href="#" class="app-icon-wrapper">
                     <div class="app-squircle">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -380,7 +434,7 @@
                     <div class="app-label">Monitoring</div>
                 </a>
 
-                <!-- 8. Profil (Placeholder) -->
+                <!-- 8. Profil -->
                 <a href="#" class="app-icon-wrapper">
                     <div class="app-squircle">
                         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -391,18 +445,119 @@
         </div>
     </div>
 
-    <!-- LAYER 5: FLOATING DOCK -->
+    <!-- LAYER 5: FLOATING DOCK (Hanya Ikon Notifikasi) -->
     <div class="dock-container" id="dock" style="opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.5s;">
-        <div class="dock-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="dock-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <div class="dock-item"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-        <div class="dock-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-        <div class="dock-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="dock-item" id="notifBtn" onclick="toggleNotifPopup(event)">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <div class="notif-badge" id="notifBadge"></div>
+            
+            <!-- Elemen Popup List Pelanggan (Melayang di atas Dock) -->
+            <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
+                <div class="notif-popup-header">
+                    <span>Notifikasi Baru</span>
+                    <span class="clear-all" onclick="clearAllNotifs(event)">Bersihkan</span>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty">Belum ada notifikasi baru hari ini.</div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Toast Popup untuk Notifikasi -->
+    <div id="toast" class="toast"></div>
 
     <!-- PURE JAVASCRIPT LOGIC -->
     <script>
-        // --- 1. CLOCK & DATE LOGIC ---
+        // --- INISIALISASI SUPABASE (Realtime) ---
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; 
+            t.className = 'toast show ' + (type === 'success' ? 'success' : '');
+            setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
+
+        // --- LOGIKA LIST NOTIFIKASI ---
+        let sessionNotifs = [];
+
+        function toggleNotifPopup(event) {
+            event.stopPropagation();
+            const popup = document.getElementById('notifPopup');
+            popup.classList.toggle('active');
+            
+            if (popup.classList.contains('active')) {
+                document.getElementById('notifBadge').classList.remove('active');
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const popup = document.getElementById('notifPopup');
+            const btn = document.getElementById('notifBtn');
+            if (popup && popup.classList.contains('active') && !btn.contains(event.target)) {
+                popup.classList.remove('active');
+            }
+        });
+
+        function clearAllNotifs(event) {
+            event.stopPropagation();
+            sessionNotifs = []; 
+            updateNotifUI(); 
+            document.getElementById('notifPopup').classList.remove('active');
+            showToast('Riwayat notifikasi dibersihkan', 'success');
+        }
+
+        function updateNotifUI() {
+            const list = document.getElementById('notifList');
+            if (sessionNotifs.length === 0) {
+                list.innerHTML = '<div class="notif-empty">Belum ada notifikasi baru hari ini.</div>';
+                return;
+            }
+            list.innerHTML = sessionNotifs.map(n => `
+                <div class="notif-item">
+                    <div class="notif-item-icon">✅</div>
+                    <div class="notif-item-content">
+                        <div class="notif-item-title">${n.nama}</div>
+                        <div class="notif-item-time">Diambil pkl ${n.waktu} • ${n.wilayah}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- BERLANGGANAN REALTIME DARI DATABASE ---
+        const processedNotifs = new Set();
+        supabaseClient
+            .channel('index-notif-channel')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+                const newData = payload.new;
+                
+                if (newData.status === 'Sudah Diambil') {
+                    const notifKey = newData.id + '_selesai';
+                    
+                    if (!processedNotifs.has(notifKey)) {
+                        processedNotifs.add(notifKey);
+                        
+                        // Masukkan ke history notifikasi
+                        sessionNotifs.unshift({
+                            nama: newData.nama_pelanggan,
+                            wilayah: newData.wilayah,
+                            waktu: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})
+                        });
+                        
+                        // Perbarui UI Notifikasi
+                        updateNotifUI();
+                        
+                        // Tampilkan Toast & Badge Merah
+                        showToast(`🔔 ${newData.nama_pelanggan} sudah diambil!`, 'success');
+                        document.getElementById('notifBadge').classList.add('active');
+                    }
+                }
+            })
+            .subscribe();
+
+
+        // --- CLOCK & DATE LOGIC ---
         function updateClocks() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
@@ -420,7 +575,7 @@
         setInterval(updateClocks, 1000);
         updateClocks();
 
-        // --- 2. UNLOCK ANIMATION ---
+        // --- UNLOCK ANIMATION ---
         const lockScreen = document.getElementById('lockScreen');
         const homeScreen = document.getElementById('homeScreen');
         const dock = document.getElementById('dock');
@@ -428,7 +583,6 @@
 
         document.getElementById('unlockBtn').addEventListener('click', doUnlock);
         
-        // Support swipe up
         let touchStartY = 0;
         lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
         lockScreen.addEventListener('touchend', e => {
@@ -439,19 +593,15 @@
             if(unlocked) return;
             unlocked = true;
             
-            // Slide up & fade out lock screen
             lockScreen.classList.add('unlocked');
-            
-            // Pop in home screen & dock
             homeScreen.classList.add('active');
             dock.style.opacity = '1';
             dock.style.pointerEvents = 'all';
 
-            // Start counter animation when unlocked
             setTimeout(animateCounters, 300);
         }
 
-        // --- 3. COUNTER ANIMATION (WIDGET) ---
+        // --- COUNTER ANIMATION (WIDGET) ---
         function animateCounters() {
             const counters = [
                 document.getElementById('countPelanggan'),
@@ -462,13 +612,12 @@
 
             counters.forEach(counter => {
                 const target = +counter.getAttribute('data-target');
-                const duration = 1500; // ms
+                const duration = 1500; 
                 const start = performance.now();
 
                 function update(currentTime) {
                     const elapsed = currentTime - start;
                     const progress = Math.min(elapsed / duration, 1);
-                    // easeOutQuart
                     const ease = 1 - Math.pow(1 - progress, 4);
                     
                     counter.innerText = Math.floor(ease * target).toLocaleString('id-ID');
@@ -480,7 +629,7 @@
             });
         }
 
-        // --- 4. TOUCH / MOUSE GLOW (LIQUID EFFECT) ---
+        // --- TOUCH / MOUSE GLOW (LIQUID EFFECT) ---
         const cursorGlow = document.getElementById('cursorGlow');
         function moveGlow(x, y) {
             cursorGlow.style.opacity = '1';
@@ -488,14 +637,12 @@
             cursorGlow.style.top = y + 'px';
         }
         
-        // Desktop
         document.addEventListener('mousemove', e => moveGlow(e.clientX, e.clientY));
         document.addEventListener('mouseleave', () => cursorGlow.style.opacity = '0');
-        // Mobile
         document.addEventListener('touchmove', e => moveGlow(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
         document.addEventListener('touchend', () => cursorGlow.style.opacity = '0');
 
-        // --- 5. RIPPLE ANIMATION ON APP ICONS ---
+        // --- RIPPLE ANIMATION ON APP ICONS ---
         document.querySelectorAll('.app-icon-wrapper, .dock-item').forEach(el => {
             const addRipple = function(e) {
                 const rect = this.getBoundingClientRect();
@@ -516,24 +663,22 @@
             el.addEventListener('touchstart', addRipple, {passive: true});
         });
 
-        // --- 6. SMOOTH PAGE TRANSITION ---
+        // --- SMOOTH PAGE TRANSITION ---
         const pageTransit = document.getElementById('pageTransit');
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) {
-                if(this.getAttribute('target') === '_blank') return; // Abaikan jika open di tab baru
+                if(this.getAttribute('target') === '_blank') return; 
                 e.preventDefault();
                 const href = this.getAttribute('href');
                 
-                // Fade to black
                 pageTransit.classList.add('active');
                 setTimeout(() => window.location.href = href, 400);
             });
         });
         
-        // Handle Safari back button cache
         window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
 
-        // --- 7. PWA SERVICE WORKER ---
+        // --- PWA SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
