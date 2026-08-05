@@ -1,276 +1,710 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0A0A0F">
-<title>Tugas Teknisi - Iyann RnB</title>
-<link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tugas Teknisi - Iyann RnB</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        :root {
+            --gold: #C9A961; --gold-light: #E5C97A; --gold-dark: #A08340;
+            --bg-dark: #050508; --bg-card: rgba(255, 255, 255, 0.03);
+            --text-main: #F5F1E8; --text-muted: #A0A0B0;
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            min-height: 100vh; overflow-x: hidden; position: relative;
+            padding-bottom: 80px;
+        }
+
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.3; animation: floatOrb 10s infinite alternate ease-in-out; }
+        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(201, 169, 97, 0.2) 0%, transparent 70%); }
+        .orb-2 { bottom: 10%; right: -10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 50px); } }
+
+        .top-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+        .header-info { text-align: center; flex: 1; }
+        .header-subtitle { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; }
+        .header-title { font-size: 16px; font-weight: 700; color: white; margin-top: 2px; }
+        .header-icon {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 800; font-size: 16px;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* 2 TAB BESAR */
+        .main-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .main-tab {
+            padding: 16px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-tab:active { transform: scale(0.97); }
+        .main-tab.active {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-color: var(--gold);
+        }
+        .main-tab.active .tab-label,
+        .main-tab.active .tab-count { color: #000; }
+        .main-tab.active .tab-icon svg { stroke: #000; }
+        .tab-icon { margin-bottom: 6px; }
+        .tab-icon svg { width: 24px; height: 24px; stroke: var(--gold); stroke-width: 2; fill: none; transition: stroke 0.3s; }
+        .tab-label { font-size: 13px; font-weight: 700; color: white; margin-bottom: 2px; transition: color 0.3s; }
+        .tab-count { font-size: 11px; color: var(--text-muted); transition: color 0.3s; }
+
+        /* SORTING 2 KOLOM */
+.sort-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.sort-select-wrapper {
+    position: relative;
+}
+.sort-select {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C9A961' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+.sort-select:focus { border-color: var(--gold); }
+.sort-select option { background: #121218; color: white; }
+
+        /* SEARCH */
+        .search-box {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px; transition: all 0.3s;
+        }
+        .search-box:focus-within { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        .search-box svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; flex-shrink: 0; }
+        .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        /* CUSTOMER LIST */
+        .customer-list { display: flex; flex-direction: column; gap: 8px; }
+        
+        .cust-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .cust-card:active { background: rgba(201, 169, 97, 0.05); }
+        
+        .cust-info-main { flex: 1; min-width: 0; }
+        .cust-name { font-size: 15px; font-weight: 700; color: white; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .cust-sub .dot { width: 3px; height: 3px; background: var(--text-muted); border-radius: 50%; }
+        
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+        .badge-belum { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-selesai { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Isolir Badge */
+        .isolir-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .isolir-badge svg { width: 11px; height: 11px; stroke-width: 2; fill: none; }
+        .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .isolir-short svg { stroke: #60A5FA; }
+        .isolir-long { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .isolir-long svg { stroke: var(--warning); }
+        .isolir-critical { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .isolir-critical svg { stroke: var(--danger); }
+
+        .more-btn {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+        }
+        .more-btn:active { transform: scale(0.9); background: rgba(201, 169, 97, 0.2); }
+        .more-btn svg { width: 18px; height: 18px; stroke: var(--gold); stroke-width: 2; fill: none; }
+
+        .popup-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
+        .popup-menu.active { display: block; }
+        .popup-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+        .popup-content {
+            position: absolute;
+            background: #1a1a24;
+            border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 16px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: popupIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes popupIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .popup-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+            text-decoration: none; color: white;
+            border: none; background: none; width: 100%;
+            font-family: inherit; font-size: 14px; font-weight: 600;
+        }
+        .popup-item:active { background: rgba(201, 169, 97, 0.1); }
+        .popup-item svg { width: 18px; height: 18px; stroke-width: 2; fill: none; flex-shrink: 0; }
+        .popup-item.wa svg { stroke: #25D366; }
+        .popup-item.map svg { stroke: #3B82F6; }
+        .popup-item.selesai svg { stroke: var(--success); }
+        .popup-item.langganan svg { stroke: var(--warning); }
+        .popup-divider { height: 1px; background: rgba(255, 255, 255, 0.05); margin: 4px 0; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); animation: fadeIn 0.5s; }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content {
+            background: #121218; border: 1px solid rgba(201, 169, 97, 0.2);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
+            animation: scaleUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal-title { font-size: 20px; font-weight: 700; color: white; text-align: center; margin-bottom: 20px; }
+        .modal-icon { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .modal-icon.warn { background: rgba(245, 158, 11, 0.15); }
+        .modal-icon.success { background: rgba(16, 185, 129, 0.15); }
+        .modal-text { text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .input-field {
+            width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            color: white; font-size: 14px; font-family: inherit; outline: none; transition: all 0.3s;
+        }
+        .input-field:focus { border-color: var(--gold); background: rgba(201, 169, 97, 0.05); }
+        textarea.input-field { min-height: 80px; resize: none; }
+
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn-modal { padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn-modal:active { transform: scale(0.95); }
+        .btn-cancel { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-confirm { background: var(--gold); color: #000; }
+        .btn-confirm.danger { background: var(--danger); color: white; }
+
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #121218; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px; border-radius: 12px; z-index: 2000;
+            font-size: 14px; font-weight: 600; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-around; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
+        .nav-item svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 2; fill: none; transition: all 0.3s; }
+        .nav-item span { font-size: 10px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; }
+        .nav-item.active svg { stroke: var(--gold); }
+        .nav-item.active span { color: var(--gold); }
+        .nav-item:active { transform: scale(0.9); }
+    </style>
 </head>
 <body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
-<!-- HEADER -->
-<div class="top-header">
-  <div class="header-content">
-    <div>
-      <div class="header-title">Tugas Teknisi</div>
-      <div class="header-subtitle">Lapangan Hari Ini</div>
-    </div>
-    <div class="header-icon">T</div>
-  </div>
-</div>
-
-<!-- STATISTIK -->
-<div class="hero-section">
-  <div class="hero-card">
-    <div class="hero-label">Tugas Teknisi</div>
-    <div class="hero-value" id="totalTugas">0</div>
-    <div class="hero-stats">
-      <div>
-        <div class="hero-stat-value" id="belumDiambil">0</div>
-        <div class="hero-stat-label">Belum Diambil</div>
-      </div>
-      <div>
-        <div class="hero-stat-value" id="sudahDiambil">0</div>
-        <div class="hero-stat-label">Sudah Diambil</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SORT CHIPS -->
-<div class="filter-chips">
-  <div class="chip active" data-sort="terlama" onclick="setSort(this)">🔴 Isolir Terlama</div>
-  <div class="chip" data-sort="terbaru" onclick="setSort(this)">🔵 Isolir Terbaru</div>
-  <div class="chip" data-sort="az" onclick="setSort(this)">A-Z (Nama)</div>
-  <div class="chip" data-sort="za" onclick="setSort(this)">Z-A (Nama)</div>
-</div>
-
-<!-- WILAYAH CHIPS -->
-<div class="filter-chips">
-  <div class="chip active" data-wilayah="" onclick="setWilayah(this)">📍 Semua Wilayah</div>
-  <div class="chip" data-wilayah="Sukamelang" onclick="setWilayah(this)">Sukamelang</div>
-  <div class="chip" data-wilayah="Cibarola" onclick="setWilayah(this)">Cibarola</div>
-  <div class="chip" data-wilayah="Panglejar" onclick="setWilayah(this)">Panglejar</div>
-  <div class="chip" data-wilayah="Perum / Flamboyan" onclick="setWilayah(this)">Perum / Flamboyan</div>
-</div>
-
-<!-- LIST TUGAS -->
-<div id="taskList"></div>
-
-<!-- MODAL KONFIRMASI PENYELESAIAN -->
-<div class="modal-overlay" id="modalSelesai">
-  <div class="modal-content">
-    <div class="modal-title">✅ Konfirmasi Penyelesaian</div>
-    <div class="input-group">
-      <label class="input-label">Tanggal Penarikan</label>
-      <input type="date" class="input-field" id="tanggalPenarikan">
-    </div>
-    <div class="input-group">
-      <label class="input-label">Catatan (Opsional)</label>
-      <input type="text" class="input-field" id="catatanPenarikan" placeholder="Catatan...">
-    </div>
-    <div class="modal-buttons">
-      <button class="btn btn-outline" onclick="closeModal('modalSelesai')">Batal</button>
-      <button class="btn btn-success" onclick="simpanSelesai()">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL LANJUT BERLANGGANAN -->
-<div class="modal-overlay" id="modalLanjut">
-  <div class="modal-content">
-    <div class="modal-title">⚠️ Lanjut Berlangganan?</div>
-    <p style="text-align:center;font-size:14px;color:var(--cream-dark);margin-bottom:var(--spacing-lg);position:relative;">
-      Pelanggan memutuskan untuk tetap berlangganan.<br>Data ini akan dihapus dari daftar isolir.
-    </p>
-    <div class="input-group">
-      <label class="input-label">Catatan (Opsional)</label>
-      <input type="text" class="input-field" id="catatanLanjut" placeholder="Catatan...">
-    </div>
-    <div class="modal-buttons">
-      <button class="btn btn-outline" onclick="closeModal('modalLanjut')">Batal</button>
-      <button class="btn btn-danger" onclick="hapusData()">Ya, Hapus Data</button>
-    </div>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item active">
-    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-    <span class="nav-label">Teknisi</span>
-  </div>
-  <div class="nav-item" onclick="keluar()">
-    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    <span class="nav-label">Keluar</span>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script>
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let allData = [];
-let currentSort = 'terlama';
-let currentWilayah = '';
-let selectedId = null;
-
-// ============ LOAD DATA ============
-async function loadData() {
-  const { data, error } = await db.from(TABLE_PENARIKAN).select('*');
-  if (error) { showToast('Gagal memuat data', 'error'); return; }
-  allData = data || [];
-  renderStats();
-  renderList();
-}
-
-function renderStats() {
-  const aktif = allData.filter(d => d.status !== 'selesai');
-  const selesai = allData.filter(d => d.status === 'selesai');
-  document.getElementById('totalTugas').textContent = aktif.length;
-  document.getElementById('belumDiambil').textContent = aktif.length + ' tugas';
-  document.getElementById('sudahDiambil').textContent = selesai.length + ' tugas';
-}
-
-function getFiltered() {
-  let list = [...allData];
-  if (currentWilayah) list = list.filter(d => d.wilayah === currentWilayah);
-  // Tampilkan yang belum selesai dulu
-  list = list.filter(d => d.status !== 'selesai');
-  switch (currentSort) {
-    case 'terlama': list.sort((a,b) => new Date(a.tanggal_isolir) - new Date(b.tanggal_isolir)); break;
-    case 'terbaru': list.sort((a,b) => new Date(b.tanggal_isolir) - new Date(a.tanggal_isolir)); break;
-    case 'az': list.sort((a,b) => (a.nama_pelanggan||'').localeCompare(b.nama_pelanggan||'')); break;
-    case 'za': list.sort((a,b) => (b.nama_pelanggan||'').localeCompare(a.nama_pelanggan||'')); break;
-  }
-  return list;
-}
-
-function renderList() {
-  const list = getFiltered();
-  const container = document.getElementById('taskList');
-  if (!list.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">Tidak ada tugas</div><p class="empty-subtitle">Semua perangkat sudah ditangani</p></div>`;
-    return;
-  }
-  container.innerHTML = list.map(d => `
-    <div class="modern-card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">${esc(d.nama_pelanggan)}</div>
-          <div class="card-subtitle">${esc(d.wilayah||'-')}</div>
+    <div class="top-header">
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <a href="index.html" class="nav-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
         </div>
-        <span class="card-badge badge-warning">${esc(d.jenis_perangkat||'Router')}</span>
-      </div>
-      <div class="card-info">📅 Isolir: ${formatTgl(d.tanggal_isolir)}</div>
-      ${d.nomor_hp ? `<div class="card-info">📞 ${esc(d.nomor_hp)}</div>` : ''}
-      ${d.alamat ? `<div class="card-info">📍 ${esc(d.alamat)}</div>` : ''}
-      <div class="card-actions">
-        ${d.nomor_hp ? `<a class="btn btn-whatsapp btn-small" href="https://wa.me/${d.nomor_hp.replace(/\D/g,'')}" target="_blank">WhatsApp</a>` : '<span></span>'}
-        ${d.koordinat ? `<a class="btn btn-map btn-small" href="https://maps.google.com/?q=${d.koordinat}" target="_blank">Maps</a>` : '<span></span>'}
-        <button class="btn btn-outline btn-small" onclick="bukaLanjut(${d.id})">Lanjut Langganan</button>
-        <button class="btn btn-success btn-small" onclick="bukaSelesai(${d.id})">✅ Selesai</button>
-      </div>
+        <div class="header-info">
+            <div class="header-subtitle">Lapangan Hari Ini</div>
+            <div class="header-title">Tugas Teknisi</div>
+        </div>
+        <div class="header-icon">T</div>
     </div>
-  `).join('');
+
+    <div class="container">
+        <!-- 2 TAB BESAR -->
+        <div class="main-tabs">
+            <div class="main-tab active" onclick="switchTab('belum', this)">
+                <div class="tab-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="tab-label">Belum Diambil</div>
+                <div class="tab-count" id="countBelum">0 tugas</div>
+            </div>
+            <div class="main-tab" onclick="switchTab('sudah', this)">
+                <div class="tab-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="tab-label">Sudah Diambil</div>
+                <div class="tab-count" id="countSudah">0 tugas</div>
+            </div>
+        </div>
+
+        <!-- SORTING & FILTER -->
+<div class="sort-section">
+    <div class="sort-select-wrapper">
+        <select class="sort-select" id="sortSelect" onchange="applySort()">
+            <option value="isolir_desc">🔴 Isolir Terlama</option>
+            <option value="isolir_asc">🔵 Isolir Terbaru</option>
+            <option value="nama_asc">A-Z (Nama)</option>
+            <option value="nama_desc">Z-A (Nama)</option>
+        </select>
+    </div>
+    <div class="sort-select-wrapper">
+        <select class="sort-select" id="wilayahSelect" onchange="applyWilayahFilter()">
+            <option value="all">📍 Semua Wilayah</option>
+            <option value="Sukamelang">Sukamelang</option>
+            <option value="Cibarola">Cibarola</option>
+            <option value="Panglejar">Panglejar</option>
+            <option value="Perum / Flamboyan">Perum / Flamboyan</option>
+        </select>
+    </div>
+</div>
+
+        <!-- SEARCH -->
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP...">
+        </div>
+
+        <!-- CUSTOMER LIST -->
+        <div class="customer-list" id="customerList"></div>
+    </div>
+
+    <!-- POPUP MENU -->
+    <div id="popupMenu" class="popup-menu">
+        <div class="popup-overlay" onclick="closePopup()"></div>
+        <div class="popup-content" id="popupContent"></div>
+    </div>
+
+    <!-- MODAL SELESAI -->
+    <div id="modalSelesai" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon success">✅</div>
+            <div class="modal-title">Konfirmasi Penyelesaian</div>
+            <div class="input-group">
+                <label class="input-label">Tanggal Penarikan</label>
+                <input type="date" id="inputTanggal" class="input-field">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Catatan (Opsional)</label>
+                <textarea id="inputCatatan" class="input-field" placeholder="Tambahkan catatan..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-modal btn-cancel" onclick="closeModal('modalSelesai')">Batal</button>
+                <button class="btn-modal btn-confirm" onclick="confirmSelesai()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BERLANGGANAN -->
+    <div id="modalLangganan" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon warn">️</div>
+            <div class="modal-title">Lanjut Berlangganan?</div>
+            <p class="modal-text">Pelanggan memutuskan untuk <b style="color: var(--gold);">tetap berlangganan</b>.<br><br>Data ini akan <b style="color: var(--danger);">dihapus</b> dari daftar isolir.</p>
+            <div class="input-group">
+                <label class="input-label">Catatan (Opsional)</label>
+                <textarea id="inputCatatanLangganan" class="input-field" placeholder="Contoh: Pelanggan ingin lanjut paket..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-modal btn-cancel" onclick="closeModal('modalLangganan')">Batal</button>
+                <button class="btn-modal btn-confirm danger" onclick="confirmLangganan()">Ya, Hapus Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Teknisi</span>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Keluar</span>
+        </div>
+    </div>
+
+    <script>
+        var userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
+        if (!userLoggedIn) { window.location.href = 'login.html'; }
+        var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        var currentPelangganId = null;
+        var currentTab = 'belum'; // 'belum' atau 'sudah'
+        var currentSort = 'isolir_desc';
+        var currentWilayahFilter = 'all';
+        var isLoading = false;
+        var allCustomers = [];
+
+        const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+        function applyWilayahFilter() {
+    currentWilayahFilter = document.getElementById('wilayahSelect').value;
+    renderCustomers();
+}
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast show ' + type;
+            setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
+        function formatWA(nomor) {
+            let clean = nomor.replace(/\D/g, '');
+            if (clean.startsWith('0')) clean = '62' + clean.substring(1);
+            return 'https://wa.me/' + clean;
+        }
+
+        // === HITUNG DURASI ISOLIR ===
+        function hitungDurasiIsolir(tanggalIsolir) {
+            if (!tanggalIsolir) return null;
+            const tgl = new Date(tanggalIsolir);
+            if (isNaN(tgl)) return null;
+            const hariIni = new Date();
+            const diffTime = Math.abs(hariIni - tgl);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function getIsolirBadge(days) {
+            if (days === null) return '';
+            let className = 'isolir-short';
+            let icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+            if (days >= 30) {
+                className = 'isolir-critical';
+                icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+            } else if (days >= 14) {
+                className = 'isolir-long';
+            }
+            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} hari</div>`;
+        }
+
+        // === SWITCH TAB ===
+        function switchTab(tab, el) {
+            currentTab = tab;
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderCustomers();
+        }
+
+        // === SORTING ===
+        function applySort() {
+            currentSort = document.getElementById('sortSelect').value;
+            renderCustomers();
+        }
+
+        function sortData(data) {
+            const sorted = [...data];
+            switch (currentSort) {
+                case 'isolir_desc':
+                    sorted.sort((a, b) => {
+                        const da = hitungDurasiIsolir(a.tanggal_isolir) || 0;
+                        const db = hitungDurasiIsolir(b.tanggal_isolir) || 0;
+                        return db - da;
+                    });
+                    break;
+                case 'isolir_asc':
+                    sorted.sort((a, b) => {
+                        const da = hitungDurasiIsolir(a.tanggal_isolir) || 9999;
+                        const db = hitungDurasiIsolir(b.tanggal_isolir) || 9999;
+                        return da - db;
+                    });
+                    break;
+                case 'nama_asc':
+                    sorted.sort((a, b) => (a.nama_pelanggan || '').localeCompare(b.nama_pelanggan || ''));
+                    break;
+                case 'nama_desc':
+                    sorted.sort((a, b) => (b.nama_pelanggan || '').localeCompare(a.nama_pelanggan || ''));
+                    break;
+                case 'wilayah_asc':
+                    sorted.sort((a, b) => (a.wilayah || '').localeCompare(b.wilayah || ''));
+                    break;
+            }
+            return sorted;
+        }
+
+        // === RENDER CUSTOMERS ===
+        function renderCustomers() {
+    const container = document.getElementById('customerList');
+    
+    // Filter berdasarkan tab
+    let filtered = allCustomers.filter(p => {
+        if (currentTab === 'belum') return p.status === 'Belum Diambil';
+        if (currentTab === 'sudah') return p.status === 'Sudah Diambil';
+        return true;
+    });
+
+    // Filter berdasarkan wilayah
+    if (currentWilayahFilter !== 'all') {
+        filtered = filtered.filter(p => p.wilayah === currentWilayahFilter);
+    }
+
+    // Update counter SESUAI FILTER WILAYAH
+    let countBelum = allCustomers.filter(p => p.status === 'Belum Diambil').length;
+    let countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil').length;
+    
+    if (currentWilayahFilter !== 'all') {
+        countBelum = allCustomers.filter(p => p.status === 'Belum Diambil' && p.wilayah === currentWilayahFilter).length;
+        countSudah = allCustomers.filter(p => p.status === 'Sudah Diambil' && p.wilayah === currentWilayahFilter).length;
+    }
+    
+    document.getElementById('countBelum').textContent = countBelum + ' tugas';
+    document.getElementById('countSudah').textContent = countSudah + ' tugas';
+
+    if (filtered.length === 0) {
+        const emptyMsg = currentTab === 'belum' ? 'Tidak ada tugas pending' : 'Belum ada yang selesai';
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div>${emptyMsg}</div></div>`;
+        return;
+    }
+
+    // Apply sorting
+    filtered = sortData(filtered);
+
+    container.innerHTML = '';
+    filtered.forEach((p, index) => {
+        const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
+        
+        const durasiIsolir = hitungDurasiIsolir(p.tanggal_isolir);
+        const isolirBadge = getIsolirBadge(durasiIsolir);
+        
+        container.innerHTML += `
+            <div class="cust-card" style="animation-delay: ${index * 0.03}s">
+                <div class="cust-info-main">
+                    <div class="cust-name">${p.nama_pelanggan}</div>
+                    <div class="cust-sub">
+                        <span>${p.wilayah}</span>
+                        <span class="dot"></span>
+                        <span>${p.perangkat || 'Router'}</span>
+                    </div>
+                    ${isolirBadge}
+                </div>
+                <span class="badge ${badgeClass}">${p.status === 'Sudah Diambil' ? 'Selesai' : 'Pending'}</span>
+                <button class="more-btn" onclick="showPopup(event, '${p.id}')">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+            </div>
+        `;
+    });
 }
 
-// ============ SORT & FILTER ============
-function setSort(el) {
-  document.querySelectorAll('[data-sort]').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentSort = el.dataset.sort;
-  renderList();
-}
-function setWilayah(el) {
-  document.querySelectorAll('[data-wilayah]').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentWilayah = el.dataset.wilayah;
-  renderList();
-}
+        // === POPUP MENU ===
+        function showPopup(event, pelangganId) {
+            event.stopPropagation();
+            const p = allCustomers.find(c => c.id === pelangganId);
+            if (!p) return;
+            
+            currentPelangganId = pelangganId;
+            const waLink = formatWA(p.nomor_hp);
+            const mapsLink = `https://www.google.com/maps?q=${p.latitude},${p.longitude}`;
+            
+            const popupContent = document.getElementById('popupContent');
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            
+            let menuHTML = '';
+            
+            if (p.status === 'Belum Diambil') {
+                menuHTML = `
+                    <button class="popup-item selesai" onclick="closePopup(); openModal('modalSelesai', '${p.id}')">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        Selesai Diambil
+                    </button>
+                    <button class="popup-item langganan" onclick="closePopup(); openModal('modalLangganan', '${p.id}')">
+                        <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+                        Lanjut Berlangganan
+                    </button>
+                    <div class="popup-divider"></div>
+                    <a href="${waLink}" target="_blank" class="popup-item wa" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="${mapsLink}" target="_blank" class="popup-item map" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Google Maps
+                    </a>
+                `;
+            } else {
+                menuHTML = `
+                    <a href="${waLink}" target="_blank" class="popup-item wa" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="${mapsLink}" target="_blank" class="popup-item map" onclick="closePopup()">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Google Maps
+                    </a>
+                `;
+            }
+            
+            popupContent.innerHTML = menuHTML;
+            
+            const popup = document.getElementById('popupMenu');
+            popup.classList.add('active');
+            
+            const popupRect = popupContent.getBoundingClientRect();
+            let top = rect.bottom + 8;
+            let left = rect.right - popupRect.width;
+            
+            if (left < 16) left = 16;
+            if (top + popupRect.height > window.innerHeight - 16) {
+                top = rect.top - popupRect.height - 8;
+            }
+            
+            popupContent.style.top = top + 'px';
+            popupContent.style.left = left + 'px';
+        }
 
-// ============ SELESAI ============
-function bukaSelesai(id) {
-  selectedId = id;
-  document.getElementById('tanggalPenarikan').value = new Date().toISOString().split('T')[0];
-  document.getElementById('catatanPenarikan').value = '';
-  document.getElementById('modalSelesai').classList.add('active');
-}
+        function closePopup() {
+            document.getElementById('popupMenu').classList.remove('active');
+        }
 
-async function simpanSelesai() {
-  const item = allData.find(d => d.id === selectedId);
-  if (!item) return;
+        // === MODALS ===
+        function openModal(id, pelangganId) {
+            currentPelangganId = pelangganId;
+            if (id === 'modalSelesai') document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            currentPelangganId = null;
+        }
 
-  const tgl = document.getElementById('tanggalPenarikan').value;
-  const catatan = document.getElementById('catatanPenarikan').value.trim();
+        async function confirmSelesai() {
+            const tanggal = document.getElementById('inputTanggal').value;
+            const catatan = document.getElementById('inputCatatan').value;
+            if (!tanggal) { showToast('Tanggal wajib diisi!', 'error'); return; }
+            
+            try {
+                const { error } = await supabaseClient.from('pelanggan').update({
+                    status: 'Sudah Diambil', tanggal_penarikan: tanggal, teknisi: 'Teknisi', catatan: catatan
+                }).eq('id', currentPelangganId);
+                if (error) throw error;
+                showToast('Perangkat berhasil diambil!', 'success');
+                closeModal('modalSelesai');
+                loadCustomers();
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        }
 
-  // 1. Update status data jadi selesai
-  const { error } = await db.from(TABLE_PENARIKAN)
-    .update({ status: 'selesai', tanggal_penarikan: tgl, catatan: catatan || null })
-    .eq('id', selectedId);
+        async function confirmLangganan() {
+            try {
+                const { error } = await supabaseClient.from('pelanggan').delete().eq('id', currentPelangganId);
+                if (error) throw error;
+                showToast('Data dihapus! Pelanggan lanjut berlangganan.', 'success');
+                closeModal('modalLangganan');
+                loadCustomers();
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        }
 
-  if (error) { showToast('Gagal menyimpan', 'error'); return; }
+        // === LOAD DATA ===
+        async function loadCustomers() {
+            if (isLoading) return;
+            isLoading = true;
+            document.getElementById('customerList').innerHTML = '<div class="empty-state">Memuat data...</div>';
+            
+            try {
+                const { data, error } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                allCustomers = data || [];
+                renderCustomers();
+            } catch (err) {
+                document.getElementById('customerList').innerHTML = `<div class="empty-state">Error: ${err.message}</div>`;
+            }
+            isLoading = false;
+        }
 
-  // 2. KIRIM NOTIFIKASI KE ADMIN (hanya nama pelanggan)
-  await kirimNotifikasiSelesai({ nama_pelanggan: item.nama_pelanggan });
+        // === SEARCH ===
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            document.querySelectorAll('.cust-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(keyword) ? 'flex' : 'none';
+            });
+        });
 
-  closeModal('modalSelesai');
-  showToast('✅ Penarikan berhasil disimpan');
-  loadData();
-}
-
-// ============ NOTIFIKASI KE ADMIN ============
-async function kirimNotifikasiSelesai(dataPenarikan) {
-  try {
-    const { error } = await db
-      .from(TABLE_NOTIFIKASI)
-      .insert([{ nama_pelanggan: dataPenarikan.nama_pelanggan }]);
-
-    if (error) console.error('Gagal kirim notif:', error.message);
-    else console.log('Notifikasi terkirim ke admin');
-  } catch (e) {
-    console.error('Error notif:', e);
-  }
-}
-
-// ============ LANJUT BERLANGGANAN ============
-function bukaLanjut(id) {
-  selectedId = id;
-  document.getElementById('catatanLanjut').value = '';
-  document.getElementById('modalLanjut').classList.add('active');
-}
-
-async function hapusData() {
-  const { error } = await db.from(TABLE_PENARIKAN).delete().eq('id', selectedId);
-  if (error) { showToast('Gagal menghapus', 'error'); return; }
-  closeModal('modalLanjut');
-  showToast('Data dihapus, pelanggan lanjut berlangganan');
-  loadData();
-}
-
-// ============ HELPERS ============
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function keluar() { localStorage.removeItem('role'); window.location.href = 'login.html'; }
-function formatTgl(d) {
-  if (!d) return '-';
-  return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type || '');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-loadData();
-</script>
+        loadCustomers();
+    </script>
 </body>
 </html>
