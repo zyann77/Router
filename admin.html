@@ -87,6 +87,7 @@
         .isolir-short { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
         .isolir-long { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
         .isolir-critical { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .isolir-taken { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
         .cust-info { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
         .cust-info svg { width: 16px; height: 16px; stroke: var(--accent-gold); stroke-width: 1.5; fill: none; flex-shrink: 0; }
@@ -242,25 +243,6 @@
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </div>
     </div>
-        
-        <div class="dock-item" id="notifBtn" onclick="toggleNotifPopup(event)">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <div class="notif-badge" id="notifBadge"></div>
-            <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
-                <div class="notif-popup-header">
-                    <span>Notifikasi Baru</span>
-                    <span class="clear-all" onclick="clearAllNotifs(event)">Bersihkan</span>
-                </div>
-                <div class="notif-list" id="notifList">
-                    <div class="notif-empty">Belum ada aktivitas baru.</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="dock-item" onclick="logout()">
-            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
-    </div>
 
     <!-- Bottom Sheet Form -->
     <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
@@ -357,8 +339,24 @@
 
         // --- CRUD Logic ---
         function selectPerangkat(value, el) { document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('perangkat').value = value; }
-        function hitungDurasiIsolir(tanggalIsolir) { if (!tanggalIsolir) return null; const tgl = new Date(tanggalIsolir); if (isNaN(tgl)) return null; return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); }
-        function getIsolirBadge(days) { if (days === null) return ''; let className = days >= 30 ? 'isolir-critical' : (days >= 14 ? 'isolir-long' : 'isolir-short'); let icon = days >= 30 ? '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; return `<div class="isolir-badge ${className}">${icon} Isolir ${days} Hari</div>`; }
+        
+        function hitungDurasiIsolir(tanggalIsolir) { 
+            if (!tanggalIsolir) return null; 
+            const tgl = new Date(tanggalIsolir); 
+            if (isNaN(tgl)) return null; 
+            return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); 
+        }
+
+        // FUNGSI UNTUK GENERATE BADGE ISOLIR DENGAN STATUS "SUDAH DIAMBIL"
+        function getIsolirBadge(days, status) { 
+            if (status === 'Sudah Diambil') {
+                return `<div class="isolir-badge isolir-taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PERANGKAT SUDAH KE AMBIL</div>`;
+            }
+            if (days === null) return ''; 
+            let className = days >= 30 ? 'isolir-critical' : (days >= 14 ? 'isolir-long' : 'isolir-short'); 
+            let icon = days >= 30 ? '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; 
+            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} Hari</div>`; 
+        }
         
         function renderBulanChips() { 
             const container = document.getElementById('bulanChips'); container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua Transaksi</div>`; 
@@ -390,7 +388,10 @@
             filtered.forEach((p, index) => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
-                const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir));
+                
+                // MENGGUNAKAN FUNGSI BARU DI SINI
+                const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir), p.status);
+                
                 let tanggalInfo = '';
                 if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diselesaikan: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`; }
                 
