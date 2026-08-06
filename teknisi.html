@@ -80,6 +80,7 @@
         .isolir-short { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
         .isolir-long { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
         .isolir-critical { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .isolir-taken { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
         .more-btn { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
         .more-btn:active { transform: scale(0.9); background: rgba(201,169,97,0.2); }
@@ -293,8 +294,18 @@
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
         function formatWA(nomor) { let clean = nomor.replace(/\D/g, ''); if (clean.startsWith('0')) clean = '62' + clean.substring(1); return 'https://wa.me/' + clean; }
 
-        function hitungDurasiIsolir(tanggalIsolir) { if (!tanggalIsolir) return null; const tgl = new Date(tanggalIsolir); if (isNaN(tgl)) return null; return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); }
-        function getIsolirBadge(days) { 
+        function hitungDurasiIsolir(tanggalIsolir) { 
+            if (!tanggalIsolir) return null; 
+            const tgl = new Date(tanggalIsolir); 
+            if (isNaN(tgl)) return null; 
+            return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); 
+        }
+
+        // FUNGSI UNTUK GENERATE BADGE ISOLIR DENGAN STATUS "SUDAH DIAMBIL"
+        function getIsolirBadge(days, status) { 
+            if (status === 'Sudah Diambil') {
+                return `<div class="isolir-badge isolir-taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PERANGKAT SUDAH KE AMBIL</div>`;
+            }
             if (days === null) return ''; 
             let className = days >= 30 ? 'isolir-critical' : (days >= 14 ? 'isolir-long' : 'isolir-short'); 
             let icon = days >= 30 ? '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; 
@@ -331,7 +342,9 @@
             filtered = sortData(filtered);
             container.innerHTML = '';
             filtered.forEach((p, index) => {
-                const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir));
+                // MENGGUNAKAN FUNGSI BARU DI SINI
+                const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir), p.status);
+                
                 container.innerHTML += `
                     <div class="cust-card" style="animation-delay: ${index * 0.05}s">
                         <div class="cust-info-main">
