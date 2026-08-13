@@ -68,8 +68,12 @@
         .cust-card:active { transform: scale(0.97); background: rgba(255,255,255,0.05); }
         .cust-info-main { flex: 1; min-width: 0; }
         .cust-name { font-size: 15px; font-weight: 600; color: white; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        
+        .cust-sub { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .cust-sub .dot { width: 4px; height: 4px; background: var(--text-muted); border-radius: 50%; opacity: 0.5; }
+        
+        .cust-info { display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; line-height: 1.4; }
+        .cust-info svg { width: 15px; height: 15px; stroke: var(--accent-gold); stroke-width: 1.5; fill: none; flex-shrink: 0; margin-top: 1px; }
 
         .isolir-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 500; margin-top: 8px; }
         .isolir-badge svg { width: 12px; height: 12px; fill: none; stroke-width: 1.5; }
@@ -179,9 +183,8 @@
             </div>
         </div>
 
-        <!-- FILTER DINAMIS (Tertunda vs Selesai) -->
+        <!-- FILTER DINAMIS -->
         <div class="sort-section">
-            <!-- 1. Filter Sorting untuk Tertunda -->
             <select class="sort-select" id="sortSelect" onchange="applySort()">
                 <option value="isolir_desc">🔴 Isolir Terlama</option>
                 <option value="isolir_asc">🔵 Isolir Terbaru</option>
@@ -189,12 +192,10 @@
                 <option value="nama_desc">Z-A (Nama)</option>
             </select>
 
-            <!-- 2. Filter Bulan untuk Selesai (Disembunyikan secara default) -->
             <select class="sort-select" id="bulanSelect" onchange="applyBulanFilter()" style="display:none;">
                 <option value="all">📅 Semua Bulan</option>
             </select>
 
-            <!-- Filter Wilayah (Global) -->
             <select class="sort-select" id="wilayahSelect" onchange="applyWilayahFilter()">
                 <option value="all">📍 Semua Wilayah</option>
                 <option value="Sukamelang">Sukamelang</option>
@@ -282,7 +283,7 @@
         let currentTab = 'belum';
         let currentSort = 'isolir_desc';
         let currentWilayahFilter = 'all';
-        let currentBulanFilter = 'all'; // Penanda filter bulan untuk Tab Selesai
+        let currentBulanFilter = 'all'; 
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
         let isLoading = false;
@@ -299,7 +300,6 @@
             return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); 
         }
 
-        // BADGE STATUS "SUDAH DIAMBIL"
         function getIsolirBadge(days, status) { 
             if (status === 'Sudah Diambil') {
                 return `<div class="isolir-badge isolir-taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PERANGKAT SUDAH KE AMBIL</div>`;
@@ -310,7 +310,6 @@
             return `<div class="isolir-badge ${className}">${icon} Isolir ${days} Hari</div>`; 
         }
 
-        // GENERATE DROPDOWN BULAN UNTUK TAB SELESAI
         function renderBulanDropdown() {
             const select = document.getElementById('bulanSelect');
             select.innerHTML = '<option value="all">📅 Semua Bulan</option>';
@@ -328,7 +327,6 @@
             select.value = currentBulanFilter;
         }
 
-        // FUNGSI GANTI TAB BESERTA PERUBAHAN FILTERNYA
         function switchTab(tab, el) { 
             currentTab = tab; 
             document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active')); 
@@ -364,12 +362,10 @@
             const container = document.getElementById('customerList');
             let filtered = allCustomers.filter(p => currentTab === 'belum' ? p.status === 'Belum Diambil' : p.status === 'Sudah Diambil');
             
-            // Filter Wilayah
             if (currentWilayahFilter !== 'all') {
                 filtered = filtered.filter(p => p.wilayah === currentWilayahFilter);
             }
             
-            // Filter Bulan Khusus Tab Selesai
             if (currentTab === 'sudah' && currentBulanFilter !== 'all') {
                 filtered = filtered.filter(p => {
                     if (!p.tanggal_penarikan) return false;
@@ -390,11 +386,9 @@
                 return; 
             }
             
-            // Sorting menyesuaikan tab
             if (currentTab === 'belum') {
                 filtered = sortData(filtered);
             } else {
-                // Untuk Tab selesai, kita urutkan otomatis dari Tgl Penarikan paling baru
                 filtered.sort((a,b) => {
                     const da = a.tanggal_penarikan ? new Date(a.tanggal_penarikan) : new Date(0);
                     const db = b.tanggal_penarikan ? new Date(b.tanggal_penarikan) : new Date(0);
@@ -406,25 +400,32 @@
             filtered.forEach((p, index) => {
                 const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir), p.status);
                 
-                // Tambahkan info tanggal selesai (Khusus Tab Selesai)
                 let tanggalInfo = '';
                 if (p.status === 'Sudah Diambil' && p.tanggal_penarikan) { 
                     const d = new Date(p.tanggal_penarikan); 
                     if (!isNaN(d)) {
-                        tanggalInfo = `<div style="margin-top: 8px; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                            <svg style="width:14px; height:14px; stroke:var(--accent-gold); fill:none; stroke-width: 1.5;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 
-                            Selesai: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}
-                        </div>`;
+                        tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Selesai: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
                     }
+                }
+                
+                // Tambahan Tampilan Alamat (Address Pin)
+                let alamatInfo = '';
+                if (p.alamat) {
+                    alamatInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${p.alamat}</div>`;
                 }
 
                 container.innerHTML += `
                     <div class="cust-card" style="animation-delay: ${index * 0.05}s">
                         <div class="cust-info-main">
                             <div class="cust-name">${p.nama_pelanggan}</div>
-                            <div class="cust-sub"><span>${p.wilayah}</span><span class="dot"></span><span>${p.perangkat || 'Router'}</span></div>
+                            <div class="cust-sub">
+                                <span>${p.wilayah}</span><span class="dot"></span>
+                                <span>${p.perangkat || 'Router'}</span><span class="dot"></span>
+                                <span>${p.nomor_hp || '-'}</span>
+                            </div>
                             ${isolirBadge}
                             ${tanggalInfo}
+                            ${alamatInfo}
                         </div>
                         <button class="more-btn" onclick="showPopup(event, '${p.id}')">
                             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
@@ -498,7 +499,7 @@
                 const { data, error } = await supabaseClient.from('pelanggan').select('*').order('created_at', { ascending: false });
                 if (error) throw error; 
                 allCustomers = data || []; 
-                renderBulanDropdown(); // Generate filter bulan untuk menu Selesai
+                renderBulanDropdown(); 
                 renderCustomers();
             } catch (err) { 
                 document.getElementById('customerList').innerHTML = `<div class="empty-state">Koneksi terputus: ${err.message}</div>`; 
