@@ -317,25 +317,89 @@
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
 
-        // --- Notifikasi ---
-        let sessionNotifs = [];
-        function toggleNotifPopup(event) { event.stopPropagation(); const popup = document.getElementById('notifPopup'); popup.classList.toggle('active'); if (popup.classList.contains('active')) document.getElementById('notifBadge').classList.remove('active'); }
-        document.addEventListener('click', function(event) { const popup = document.getElementById('notifPopup'); const btn = document.getElementById('notifBtn'); if (popup && popup.classList.contains('active') && !btn.contains(event.target)) { popup.classList.remove('active'); } });
-        function clearAllNotifs(event) { event.stopPropagation(); sessionNotifs = []; updateNotifUI(); document.getElementById('notifPopup').classList.remove('active'); showToast('Riwayat dibersihkan', 'success'); }
-        function updateNotifUI() { const list = document.getElementById('notifList'); if (sessionNotifs.length === 0) { list.innerHTML = '<div class="notif-empty">Belum ada aktivitas baru.</div>'; return; } list.innerHTML = sessionNotifs.map(n => `<div class="notif-item"><div class="notif-item-icon">✅</div><div class="notif-item-content"><div class="notif-item-title">${n.nama}</div><div class="notif-item-time">${n.wilayah} • Pkl ${n.waktu}</div></div></div>`).join(''); }
+        // --- Notifikasi (Diperbarui dengan Penyimpanan Lokal) ---
+        let sessionNotifs = JSON.parse(localStorage.getItem('adminNotifs')) || [];
+        let processedKeys = JSON.parse(localStorage.getItem('adminNotifKeys')) || [];
+        const processedNotifs = new Set(processedKeys);
 
-        const processedNotifs = new Set();
-        supabaseClient.channel('admin-realtime').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
-            const newData = payload.new;
-            if (newData.status === 'Sudah Diambil') {
-                const notifKey = newData.id + '_selesai';
-                if (!processedNotifs.has(notifKey)) {
-                    processedNotifs.add(notifKey);
-                    sessionNotifs.unshift({ nama: newData.nama_pelanggan, wilayah: newData.wilayah, waktu: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) });
-                    updateNotifUI(); showToast(`🔔 ${newData.nama_pelanggan} telah diambil!`, 'success'); document.getElementById('notifBadge').classList.add('active'); loadTable();
-                }
+        // Tampilkan badge merah jika ada notif tersimpan saat halaman dimuat
+        if (sessionNotifs.length > 0) {
+            document.getElementById('notifBadge').classList.add('active');
+        }
+
+        function toggleNotifPopup(event) { 
+            event.stopPropagation(); 
+            const popup = document.getElementById('notifPopup'); 
+            popup.classList.toggle('active'); 
+            if (popup.classList.contains('active')) {
+                document.getElementById('notifBadge').classList.remove('active'); 
             }
-        }).subscribe();
+        }
+        
+        document.addEventListener('click', function(event) { 
+            const popup = document.getElementById('notifPopup'); 
+            const btn = document.getElementById('notifBtn'); 
+            if (popup && popup.classList.contains('active') && !btn.contains(event.target)) { 
+                popup.classList.remove('active'); 
+            } 
+        });
+        
+        function clearAllNotifs(event) { 
+            event.stopPropagation(); 
+            sessionNotifs = []; 
+            processedNotifs.clear();
+            localStorage.removeItem('adminNotifs');
+            localStorage.removeItem('adminNotifKeys');
+            updateNotifUI(); 
+            document.getElementById('notifPopup').classList.remove('active'); 
+            showToast('Riwayat dibersihkan', 'success'); 
+        }
+        
+        function updateNotifUI() { 
+            // Simpan ke local storage setiap ada perubahan
+            localStorage.setItem('adminNotifs', JSON.stringify(sessionNotifs));
+            localStorage.setItem('adminNotifKeys', JSON.stringify([...processedNotifs]));
+
+            const list = document.getElementById('notifList'); 
+            if (sessionNotifs.length === 0) { 
+                list.innerHTML = '<div class="notif-empty">Sistem aman. Belum ada aktivitas baru.</div>'; 
+                return; 
+            } 
+            list.innerHTML = sessionNotifs.map(n => `<div class="notif-item"><div class="notif-item-icon">✅</div><div class="notif-item-content"><div class="notif-item-title" style="font-weight:600;">${n.nama}</div><div class="notif-item-time" style="font-size:11px; color:var(--text-muted);">${n.wilayah} • Pkl ${n.waktu}</div></div></div>`).join(''); 
+        }
+
+        // Tampilkan daftar notifikasi dari penyimpanan lokal saat web pertama dibuka
+        updateNotifUI();
+
+        // Siaran Langsung dari Database Supabase
+        supabaseClient.channel('admin-realtime')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
+                const newData = payload.new;
+                // Jika status berubah menjadi 'Sudah Diambil'
+                if (newData.status === 'Sudah Diambil') {
+                    const notifKey = newData.id + '_selesai';
+                    if (!processedNotifs.has(notifKey)) {
+                        processedNotifs.add(notifKey);
+                        sessionNotifs.unshift({ 
+                            nama: newData.nama_pelanggan, 
+                            wilayah: newData.wilayah, 
+                            waktu: new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) 
+                        });
+                        
+                        updateNotifUI(); 
+                        showToast(`🔔 ${newData.nama_pelanggan} telah diambil!`, 'success'); 
+                        document.getElementById('notifBadge').classList.add('active'); 
+                        
+                        // Perbarui tabel secara otomatis
+                        loadTable(true);
+                    }
+                }
+            })
+            .subscribe((status) => {
+                if(status === 'SUBSCRIBED') {
+                    console.log("Koneksi Realtime Terhubung");
+                }
+            });
 
         // --- CRUD Logic ---
         function selectPerangkat(value, el) { document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('perangkat').value = value; }
