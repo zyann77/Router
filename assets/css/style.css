@@ -32,16 +32,43 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
 .mono-text { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.02em; }
 
 /* TOP HEADER */
-.top-header {
-  background: var(--bg-primary);
-  padding: calc(var(--safe-top) + 16px) var(--spacing-xl) var(--spacing-lg);
-  position: sticky; top: 0; z-index: 100;
-  border-bottom: 1px solid rgba(201, 169, 97, 0.1);
-}.header-title-box { 
+/* Merapikan 2 tombol di kiri agar menyamping (horizontal), bukan menumpuk */
+.nav-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.header-title-box { 
     flex: 1; 
     overflow: hidden; 
     white-space: nowrap; 
-    margin: 0 10px;
+    margin: 0 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px; /* Menjaga agar header tetap ramping */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-text {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-gold); /* Berubah menjadi warna Emas Premium */
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding-left: 100%; 
+    animation: marqueeScroll 8s linear infinite;
+    will-change: transform;
+    line-height: 1;
+}
+
+@keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
     /* Efek fade/pudar di tepi kanan dan kiri agar terlihat mewah di HP */
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
