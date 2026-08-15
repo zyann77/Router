@@ -40,13 +40,15 @@
             flex: 1; 
             overflow: hidden; 
             white-space: nowrap; 
-            margin: 0 15px;
+            /* Menghilangkan margin kanan dan menariknya ke ujung layar */
+            margin: 0 -20px 0 15px; 
             position: relative;
             display: flex;
             align-items: center;
             height: 40px; 
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            /* Gradasi diubah: hanya pudar di kiri (dekat tombol), kanan solid */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 15%, black 100%);
         }
 
         .marquee-text {
