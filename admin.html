@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="su">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kelola Data - RNB Premium</title>
+    <title>Ngatur Data - RNB Premium</title>
     
     <!-- Leaflet & Supabase & SheetJS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -27,33 +27,23 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); min-height: 100vh; overflow-x: hidden; padding-bottom: 120px; }
 
-        /* Aurora Background */
-        .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; }
-        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
-        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
-        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
+        .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--bg-dark); }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.25; mix-blend-mode: screen; will-change: transform; animation: floatBlob 20s infinite alternate ease-in-out; }
+        .blob-1 { width: 400px; height: 400px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 350px; height: 350px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(30px, 50px, 0) scale(1.1); } 100% { transform: translate3d(-20px, -30px, 0) scale(0.9); } }
 
         /* Top Header */
         .top-header { position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(30px); border-bottom: 1px solid var(--glass-border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* INI TAMBAHANNYA AGAR TOMBOL MENYAMPING & HEADER RAMPING */
         .nav-buttons { display: flex; gap: 8px; align-items: center; }
         
         .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
         .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
         .nav-btn:active { transform: scale(0.9); }
         .nav-btn svg { width: 20px; height: 20px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
+        
         .header-title-box { text-align: center; flex: 1; }
         .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-        .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
-        .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
-        .nav-btn:active { transform: scale(0.9); }
-        .nav-btn svg { width: 20px; height: 20px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
-        .header-title-box { text-align: center; }
-        .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-        .header-subtitle { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
@@ -78,9 +68,9 @@
         .chip:active { transform: scale(0.95); }
         .chip.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); box-shadow: 0 10px 20px rgba(201,169,97,0.3); font-weight: 600; }
 
-        /* Customer Cards */
+        /* Customer Cards (Optimasi Solid Background) */
         .customer-list { display: flex; flex-direction: column; gap: 15px; }
-        .cust-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative; animation: slideUp 0.5s var(--spring) backwards; transition: all 0.3s var(--spring); }
+        .cust-card { background: #121215; border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative; animation: slideUp 0.5s var(--spring) backwards; transition: all 0.3s var(--spring); }
         .cust-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
         
         .cust-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
@@ -187,10 +177,9 @@
         </div>
         
         <div class="header-title-box">
-            <div class="header-title">Kelola Data</div>
+            <div class="header-title">Ngatur Data</div>
         </div>
         
-        <!-- Penyeimbang kanan agar teks pas di tengah -->
         <div style="width: 90px;"></div>
     </div>
 
@@ -198,20 +187,20 @@
         <div class="action-grid">
             <button class="action-btn btn-export" onclick="doExport('all')">
                 <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Export Semua
+                Ékspor Sadayana
             </button>
             <button class="action-btn btn-add" onclick="openBottomSheet()">
                 <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Tambah Data
+                Nambih Data
             </button>
         </div>
 
         <div class="search-box">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchTable" placeholder="Pencarian cerdas...">
+            <input type="text" id="searchTable" placeholder="Pamilarian pinter...">
         </div>
 
-        <div class="filter-label">Filter Bulan Penarikan</div>
+        <div class="filter-label">Saringan Sasih Panarikan</div>
         <div class="chips-container" id="bulanChips"></div>
 
         <div class="customer-list" id="tableContainer"></div>
@@ -219,38 +208,33 @@
 
     <!-- FLOATING DOCK -->
     <div class="dock-container">
-        <!-- 1. Dashboard -->
         <div class="dock-item transit-link" href="dashboard.html">
             <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
         
-        <!-- 2. Admin Data (Active) -->
         <div class="dock-item active transit-link" href="admin.html">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
         
-        <!-- 3. Notifikasi (TENGAH) -->
         <div class="dock-item" id="notifBtn" onclick="toggleNotifPopup(event)">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             <div class="notif-badge" id="notifBadge"></div>
             
             <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
                 <div class="notif-popup-header">
-                    <span>Notifikasi Baru</span>
-                    <span class="clear-all" onclick="clearAllNotifs(event)">Bersihkan</span>
+                    <span>Béwara Anyar</span>
+                    <span class="clear-all" onclick="clearAllNotifs(event)">Beresihan</span>
                 </div>
                 <div class="notif-list" id="notifList">
-                    <div class="notif-empty">Sistem aman. Belum ada aktivitas baru.</div>
+                    <div class="notif-empty">Sistem aman. Teu acan aya aktivitas anyar.</div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Teknisi -->
         <div class="dock-item transit-link" href="teknisi.html">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         
-        <!-- 5. Logout -->
         <div class="dock-item" onclick="logout()">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </div>
@@ -260,21 +244,21 @@
     <div id="bottomSheetOverlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
     <div id="bottomSheet" class="bottom-sheet">
         <div class="bottom-sheet-handle"></div>
-        <div class="bottom-sheet-title" id="formTitle">Tambah Data Baru</div>
+        <div class="bottom-sheet-title" id="formTitle">Nambih Data Anyar</div>
         <form id="formPelanggan">
             <input type="hidden" id="editId">
             <div class="input-group">
-                <label class="input-label">Nama Pelanggan *</label>
-                <input type="text" id="nama" class="input-field" placeholder="Masukkan nama lengkap" required>
+                <label class="input-label">Nami Pelanggan *</label>
+                <input type="text" id="nama" class="input-field" placeholder="Lebetkeun nami lengkep" required>
             </div>
             <div class="input-group">
-                <label class="input-label">Nomor HP *</label>
+                <label class="input-label">Nomer HP *</label>
                 <input type="text" id="nomor_hp" class="input-field" placeholder="08xxxxxxxxxx" required>
             </div>
             <div class="input-group">
-                <label class="input-label">Wilayah *</label>
+                <label class="input-label">Wewengkon *</label>
                 <select id="wilayah" class="input-field" required>
-                    <option value="">Pilih Wilayah</option>
+                    <option value="">Pilih Wewengkon</option>
                     <option value="Sukamelang">Sukamelang</option>
                     <option value="Cibarola">Cibarola</option>
                     <option value="Panglejar">Panglejar</option>
@@ -282,7 +266,7 @@
                 </select>
             </div>
             <div class="input-group">
-                <label class="input-label">Jenis Perangkat</label>
+                <label class="input-label">Rupi Perangkat</label>
                 <div class="perangkat-selector">
                     <div class="perangkat-option selected" onclick="selectPerangkat('Router', this)">Router</div>
                     <div class="perangkat-option" onclick="selectPerangkat('STB', this)">STB</div>
@@ -291,15 +275,15 @@
                 <input type="hidden" id="perangkat" value="Router">
             </div>
             <div class="input-group">
-                <label class="input-label">Tanggal Isolir</label>
+                <label class="input-label">Kaping Isolir</label>
                 <input type="date" id="tanggal_isolir" class="input-field">
             </div>
             <div class="input-group">
-                <label class="input-label">Alamat (Opsional)</label>
-                <textarea id="alamat" class="input-field" placeholder="Keterangan alamat detail..."></textarea>
+                <label class="input-label">Alamat (Pilihan)</label>
+                <textarea id="alamat" class="input-field" placeholder="Katerangan alamat detail..."></textarea>
             </div>
             <div class="input-group">
-                <label class="input-label">Titik Koordinat (Opsional)</label>
+                <label class="input-label">Titik Koordinat (Pilihan)</label>
                 <div class="map-container"><div id="map-picker"></div></div>
                 <div class="coord-inputs">
                     <input type="text" id="latitude" class="input-field" placeholder="Latitude">
@@ -307,10 +291,10 @@
                 </div>
                 <button type="button" class="action-btn btn-export" style="width: 100%; margin-top: 10px;" onclick="useMyGPS()">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-                    Dapatkan Lokasi Saya
+                    Milari Lokasi Abdi
                 </button>
             </div>
-            <button type="submit" class="action-btn btn-add" style="width: 100%; margin-top: 20px;">Simpan Data Registrasi</button>
+            <button type="submit" class="action-btn btn-add" style="width: 100%; margin-top: 20px;">Simpen Data Registrasi</button>
         </form>
     </div>
 
@@ -329,12 +313,10 @@
         function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
 
-        // --- Notifikasi (Diperbarui dengan Penyimpanan Lokal) ---
         let sessionNotifs = JSON.parse(localStorage.getItem('adminNotifs')) || [];
         let processedKeys = JSON.parse(localStorage.getItem('adminNotifKeys')) || [];
         const processedNotifs = new Set(processedKeys);
 
-        // Tampilkan badge merah jika ada notif tersimpan saat halaman dimuat
         if (sessionNotifs.length > 0) {
             document.getElementById('notifBadge').classList.add('active');
         }
@@ -364,30 +346,26 @@
             localStorage.removeItem('adminNotifKeys');
             updateNotifUI(); 
             document.getElementById('notifPopup').classList.remove('active'); 
-            showToast('Riwayat dibersihkan', 'success'); 
+            showToast('Riwayat parantos diberesihan', 'success'); 
         }
         
         function updateNotifUI() { 
-            // Simpan ke local storage setiap ada perubahan
             localStorage.setItem('adminNotifs', JSON.stringify(sessionNotifs));
             localStorage.setItem('adminNotifKeys', JSON.stringify([...processedNotifs]));
 
             const list = document.getElementById('notifList'); 
             if (sessionNotifs.length === 0) { 
-                list.innerHTML = '<div class="notif-empty">Sistem aman. Belum ada aktivitas baru.</div>'; 
+                list.innerHTML = '<div class="notif-empty">Sistem aman. Teu acan aya aktivitas anyar.</div>'; 
                 return; 
             } 
             list.innerHTML = sessionNotifs.map(n => `<div class="notif-item"><div class="notif-item-icon">✅</div><div class="notif-item-content"><div class="notif-item-title" style="font-weight:600;">${n.nama}</div><div class="notif-item-time" style="font-size:11px; color:var(--text-muted);">${n.wilayah} • Pkl ${n.waktu}</div></div></div>`).join(''); 
         }
 
-        // Tampilkan daftar notifikasi dari penyimpanan lokal saat web pertama dibuka
         updateNotifUI();
 
-        // Siaran Langsung dari Database Supabase
         supabaseClient.channel('admin-realtime')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pelanggan' }, payload => {
                 const newData = payload.new;
-                // Jika status berubah menjadi 'Sudah Diambil'
                 if (newData.status === 'Sudah Diambil') {
                     const notifKey = newData.id + '_selesai';
                     if (!processedNotifs.has(notifKey)) {
@@ -399,21 +377,13 @@
                         });
                         
                         updateNotifUI(); 
-                        showToast(`🔔 ${newData.nama_pelanggan} telah diambil!`, 'success'); 
+                        showToast(`🔔 ${newData.nama_pelanggan} parantos dicandak!`, 'success'); 
                         document.getElementById('notifBadge').classList.add('active'); 
-                        
-                        // Perbarui tabel secara otomatis
                         loadTable(true);
                     }
                 }
-            })
-            .subscribe((status) => {
-                if(status === 'SUBSCRIBED') {
-                    console.log("Koneksi Realtime Terhubung");
-                }
-            });
+            }).subscribe();
 
-        // --- CRUD Logic ---
         function selectPerangkat(value, el) { document.querySelectorAll('.perangkat-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('perangkat').value = value; }
         
         function hitungDurasiIsolir(tanggalIsolir) { 
@@ -423,19 +393,18 @@
             return Math.ceil(Math.abs(new Date() - tgl) / (1000 * 60 * 60 * 24)); 
         }
 
-        // FUNGSI UNTUK GENERATE BADGE ISOLIR DENGAN STATUS "SUDAH DIAMBIL"
         function getIsolirBadge(days, status) { 
             if (status === 'Sudah Diambil') {
-                return `<div class="isolir-badge isolir-taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PERANGKAT SUDAH KE AMBIL</div>`;
+                return `<div class="isolir-badge isolir-taken"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PERANGKAT TOS DICANDAK</div>`;
             }
             if (days === null) return ''; 
             let className = days >= 30 ? 'isolir-critical' : (days >= 14 ? 'isolir-long' : 'isolir-short'); 
             let icon = days >= 30 ? '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; 
-            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} Hari</div>`; 
+            return `<div class="isolir-badge ${className}">${icon} Isolir ${days} Dinten</div>`; 
         }
         
         function renderBulanChips() { 
-            const container = document.getElementById('bulanChips'); container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua Transaksi</div>`; 
+            const container = document.getElementById('bulanChips'); container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Sadaya Transaksi</div>`; 
             const bulanSet = new Set(); allData.forEach(p => { if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) bulanSet.add(d.getMonth()); }}); 
             bulanSet.add(new Date().getMonth()); 
             Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => { 
@@ -453,23 +422,22 @@
             let filtered = allData;
             if (currentBulan !== 'all') { filtered = filtered.filter(p => p.tanggal_penarikan && !isNaN(new Date(p.tanggal_penarikan)) && String(new Date(p.tanggal_penarikan).getMonth()) === currentBulan); }
             
-            // Check URL Params for Wilayah Filter (from Dashboard)
             const urlParams = new URLSearchParams(window.location.search);
             const wilParam = urlParams.get('wilayah');
             if(wilParam) { filtered = filtered.filter(p => p.wilayah === wilParam); }
 
             const container = document.getElementById('tableContainer');
-            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">Tidak ada data ditemukan.</div>'; return; }
+            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">Teu aya data nu kapendak.</div>'; return; }
             container.innerHTML = '';
             filtered.forEach((p, index) => {
                 const badgeClass = p.status === 'Sudah Diambil' ? 'badge-selesai' : 'badge-belum';
+                const displayStatus = p.status === 'Sudah Diambil' ? 'TOS DICANDAK' : 'TEU ACAN';
                 const mapsLink = p.latitude && p.longitude ? `https://www.google.com/maps?q=${p.latitude},${p.longitude}` : '#';
                 
-                // MENGGUNAKAN FUNGSI BARU DI SINI
                 const isolirBadge = getIsolirBadge(hitungDurasiIsolir(p.tanggal_isolir), p.status);
                 
                 let tanggalInfo = '';
-                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diselesaikan: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`; }
+                if (p.tanggal_penarikan) { const d = new Date(p.tanggal_penarikan); if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Réngsé: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`; }
                 
                 container.innerHTML += `
                     <div class="cust-card" style="animation-delay: ${index * 0.05}s">
@@ -478,13 +446,13 @@
                                 <div class="cust-name">${p.nama_pelanggan}</div>
                                 <div class="cust-sub"><span>${p.wilayah}</span><span class="dot"></span><span>${p.perangkat || 'Router'}</span><span class="dot"></span><span>${p.nomor_hp}</span></div>
                             </div>
-                            <span class="badge ${badgeClass}">${p.status}</span>
+                            <span class="badge ${badgeClass}">${displayStatus}</span>
                         </div>
                         ${isolirBadge}${tanggalInfo}
                         ${p.alamat ? `<div class="cust-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${p.alamat}</div>` : ''}
                         <div class="cust-actions">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn-action btn-map"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Peta</a>` : ''}
-                            <button class="btn-action btn-edit" onclick="editData('${p.id}')">Edit</button>
+                            <button class="btn-action btn-edit" onclick="editData('${p.id}')">Édit</button>
                             <button class="btn-action btn-delete" onclick="deleteData('${p.id}')">Hapus</button>
                         </div>
                     </div>`;
@@ -496,11 +464,11 @@
         function openBottomSheet(editData = null) {
             document.getElementById('bottomSheetOverlay').classList.add('active'); document.getElementById('bottomSheet').classList.add('active');
             if (editData) {
-                document.getElementById('formTitle').textContent = 'Edit Data Pelanggan'; document.getElementById('editId').value = editData.id; document.getElementById('nama').value = editData.nama_pelanggan; document.getElementById('nomor_hp').value = editData.nomor_hp; document.getElementById('wilayah').value = editData.wilayah; document.getElementById('alamat').value = editData.alamat || ''; document.getElementById('tanggal_isolir').value = editData.tanggal_isolir || ''; document.getElementById('perangkat').value = editData.perangkat || 'Router';
+                document.getElementById('formTitle').textContent = 'Ngarobih Data Pelanggan'; document.getElementById('editId').value = editData.id; document.getElementById('nama').value = editData.nama_pelanggan; document.getElementById('nomor_hp').value = editData.nomor_hp; document.getElementById('wilayah').value = editData.wilayah; document.getElementById('alamat').value = editData.alamat || ''; document.getElementById('tanggal_isolir').value = editData.tanggal_isolir || ''; document.getElementById('perangkat').value = editData.perangkat || 'Router';
                 document.querySelectorAll('.perangkat-option').forEach(el => { el.classList.remove('selected'); if (el.textContent.trim().replace(/\s+/g, '') === (editData.perangkat || 'Router').replace(/\s+/g, '')) el.classList.add('selected'); });
                 setTimeout(() => { initMap(editData.latitude, editData.longitude); }, 300);
             } else {
-                document.getElementById('formTitle').textContent = 'Registrasi Baru'; document.getElementById('formPelanggan').reset(); document.getElementById('editId').value = ''; document.getElementById('perangkat').value = 'Router'; document.getElementById('tanggal_isolir').value = new Date().toISOString().split('T')[0]; document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); }); setTimeout(initMap, 300);
+                document.getElementById('formTitle').textContent = 'Nambih Data Anyar'; document.getElementById('formPelanggan').reset(); document.getElementById('editId').value = ''; document.getElementById('perangkat').value = 'Router'; document.getElementById('tanggal_isolir').value = new Date().toISOString().split('T')[0]; document.querySelectorAll('.perangkat-option').forEach((el, i) => { el.classList.toggle('selected', i === 0); }); setTimeout(initMap, 300);
             }
         }
         function closeBottomSheet() { document.getElementById('bottomSheetOverlay').classList.remove('active'); document.getElementById('bottomSheet').classList.remove('active'); }
@@ -517,42 +485,41 @@
         document.getElementById('latitude').addEventListener('input', function(e) { const lat = parseFloat(e.target.value); const lng = parseFloat(document.getElementById('longitude').value); if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }});
         document.getElementById('longitude').addEventListener('input', function(e) { const lat = parseFloat(document.getElementById('latitude').value); const lng = parseFloat(e.target.value); if (!isNaN(lat) && !isNaN(lng) && map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 15); }});
         function useMyGPS() {
-            if (!navigator.geolocation) { showToast('GPS tidak didukung', 'error'); return; }
-            showToast('Mencari lokasi akurat...', 'success');
+            if (!navigator.geolocation) { showToast('GPS teu tiasa dianggo', 'error'); return; }
+            showToast('Milari lokasi akurat...', 'success');
             navigator.geolocation.getCurrentPosition(
-                (pos) => { const lat = pos.coords.latitude; const lng = pos.coords.longitude; if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); } updateCoordDisplay(lat, lng); showToast('Lokasi ditemukan!', 'success'); },
-                () => { showToast('Gagal mendapat akses GPS', 'error'); }, { enableHighAccuracy: true, timeout: 10000 }
+                (pos) => { const lat = pos.coords.latitude; const lng = pos.coords.longitude; if (map && marker) { marker.setLatLng([lat, lng]); map.setView([lat, lng], 16); } updateCoordDisplay(lat, lng); showToast('Lokasi kapendak!', 'success'); },
+                () => { showToast('Gagal kenging aksés GPS', 'error'); }, { enableHighAccuracy: true, timeout: 10000 }
             );
         }
 
         document.getElementById('formPelanggan').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editId').value; const nama = document.getElementById('nama').value.trim(); const nomorHp = document.getElementById('nomor_hp').value.trim(); const alamat = document.getElementById('alamat').value.trim(); const lat = parseFloat(document.getElementById('latitude').value); const lng = parseFloat(document.getElementById('longitude').value); const tanggalIsolir = document.getElementById('tanggal_isolir').value;
-            if (!nama || !nomorHp) { showToast('Nama & HP wajib!', 'error'); return; }
+            if (!nama || !nomorHp) { showToast('Nami & HP wajib diisian!', 'error'); return; }
             if (!editId) {
                 const { data: existing } = await supabaseClient.from('pelanggan').select('id').eq('nama_pelanggan', nama).eq('nomor_hp', nomorHp);
-                if (existing && existing.length > 0 && !confirm('Peringatan: Data duplikat ditemukan. Tetap lanjutkan?')) return;
+                if (existing && existing.length > 0 && !confirm('Pépéling: Data duplikat kapendak. Tetep lajengkeun?')) return;
             }
             const data = { nama_pelanggan: nama, nomor_hp: nomorHp, alamat: alamat || (isNaN(lat) || isNaN(lng) ? '' : `Lat: ${lat}, Lng: ${lng}`), latitude: isNaN(lat) ? null : lat, longitude: isNaN(lng) ? null : lng, wilayah: document.getElementById('wilayah').value, perangkat: document.getElementById('perangkat').value, tanggal_isolir: tanggalIsolir || null };
             let error;
             if (editId) { const result = await supabaseClient.from('pelanggan').update(data).eq('id', editId); error = result.error; } 
             else { data.status = 'Belum Diambil'; const result = await supabaseClient.from('pelanggan').insert([data]); error = result.error; }
-            if (!error) { showToast(editId ? 'Sistem diperbarui!' : 'Data tersimpan!', 'success'); closeBottomSheet(); loadTable(); } else { showToast('Gagal: ' + error.message, 'error'); }
+            if (!error) { showToast(editId ? 'Sistem parantos diénggalkeun!' : 'Data parantos disimpen!', 'success'); closeBottomSheet(); loadTable(); } else { showToast('Gagal: ' + error.message, 'error'); }
         });
         
-        async function deleteData(id) { if (!confirm('Tindakan ini tidak bisa dibatalkan. Hapus?')) return; const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id); if (!error) { showToast('Data dihapus permanen.', 'success'); loadTable(); } else { showToast('Error: ' + error.message, 'error'); } }
+        async function deleteData(id) { if (!confirm('Tindakan ieu teu tiasa dibatalkeun. Hapus?')) return; const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id); if (!error) { showToast('Data dihapus permanén.', 'success'); loadTable(); } else { showToast('Éror: ' + error.message, 'error'); } }
         async function editData(id) { const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single(); if (data) openBottomSheet(data); }
 
         function doExport(type) {
             let dataToExport = type === 'all' ? allData : allData.filter(p => p.status === 'Sudah Diambil');
-            if (dataToExport.length === 0) { showToast('Kosong. Tidak ada yang bisa di-export.', 'error'); return; }
-            const exportData = dataToExport.map(p => ({ 'Nama': p.nama_pelanggan, 'HP': p.nomor_hp, 'Perangkat': p.perangkat || 'Router', 'Wilayah': p.wilayah, 'Alamat': p.alamat || '', 'Tanggal Isolir': p.tanggal_isolir || '', 'Status': p.status, 'Tgl Penarikan': p.tanggal_penarikan || '' }));
+            if (dataToExport.length === 0) { showToast('Kosong. Teu aya nu tiasa di-ékspor.', 'error'); return; }
+            const exportData = dataToExport.map(p => ({ 'Nami': p.nama_pelanggan, 'HP': p.nomor_hp, 'Perangkat': p.perangkat || 'Router', 'Wilayah': p.wilayah, 'Alamat': p.alamat || '', 'Kaping Isolir': p.tanggal_isolir || '', 'Status': p.status, 'Kaping Panarikan': p.tanggal_penarikan || '' }));
             const ws = XLSX.utils.json_to_sheet(exportData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data');
             XLSX.writeFile(wb, `Laporan_Sistem_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast(`Export sukses!`, 'success');
+            showToast(`Ékspor suksés!`, 'success');
         }
 
-        // --- Transition Links ---
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) { e.preventDefault(); const href = this.getAttribute('href'); document.getElementById('pageTransit').classList.add('active'); setTimeout(() => window.location.href = href, 400); });
         });
