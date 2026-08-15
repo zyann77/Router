@@ -33,10 +33,33 @@
         .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
         .nav-btn:active { transform: scale(0.9); }
         .nav-btn svg { width: 20px; height: 20px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
-        .header-title-box { text-align: center; }
-        .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-        .header-subtitle { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; }
+        .header-title-box { 
+    flex: 1; 
+    overflow: hidden; 
+    white-space: nowrap; /* Memaksa teks jadi 1 baris lurus */
+    margin: 0 15px;
+    position: relative;
+    /* Efek gradasi pudar di ujung kanan-kiri */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
 
+.marquee-text {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding-left: 100%; /* Memaksa teks mulai dari luar layar kanan */
+    animation: marqueeScroll 8s linear infinite;
+    will-change: transform;
+}
+
+@keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
         /* Tabs */
