@@ -37,10 +37,30 @@ h1, h2, h3, .display-text { font-family: var(--font-display); font-weight: 700; 
   padding: calc(var(--safe-top) + 16px) var(--spacing-xl) var(--spacing-lg);
   position: sticky; top: 0; z-index: 100;
   border-bottom: 1px solid rgba(201, 169, 97, 0.1);
+}.header-title-box { 
+    flex: 1; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    margin: 0 10px;
+    /* Efek fade/pudar di tepi kanan dan kiri agar terlihat mewah di HP */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
-.header-content { display: flex; justify-content: space-between; align-items: center; }
-.header-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--cream); }
-.header-subtitle { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+.marquee-text {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    /* Durasi 10 detik, bisa dipercepat/diperlambat dengan mengubah angka 10s */
+    animation: scrollMarquee 10s linear infinite;
+    will-change: transform;
+}
+@keyframes scrollMarquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
 .header-icon {
   width: 44px; height: 44px; border-radius: 12px;
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
