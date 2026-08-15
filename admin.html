@@ -37,6 +37,16 @@
 
         /* Top Header */
         .top-header { position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(30px); border-bottom: 1px solid var(--glass-border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* INI TAMBAHANNYA AGAR TOMBOL MENYAMPING & HEADER RAMPING */
+        .nav-buttons { display: flex; gap: 8px; align-items: center; }
+        
+        .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
+        .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        .nav-btn:active { transform: scale(0.9); }
+        .nav-btn svg { width: 20px; height: 20px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
+        .header-title-box { text-align: center; flex: 1; }
+        .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
         .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
         .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
         .nav-btn:active { transform: scale(0.9); }
@@ -175,10 +185,12 @@
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </a>
         </div>
+        
         <div class="header-title-box">
-            <div class="header-subtitle">Panel Administrasi</div>
             <div class="header-title">Kelola Data</div>
         </div>
+        
+        <!-- Penyeimbang kanan agar teks pas di tengah -->
         <div style="width: 90px;"></div>
     </div>
 
