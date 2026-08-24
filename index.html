@@ -108,20 +108,18 @@
         .ls-action span { font-size: 12px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.8); }
         .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.8); stroke-width: 2; fill: none; }
 
-        /* WALKING ANIMATION FOR ANIME CHARACTER */
+        /* WALKING ANIME CHARACTER */
         .mascot-lock {
             position: absolute; 
             bottom: 60px; 
-            right: -100px; /* Start from outside */
-            width: 180px; 
+            right: -150px;
+            width: 200px; 
             height: auto;
             filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.4));
             pointer-events: none; 
             z-index: 50;
             opacity: 0;
-            animation: 
-                walkAcross 15s ease-in-out forwards,
-                walkBounce 0.6s ease-in-out infinite;
+            animation: walkAcross 20s ease-in-out forwards;
         }
         
         .mascot-lock.loaded {
@@ -134,58 +132,49 @@
             bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
+            width: 120px;
             height: 20px;
             background: radial-gradient(ellipse, rgba(236, 72, 153, 0.3), transparent);
             filter: blur(10px);
-            animation: shadowScale 0.6s ease-in-out infinite;
+            animation: shadowPulse 2s ease-in-out infinite;
         }
         
-        /* Character walks across screen */
+        /* Character walks across screen from right to left */
         @keyframes walkAcross {
             0% {
-                right: -100px;
+                right: -150px;
                 transform: scaleX(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
             }
             45% {
-                right: 20px;
+                right: 30px;
                 transform: scaleX(1);
             }
             50% {
-                right: 20px;
-                transform: scaleX(-1); /* Turn around */
+                right: 30px;
+                transform: scaleX(-1);
             }
-            95% {
-                right: calc(100% - 280px);
+            90% {
+                right: calc(100% - 230px);
                 transform: scaleX(-1);
             }
             100% {
-                right: calc(100% - 280px);
+                right: calc(100% - 230px);
                 transform: scaleX(-1);
+                opacity: 1;
             }
         }
 
-        /* Walking bounce effect */
-        @keyframes walkBounce {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-8px) rotate(-2deg);
-            }
-            75% {
-                transform: translateY(-5px) rotate(2deg);
-            }
-        }
-
-        /* Shadow animation */
-        @keyframes shadowScale {
+        @keyframes shadowPulse {
             0%, 100% {
                 transform: translateX(-50%) scale(1);
                 opacity: 0.3;
             }
             50% {
-                transform: translateX(-50%) scale(0.8);
+                transform: translateX(-50%) scale(0.85);
                 opacity: 0.2;
             }
         }
@@ -222,63 +211,46 @@
         /* WIDGET MASCOT - WALKING IN PLACE */
         .mascot-widget {
             position: absolute; 
-            top: -45px; 
-            right: 10px; 
-            width: 90px; 
+            top: -50px; 
+            right: 15px; 
+            width: 100px; 
             height: auto;
             filter: drop-shadow(0 5px 15px rgba(139, 92, 246, 0.4));
             pointer-events: none; 
             z-index: 10;
-            animation: 
-                walkInPlace 1s ease-in-out infinite,
-                widgetFloat 3s ease-in-out infinite;
+            animation: widgetWalk 1.2s ease-in-out infinite;
         }
 
         .mascot-widget::after {
-            content: '✨'; 
+            content: '💕'; 
             position: absolute; 
-            top: -10px; 
-            right: 5px; 
-            font-size: 14px;
-            animation: sparkle 1.5s ease-in-out infinite;
+            top: -5px; 
+            right: 10px; 
+            font-size: 16px;
+            animation: floatHeart 2s ease-in-out infinite;
         }
 
-        /* Walking in place animation */
-        @keyframes walkInPlace {
+        @keyframes widgetWalk {
             0%, 100% {
                 transform: translateY(0) rotate(0deg);
             }
             25% {
-                transform: translateY(-6px) rotate(-3deg);
+                transform: translateY(-8px) rotate(-3deg);
             }
             75% {
-                transform: translateY(-4px) rotate(3deg);
+                transform: translateY(-5px) rotate(3deg);
             }
         }
 
-        @keyframes widgetFloat {
+        @keyframes floatHeart {
             0%, 100% {
-                margin-left: 0;
-            }
-            50% {
-                margin-left: 5px;
-            }
-        }
-
-        @keyframes sparkle {
-            0%, 100% {
-                opacity: 0.5;
-                transform: scale(1);
+                opacity: 0.6;
+                transform: translateY(0) scale(1);
             }
             50% {
                 opacity: 1;
-                transform: scale(1.3);
+                transform: translateY(-8px) scale(1.2);
             }
-        }
-
-        @keyframes popHeart { 
-            0%, 100% { transform: scale(1); opacity: 0.8; } 
-            50% { transform: scale(1.3) translateY(-5px); opacity: 1; } 
         }
 
         .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
@@ -414,7 +386,7 @@
             .app-squircle svg { width: 34px; height: 34px; }
             .app-label { font-size: 12px; margin-top: 4px; }
             .notif-popup { width: 360px; }
-            .mascot-lock { width: 220px; }
+            .mascot-lock { width: 240px; }
         }
     </style>
 </head>
@@ -445,23 +417,22 @@
             <span>Usap ka Luhur pikeun Muka</span>
         </div>
 
-        <!-- 🌸 ANIME MASCOT 1 - Walking Character (Use GIF for best effect) -->
-        <img src="https://media.tenor.com/images/anime-girl-walking.gif" 
+        <!--  ANIME MASCOT - WALKING GIF -->
+        <img src="https://tenor.com/vZJIHz4bndp.gif" 
              alt="Walking Anime Girl" 
              class="mascot-lock" 
-             id="mascotLock"
-             onerror="this.src='https://tenor.com/vZJIHz4bndp.gif'; this.classList.add('loaded')">
+             id="mascotLock">
     </div>
 
     <div class="home-screen" id="homeScreen">
         <div class="home-container">
             
             <div class="widget-panel">
-                <!-- 🌸 ANIME MASCOT 2 - Walking in Place -->
-                <img src="https://media.tenor.com/images/anime-chibi-walk.gif" 
+                <!--  WIDGET MASCOT -->
+                <img src="https://tenor.com/vZJIHz4bndp.gif" 
                      alt="Widget Mascot" 
                      class="mascot-widget"
-                     onerror="this.style.display='none'">
+                     style="width: 90px;">
 
                 <div class="widget-header">
                     <div class="w-title">
@@ -607,12 +578,12 @@
         function updateNotifUI() {
             const list = document.getElementById('notifList');
             if (sessionNotifs.length === 0) {
-                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (‿◕)</div>';
+                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿)</div>';
                 return;
             }
             list.innerHTML = sessionNotifs.map(n => `
                 <div class="notif-item">
-                    <div class="notif-item-icon"></div>
+                    <div class="notif-item-icon">🌸</div>
                     <div class="notif-item-content">
                         <div class="notif-item-title">${n.nama}</div>
                         <div class="notif-item-time">Dicandak tabuh ${n.waktu} • ${n.wilayah}</div>
@@ -755,12 +726,10 @@
             });
         }
 
-        // Load mascot images
+        // Show mascot when loaded
         window.addEventListener('load', () => {
             const mascotLock = document.getElementById('mascotLock');
-            if (mascotLock.complete) {
-                mascotLock.classList.add('loaded');
-            }
+            mascotLock.classList.add('loaded');
         });
     </script>
 </body>
