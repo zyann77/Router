@@ -26,10 +26,9 @@
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-blur: blur(25px);
             
-            /* Kawaii Premium Aurora */
-            --aurora-1: #ec4899; /* Pink */
-            --aurora-2: #8b5cf6; /* Purple */
-            --aurora-3: #3b82f6; /* Blue */
+            --aurora-1: #ec4899;
+            --aurora-2: #8b5cf6;
+            --aurora-3: #3b82f6;
             --accent-pink: #f472b6;
             --accent-gold: #fbbf24;
             --success: #34d399;
@@ -38,7 +37,7 @@
             --text-muted: #c4b5fd;
             
             --font-main: 'Poppins', sans-serif;
-            --spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* Lebih memantul/lucu */
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -57,9 +56,6 @@
             position: relative;
         }
 
-        /* =========================================
-           1. DYNAMIC BACKGROUND
-        ========================================= */
         .bg-layer {
             position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
         }
@@ -77,7 +73,6 @@
             100% { transform: translate(-30px, 30px) scale(0.95); }
         }
 
-        /* Kawaii Cursor Glow */
         .cursor-glow {
             position: absolute; width: 300px; height: 300px; 
             background: radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%);
@@ -85,9 +80,6 @@
             z-index: 2; opacity: 0; transition: opacity 0.3s ease; mix-blend-mode: screen;
         }
 
-        /* =========================================
-           2. LOCK SCREEN (Dengan Mascot)
-        ========================================= */
         .lock-screen {
             position: absolute; inset: 0; z-index: 100;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
@@ -116,20 +108,36 @@
         .ls-action span { font-size: 12px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.8); }
         .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.8); stroke-width: 2; fill: none; }
 
-        /* MASCOT: Lock Screen Peeking */
+        /* ANIME MASCOT - LOCK SCREEN */
         .mascot-lock {
-            position: absolute; bottom: -20px; right: -20px; width: 180px; height: 180px;
+            position: absolute; 
+            bottom: 80px; 
+            right: 20px; 
+            width: 200px; 
+            height: auto;
             animation: floatAnime 4s ease-in-out infinite, peekIn 1s var(--spring) forwards;
-            filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.3));
-            pointer-events: none; z-index: 1;
+            filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.4));
+            pointer-events: none; 
+            z-index: 50;
+            opacity: 0;
         }
-        @keyframes peekIn { from { transform: translateY(100px) rotate(-10deg); opacity: 0; } to { transform: translateY(0) rotate(0deg); opacity: 1; } }
-        @keyframes floatAnime { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .mascot-lock.loaded {
+            opacity: 1;
+        }
+        
+        @keyframes peekIn { 
+            from { transform: translateY(100px) rotate(-10deg); opacity: 0; } 
+            to { transform: translateY(0) rotate(0deg); opacity: 1; } 
+        }
+        @keyframes floatAnime { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+        @keyframes bounceFloat { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-8px); } 
+        }
 
-        /* =========================================
-           3. HOME SCREEN
-        ========================================= */
         .home-screen {
             position: absolute; inset: 0; z-index: 10;
             display: flex; flex-direction: column; align-items: center;
@@ -141,13 +149,12 @@
 
         .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 25px; }
 
-        /* WIDGET PANEL (Dengan Mascot Duduk) */
         .widget-panel {
             background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border); border-radius: 28px;
             padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            position: relative; overflow: visible; /* Diubah agar mascot bisa keluar */
+            position: relative; overflow: visible;
         }
         .widget-panel::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -155,18 +162,26 @@
             transform: rotate(45deg); animation: shineGlow 8s infinite linear; pointer-events: none;
         }
         
-        /* MASCOT: Widget Sitter */
+        /* ANIME MASCOT - WIDGET */
         .mascot-widget {
-            position: absolute; top: -35px; right: -10px; width: 90px; height: 90px;
+            position: absolute; 
+            top: -40px; 
+            right: 0px; 
+            width: 100px; 
+            height: auto;
             animation: floatAnime 5s ease-in-out infinite;
             filter: drop-shadow(0 5px 15px rgba(139, 92, 246, 0.4));
-            pointer-events: none; z-index: 10;
+            pointer-events: none; 
+            z-index: 10;
         }
         .mascot-widget::after {
-            content: '❤️'; position: absolute; top: -10px; right: 10px; font-size: 16px;
+            content: '❤️'; position: absolute; top: -5px; right: 15px; font-size: 16px;
             animation: popHeart 2s infinite;
         }
-        @keyframes popHeart { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.3) translateY(-5px); opacity: 1; } }
+        @keyframes popHeart { 
+            0%, 100% { transform: scale(1); opacity: 0.8; } 
+            50% { transform: scale(1.3) translateY(-5px); opacity: 1; } 
+        }
 
         .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
@@ -185,7 +200,6 @@
         .sg-lbl { font-size: 9px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .sg-val.online { color: var(--success); } .sg-val.pending { color: #fbbf24; } .sg-val.offline { color: #f87171; }
 
-        /* APP GRID LAUNCHER */
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
         .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
 
@@ -210,9 +224,6 @@
         .app-squircle.purple-glow { background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.05)); border-color: rgba(139, 92, 246, 0.4); }
         .app-squircle.purple-glow svg { stroke: #c4b5fd; }
 
-        /* =========================================
-           4. FLOATING DOCK & NOTIFICATIONS
-        ========================================= */
         .dock-container {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 12px; padding: 10px 16px;
@@ -264,7 +275,6 @@
         .notif-item { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; gap: 14px; align-items: flex-start; text-align: left; transition: background 0.2s; }
         .notif-item:hover { background: rgba(255,255,255,0.03); }
         
-        /* MASCOT: Notif Avatar */
         .notif-item-icon {
             width: 36px; height: 36px; border-radius: 50%; 
             background: rgba(244, 114, 182, 0.15); color: var(--accent-pink); 
@@ -278,7 +288,6 @@
         .notif-item-time { font-size: 10px; color: var(--text-muted); font-weight: 400; }
         .notif-empty { padding: 35px 20px; text-align: center; color: var(--text-muted); font-size: 12px; }
 
-        /* Toast Popup (Elastic) */
         .toast {
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-150px);
             background: rgba(20, 10, 40, 0.95); backdrop-filter: blur(20px);
@@ -290,7 +299,6 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .toast.success { border-color: var(--success); box-shadow: 0 15px 40px rgba(52, 211, 153, 0.2); }
 
-        /* Ripple & Transit */
         .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none; }
         @keyframes rippleAnim { to { transform: scale(3); opacity: 0; } }
         @keyframes shineGlow { 0% { left: -50%; } 100% { left: 150%; } }
@@ -308,13 +316,12 @@
             .app-squircle svg { width: 34px; height: 34px; }
             .app-label { font-size: 12px; margin-top: 4px; }
             .notif-popup { width: 360px; }
-            .mascot-lock { width: 220px; height: 220px; }
+            .mascot-lock { width: 250px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- LAYER 1: Background & Glow -->
     <div class="bg-layer">
         <div class="aurora-blob blob-1"></div>
         <div class="aurora-blob blob-2"></div>
@@ -322,10 +329,8 @@
         <div class="cursor-glow" id="cursorGlow"></div>
     </div>
 
-    <!-- LAYER 2: Page Transition Overlay -->
     <div class="page-transit" id="pageTransit"></div>
 
-    <!-- LAYER 3: LOCK SCREEN -->
     <div class="lock-screen" id="lockScreen">
         <div class="ls-header">
             <div class="ls-clock" id="lsClock">00:00</div>
@@ -342,18 +347,23 @@
             <span>Usap ka Luhur pikeun Muka</span>
         </div>
 
-        <!-- 🌸 MASCOT 1: Lock Screen Peeking Girl (Stable SVG Illustration) -->
-        <img src="https://illustrations.popsy.co/amber/girl-with-magnifying-glass.svg" alt="Cute Mascot" class="mascot-lock">
+        <!-- 🌸 ANIME MASCOT 1 - Lock Screen -->
+        <img src="https://cdn.jsdelivr.net/gh/zyann77/assets@main/anime-girl-1.png" 
+             alt="Anime Mascot" 
+             class="mascot-lock" 
+             id="mascotLock"
+             onerror="this.src='https://i.pinimg.com/736x/8b/16/7a/8b167af653c239991647d43763cd4d7a.jpg'; this.classList.add('loaded')">
     </div>
 
-    <!-- LAYER 4: HOME SCREEN -->
     <div class="home-screen" id="homeScreen">
         <div class="home-container">
             
-            <!-- WIDGET ATAS -->
             <div class="widget-panel">
-                <!-- 🌸 MASCOT 2: Widget Sitter Girl -->
-                <img src="https://illustrations.popsy.co/amber/working-on-laptop.svg" alt="Cute Widget Mascot" class="mascot-widget">
+                <!-- 🌸 ANIME MASCOT 2 - Widget -->
+                <img src="https://cdn.jsdelivr.net/gh/zyann77/assets@main/anime-girl-2.png" 
+                     alt="Widget Mascot" 
+                     class="mascot-widget"
+                     onerror="this.style.display='none'">
 
                 <div class="widget-header">
                     <div class="w-title">
@@ -379,7 +389,6 @@
                 </div>
             </div>
 
-            <!-- APP GRID LAUNCHER -->
             <div class="app-grid">
                 <a href="login.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle pink-glow">
@@ -440,7 +449,6 @@
         </div>
     </div>
 
-    <!-- LAYER 5: FLOATING DOCK -->
     <div class="dock-container" id="dock" style="opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.5s;">
         <div class="dock-item" id="notifBtn" onclick="toggleNotifPopup(event)">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -452,7 +460,7 @@
                     <span class="clear-all" onclick="clearAllNotifs(event)">Beresihan</span>
                 </div>
                 <div class="notif-list" id="notifList">
-                    <div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿◕)</div>
+                    <div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿)</div>
                 </div>
             </div>
         </div>
@@ -461,19 +469,16 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // --- INISIALISASI SUPABASE (Realtime) ---
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            // Tambahkan emoji lucu sesuai tipe
             const emoji = type === 'success' ? '🎉' : '⚠️';
             t.innerHTML = `<span>${emoji}</span> ${msg}`; 
             t.className = 'toast show ' + (type === 'success' ? 'success' : '');
             setTimeout(() => { t.className = 'toast'; }, 3500);
         }
 
-        // --- LOGIKA LIST NOTIFIKASI ---
         let sessionNotifs = [];
 
         function toggleNotifPopup(event) {
@@ -504,7 +509,7 @@
         function updateNotifUI() {
             const list = document.getElementById('notifList');
             if (sessionNotifs.length === 0) {
-                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿◕)</div>';
+                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿)</div>';
                 return;
             }
             list.innerHTML = sessionNotifs.map(n => `
@@ -518,7 +523,6 @@
             `).join('');
         }
 
-        // --- BERLANGGANAN REALTIME DARI DATABASE ---
         const processedNotifs = new Set();
         supabaseClient
             .channel('index-notif-channel')
@@ -537,7 +541,6 @@
                         showToast(`${newData.nama_pelanggan} parantos dicandak!`, 'success');
                         document.getElementById('notifBadge').classList.add('active');
                         
-                        // Efek getar lucu pada dock saat notifikasi masuk
                         const dock = document.getElementById('dock');
                         dock.style.animation = 'bounceFloat 0.5s ease';
                         setTimeout(() => dock.style.animation = '', 500);
@@ -546,7 +549,6 @@
             })
             .subscribe();
 
-        // --- CLOCK & DATE LOGIC ---
         function updateClocks() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
@@ -563,7 +565,6 @@
         setInterval(updateClocks, 1000);
         updateClocks();
 
-        // --- UNLOCK ANIMATION ---
         const lockScreen = document.getElementById('lockScreen');
         const homeScreen = document.getElementById('homeScreen');
         const dock = document.getElementById('dock');
@@ -586,7 +587,6 @@
             setTimeout(animateCounters, 300);
         }
 
-        // --- COUNTER ANIMATION (WIDGET) ---
         function animateCounters() {
             const counters = [
                 document.getElementById('countPelanggan'),
@@ -610,7 +610,6 @@
             });
         }
 
-        // --- TOUCH / MOUSE GLOW (KAWAII EFFECT) ---
         const cursorGlow = document.getElementById('cursorGlow');
         function moveGlow(x, y) {
             cursorGlow.style.opacity = '1';
@@ -622,7 +621,6 @@
         document.addEventListener('touchmove', e => moveGlow(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
         document.addEventListener('touchend', () => cursorGlow.style.opacity = '0');
 
-        // --- RIPPLE ANIMATION ON APP ICONS ---
         document.querySelectorAll('.app-icon-wrapper, .dock-item').forEach(el => {
             const addRipple = function(e) {
                 const rect = this.getBoundingClientRect();
@@ -641,7 +639,6 @@
             el.addEventListener('touchstart', addRipple, {passive: true});
         });
 
-        // --- SMOOTH PAGE TRANSITION ---
         const pageTransit = document.getElementById('pageTransit');
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -654,12 +651,19 @@
         });
         window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
 
-        // --- PWA SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail:', err));
             });
         }
+
+        // Load mascot images
+        window.addEventListener('load', () => {
+            const mascotLock = document.getElementById('mascotLock');
+            if (mascotLock.complete) {
+                mascotLock.classList.add('loaded');
+            }
+        });
     </script>
 </body>
 </html>
