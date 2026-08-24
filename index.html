@@ -108,31 +108,88 @@
         .ls-action span { font-size: 12px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.8); }
         .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.8); stroke-width: 2; fill: none; }
 
-        /* ANIME MASCOT - LOCK SCREEN */
+        /* WALKING ANIMATION FOR ANIME CHARACTER */
         .mascot-lock {
             position: absolute; 
-            bottom: 80px; 
-            right: 20px; 
-            width: 200px; 
+            bottom: 60px; 
+            right: -100px; /* Start from outside */
+            width: 180px; 
             height: auto;
-            animation: floatAnime 4s ease-in-out infinite, peekIn 1s var(--spring) forwards;
             filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.4));
             pointer-events: none; 
             z-index: 50;
             opacity: 0;
+            animation: 
+                walkAcross 15s ease-in-out forwards,
+                walkBounce 0.6s ease-in-out infinite;
         }
+        
         .mascot-lock.loaded {
             opacity: 1;
         }
+
+        .mascot-lock::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(236, 72, 153, 0.3), transparent);
+            filter: blur(10px);
+            animation: shadowScale 0.6s ease-in-out infinite;
+        }
         
-        @keyframes peekIn { 
-            from { transform: translateY(100px) rotate(-10deg); opacity: 0; } 
-            to { transform: translateY(0) rotate(0deg); opacity: 1; } 
+        /* Character walks across screen */
+        @keyframes walkAcross {
+            0% {
+                right: -100px;
+                transform: scaleX(1);
+            }
+            45% {
+                right: 20px;
+                transform: scaleX(1);
+            }
+            50% {
+                right: 20px;
+                transform: scaleX(-1); /* Turn around */
+            }
+            95% {
+                right: calc(100% - 280px);
+                transform: scaleX(-1);
+            }
+            100% {
+                right: calc(100% - 280px);
+                transform: scaleX(-1);
+            }
         }
-        @keyframes floatAnime { 
-            0%, 100% { transform: translateY(0); } 
-            50% { transform: translateY(-15px); } 
+
+        /* Walking bounce effect */
+        @keyframes walkBounce {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-8px) rotate(-2deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(2deg);
+            }
         }
+
+        /* Shadow animation */
+        @keyframes shadowScale {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateX(-50%) scale(0.8);
+                opacity: 0.2;
+            }
+        }
+
         @keyframes bounceFloat { 
             0%, 100% { transform: translateY(0); } 
             50% { transform: translateY(-8px); } 
@@ -162,22 +219,63 @@
             transform: rotate(45deg); animation: shineGlow 8s infinite linear; pointer-events: none;
         }
         
-        /* ANIME MASCOT - WIDGET */
+        /* WIDGET MASCOT - WALKING IN PLACE */
         .mascot-widget {
             position: absolute; 
-            top: -40px; 
-            right: 0px; 
-            width: 100px; 
+            top: -45px; 
+            right: 10px; 
+            width: 90px; 
             height: auto;
-            animation: floatAnime 5s ease-in-out infinite;
             filter: drop-shadow(0 5px 15px rgba(139, 92, 246, 0.4));
             pointer-events: none; 
             z-index: 10;
+            animation: 
+                walkInPlace 1s ease-in-out infinite,
+                widgetFloat 3s ease-in-out infinite;
         }
+
         .mascot-widget::after {
-            content: '❤️'; position: absolute; top: -5px; right: 15px; font-size: 16px;
-            animation: popHeart 2s infinite;
+            content: '✨'; 
+            position: absolute; 
+            top: -10px; 
+            right: 5px; 
+            font-size: 14px;
+            animation: sparkle 1.5s ease-in-out infinite;
         }
+
+        /* Walking in place animation */
+        @keyframes walkInPlace {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-6px) rotate(-3deg);
+            }
+            75% {
+                transform: translateY(-4px) rotate(3deg);
+            }
+        }
+
+        @keyframes widgetFloat {
+            0%, 100% {
+                margin-left: 0;
+            }
+            50% {
+                margin-left: 5px;
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+        }
+
         @keyframes popHeart { 
             0%, 100% { transform: scale(1); opacity: 0.8; } 
             50% { transform: scale(1.3) translateY(-5px); opacity: 1; } 
@@ -316,7 +414,7 @@
             .app-squircle svg { width: 34px; height: 34px; }
             .app-label { font-size: 12px; margin-top: 4px; }
             .notif-popup { width: 360px; }
-            .mascot-lock { width: 250px; }
+            .mascot-lock { width: 220px; }
         }
     </style>
 </head>
@@ -347,20 +445,20 @@
             <span>Usap ka Luhur pikeun Muka</span>
         </div>
 
-        <!-- 🌸 ANIME MASCOT 1 - Lock Screen -->
-        <img src="https://cdn.jsdelivr.net/gh/zyann77/assets@main/anime-girl-1.png" 
-             alt="Anime Mascot" 
+        <!-- 🌸 ANIME MASCOT 1 - Walking Character (Use GIF for best effect) -->
+        <img src="https://media.tenor.com/images/anime-girl-walking.gif" 
+             alt="Walking Anime Girl" 
              class="mascot-lock" 
              id="mascotLock"
-             onerror="this.src='https://i.ibb.co.com/GfBQCgzB/4199aac18330c83079c7c9258f5ce6d8-removebg-preview.png'; this.classList.add('loaded')">
+             onerror="this.src='https://i.pinimg.com/originals/anime-walk.gif'; this.classList.add('loaded')">
     </div>
 
     <div class="home-screen" id="homeScreen">
         <div class="home-container">
             
             <div class="widget-panel">
-                <!-- 🌸 ANIME MASCOT 2 - Widget -->
-                <img src="https://cdn.jsdelivr.net/gh/zyann77/assets@main/anime-girl-2.png" 
+                <!-- 🌸 ANIME MASCOT 2 - Walking in Place -->
+                <img src="https://media.tenor.com/images/anime-chibi-walk.gif" 
                      alt="Widget Mascot" 
                      class="mascot-widget"
                      onerror="this.style.display='none'">
@@ -460,7 +558,7 @@
                     <span class="clear-all" onclick="clearAllNotifs(event)">Beresihan</span>
                 </div>
                 <div class="notif-list" id="notifList">
-                    <div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿)</div>
+                    <div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿◕)</div>
                 </div>
             </div>
         </div>
@@ -509,12 +607,12 @@
         function updateNotifUI() {
             const list = document.getElementById('notifList');
             if (sessionNotifs.length === 0) {
-                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (◕‿)</div>';
+                list.innerHTML = '<div class="notif-empty">Teu acan aya béwara anyar dinten ieu. (‿◕)</div>';
                 return;
             }
             list.innerHTML = sessionNotifs.map(n => `
                 <div class="notif-item">
-                    <div class="notif-item-icon">🌸</div>
+                    <div class="notif-item-icon"></div>
                     <div class="notif-item-content">
                         <div class="notif-item-title">${n.nama}</div>
                         <div class="notif-item-time">Dicandak tabuh ${n.waktu} • ${n.wilayah}</div>
