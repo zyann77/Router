@@ -52,7 +52,7 @@
         /* CARDS */
         .cust-card { background: #121215; border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; }
         .cust-name { font-size: 16px; font-weight: 600; color: white; margin-bottom: 4px; }
-        .cust-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+        .cust-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
         .cust-info { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
         .cust-info svg { width: 16px; height: 16px; stroke: var(--accent-gold); stroke-width: 1.5; fill: none; flex-shrink: 0; }
         
@@ -74,7 +74,6 @@
         .input-group { margin-bottom: 15px; }
         .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 5px; text-transform: uppercase; }
         .input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-family: inherit; }
-        textarea.input-field { min-height: 80px; resize: none; }
         
         .toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 24px; border-radius: 16px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
         .toast.show { transform: translateX(-50%) translateY(0); }
@@ -106,7 +105,7 @@
         <div id="psbList"></div>
     </div>
 
-    <!-- Modal Form -->
+    <!-- Modal Form Cukup 3 Inputan -->
     <div class="modal-overlay" id="modalForm">
         <div class="modal-content">
             <div class="modal-title" id="formTitle">Nambih Data PSB</div>
@@ -115,10 +114,6 @@
                 <div class="input-group">
                     <label class="input-label">Nami Pelanggan</label>
                     <input type="text" id="nama" class="input-field" required>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">No WhatsApp / HP</label>
-                    <input type="text" id="hp" class="input-field" required>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Wewengkon</label>
@@ -132,10 +127,6 @@
                 <div class="input-group">
                     <label class="input-label">Pakét / Alat</label>
                     <input type="text" id="paket" class="input-field" placeholder="Cth: Router / Pakét 3Mbps">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Alamat Lengkep</label>
-                    <textarea id="alamat" class="input-field"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="button" class="btn-action btn-delete" onclick="closeModal()">Batal</button>
@@ -158,7 +149,6 @@
         function openModal() { document.getElementById('psbForm').reset(); document.getElementById('editId').value = ''; document.getElementById('formTitle').textContent = 'Nambih Data PSB'; document.getElementById('modalForm').classList.add('active'); }
         function closeModal() { document.getElementById('modalForm').classList.remove('active'); }
 
-        // PINDAH TAB & TAMPILKEUN CHIP BULAN
         function switchTab(tab, el) { 
             currentTab = tab; 
             document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active')); 
@@ -175,7 +165,6 @@
             renderList(); 
         }
 
-        // RENDER CHIP BULAN
         function renderBulanChips() { 
             const container = document.getElementById('bulanChips'); 
             container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Sadaya Sasih</div>`; 
@@ -207,7 +196,7 @@
             if (error) { showToast('Gagal ngamuat data'); return; }
             allPsb = data || [];
             
-            renderBulanChips(); // Render tombol bulan saatos data asup
+            renderBulanChips();
             renderList();
         }
 
@@ -215,14 +204,12 @@
             const list = document.getElementById('psbList');
             let filtered = allPsb.filter(p => currentTab === 'Belum' ? p.status !== 'Selesai' : p.status === 'Selesai');
             
-            // SARENGAN BULAN (Upami Tab "Tos Dipasang")
             if (currentTab === 'Selesai' && currentBulan !== 'all') {
                 filtered = filtered.filter(p => p.tanggal_pasang && String(new Date(p.tanggal_pasang).getMonth()) === currentBulan);
             }
             
             if (filtered.length === 0) { list.innerHTML = '<p style="text-align:center; color:gray; font-size: 13px;">Teu aya data di saringan ieu.</p>'; return; }
             
-            // Urutkeun dumasar kaping dipasang upami di tab Selesai
             if (currentTab === 'Selesai') {
                 filtered.sort((a,b) => new Date(b.tanggal_pasang || b.created_at) - new Date(a.tanggal_pasang || a.created_at));
             }
@@ -251,9 +238,8 @@
                     <div class="cust-card">
                         ${badge}
                         <div class="cust-name">${p.nama}</div>
-                        <div class="cust-sub">${p.wilayah} • ${p.hp}</div>
+                        <div class="cust-sub">${p.wilayah}</div>
                         ${tanggalInfo}
-                        <div class="cust-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${p.alamat || '-'}</div>
                         <div class="cust-info"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/></svg> ${p.paket || '-'}</div>
                         ${actionButtons}
                     </div>`;
@@ -265,12 +251,14 @@
             const id = document.getElementById('editId').value;
             const payload = {
                 nama: document.getElementById('nama').value,
-                hp: document.getElementById('hp').value,
                 wilayah: document.getElementById('wilayah').value,
                 paket: document.getElementById('paket').value,
-                alamat: document.getElementById('alamat').value,
                 status: id ? undefined : 'Belum' 
             };
+
+            // Eusian string kosong kanggo kolom nu dihapus di UI sangkan database teu error NOT NULL (Pami aya constraint)
+            payload.hp = "-"; 
+            payload.alamat = "-";
 
             let error;
             if (id) {
@@ -283,13 +271,10 @@
             else { showToast('Gagal: ' + error.message); }
         });
 
-        // FUNGSI MARK DONE (Nambih tanggal pasang otomatis)
         async function markDone(id) {
             if(!confirm('Yakin data ieu tos bérés dipasang?')) return;
-            
-            const tglAyeuna = new Date().toISOString(); // Nyandak kaping otomatis ayeuna
+            const tglAyeuna = new Date().toISOString(); 
             const { error } = await supabaseClient.from('psb').update({ status: 'Selesai', tanggal_pasang: tglAyeuna }).eq('id', id);
-            
             if (!error) { showToast('Status robih janten Rengsé!'); loadData(); }
         }
 
@@ -304,10 +289,8 @@
             if(data) {
                 document.getElementById('editId').value = data.id;
                 document.getElementById('nama').value = data.nama;
-                document.getElementById('hp').value = data.hp;
                 document.getElementById('wilayah').value = data.wilayah;
                 document.getElementById('paket').value = data.paket;
-                document.getElementById('alamat').value = data.alamat;
                 document.getElementById('formTitle').textContent = 'Édit Data PSB';
                 document.getElementById('modalForm').classList.add('active');
             }
