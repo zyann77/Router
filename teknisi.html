@@ -319,7 +319,7 @@
         let isLoading = false;
         let allCustomers = [];
 
-        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'index.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
         function formatWA(nomor) { let clean = nomor.replace(/\D/g, ''); if (clean.startsWith('0')) clean = '62' + clean.substring(1); return 'https://wa.me/' + clean; }
 
