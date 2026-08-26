@@ -132,7 +132,7 @@
     <script>
         // CEK LOGIN SAMA SEPERTI ADMIN & TEKNISI
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn) { window.location.href = 'login.html'; }
+        if (!userLoggedIn) { window.location.href = 'login-psb.html'; }
         
         // CEK ROLE ADMIN
         const isAdmin = userLoggedIn.role === 'admin';
