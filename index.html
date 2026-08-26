@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <title>Created; Iyann</title>
+    <title>Created; Sahaaaa</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
@@ -95,7 +95,6 @@
         .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
         .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
         
-        /* GANTI GRID 3 KOTAK JADI 1 KOTAK PANJANG */
         .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
         .sg-box { display: flex; align-items: center; justify-content: space-between; background: rgba(239, 68, 68, 0.05); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.15); }
         .sg-val { font-size: 22px; font-weight: 700; color: var(--danger); }
@@ -128,7 +127,6 @@
     <div class="bg-layer"><div class="aurora-blob blob-1"></div><div class="aurora-blob blob-2"></div><div class="aurora-blob blob-3"></div></div>
     <div class="page-transit" id="pageTransit"></div>
 
-    <!-- LOCK SCREEN -->
     <div class="lock-screen" id="lockScreen">
         <div class="ls-header">
             <div class="ls-clock" id="lsClock">00:00</div>
@@ -144,7 +142,6 @@
         </div>
     </div>
 
-    <!-- LOGIN SCREEN -->
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
             <div class="logo-box">
@@ -188,7 +185,6 @@
         </div>
     </div>
 
-    <!-- HOME SCREEN -->
     <div class="home-screen" id="homeScreen">
         <div class="home-container">
             <div class="widget-panel">
@@ -216,7 +212,6 @@
             </div>
 
             <div class="app-grid">
-                <!-- Tautan -->
                 <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
                     <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="app-label">Panarikan<br>Perangkat</div>
@@ -254,7 +249,6 @@
     </div>
 
     <div class="dock-container" id="dock">
-        <!-- TOMBOL KELUAR -->
         <div class="dock-item" onclick="prosesLogout()">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </div>
@@ -284,7 +278,6 @@
             document.getElementById('lsDate').textContent = dateStr;
             document.getElementById('hsDate').textContent = dateStr;
             
-            // Set label Eureun Langganan dumasar bulan ayeuna
             document.getElementById('labelEureunLangganan').textContent = `Berhenti Berlangganan (${namaBulanArr[now.getMonth()]})`;
         }
         setInterval(updateClocks, 1000); updateClocks();
@@ -337,31 +330,42 @@
         }
 
         // ==========================================
-        // FUNGSI KALKULATOR TOTAL PELANGGAN & TARIKAN SASIH IEU
+        // FUNGSI KALKULATOR TOTAL PELANGGAN & TARIKAN
         // ==========================================
         async function kalkulasiTotalPelanggan() {
             try {
                 // 1. Candak Total PSB
                 const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
-                // 2. Candak Total Tarikan sadayana
-                const { count: countTarikanAll } = await supabaseClient.from('pelanggan').select('*', { count: 'exact', head: true }).eq('status', 'Selesai');
+                
+                // 2. Candak sadaya data tarikan (Selesai) ti tabel pelanggan
+                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at, tanggal').eq('status', 'Selesai');
+                
+                const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // Ngitung Total Pelanggan Ayeuna (Angka 936 dirumus tina target 965 - 29 psb nu tos asup + 0 tarikan)
-                const angkaDasar = 936; 
-                const totalAyeuna = angkaDasar + (countPSB || 0) - (countTarikanAll || 0);
+                // NGITUNG TOTAL: Dasar + PSB - Tarikan
+                // Rumusna: 957 + 27 - 19 = 965
+                const angkaDasar = 957; 
+                const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
-                // 3. Candak Tarikan (Berhenti) Khusus Sasih Ieu
-                const now = new Date();
-                const yearBulanStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
-                
-                const { count: countTarikanBulanIeu } = await supabaseClient
-                    .from('pelanggan')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('status', 'Selesai')
-                    .like('tanggal', `${yearBulanStr}%`);
+                // 3. Itung manual tarikan khusus sasih ieu sangkan akurat
+                let countTarikanBulanIeu = 0;
+                if (tarikanData) {
+                    const now = new Date();
+                    tarikanData.forEach(item => {
+                        // Kolomna tiasa 'tanggal' atanapi 'created_at'
+                        const tgl = item.tanggal || item.created_at; 
+                        if (tgl) {
+                            const d = new Date(tgl);
+                            // Pami sasih sarta taunna sami sareng dinten ayeuna (Agustus 2026)
+                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                                countTarikanBulanIeu++;
+                            }
+                        }
+                    });
+                }
 
-                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu || 0);
+                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
 
                 animateCounters(); 
 
@@ -430,7 +434,6 @@
         });
 
         function animateCounters() {
-            // Ngan ngajalankeun animasi kana 2 id ieu
             const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan') ];
             counters.forEach(counter => {
                 if(!counter) return;
