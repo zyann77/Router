@@ -311,7 +311,7 @@
         let allData = [];
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'index.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
 
         let sessionNotifs = JSON.parse(localStorage.getItem('adminNotifs')) || [];
