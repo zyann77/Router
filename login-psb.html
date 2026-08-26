@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="su" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="google" content="notranslate">
+    <title>Asup Data PSB - RNB Premium Network</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6;
+            --accent-gold: #C9A961; --accent-gold-light: #E5C97A; --text-main: #FFFFFF; --text-muted: #A1A1AA;
+            --font-main: 'Poppins', sans-serif; --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --smooth: cubic-bezier(0.25, 1, 0.25, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); min-height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+        .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; }
+        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
+        .top-nav { position: absolute; top: 30px; left: 20px; z-index: 10; display: flex; gap: 10px; }
+        .nav-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
+        .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        .nav-btn:active { transform: scale(0.9); }
+        .nav-btn svg { width: 22px; height: 22px; stroke: var(--text-main); stroke-width: 2; fill: none; }
+        .login-container { position: relative; z-index: 10; width: 100%; max-width: 400px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; animation: bounceIn 1s var(--spring); }
+        .logo-box svg { width: 40px; height: 40px; stroke: var(--accent-gold-light); stroke-width: 1.5; fill: none; }
+        .login-title { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 5px; background: linear-gradient(135deg, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeIn 1s ease; }
+        .login-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; letter-spacing: 1px; margin-bottom: 40px; animation: fadeIn 1.2s ease; }
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s var(--smooth); }
+        .role-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.4s var(--spring); box-shadow: 0 15px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .role-card:hover { transform: translateY(-5px) scale(1.03); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
+        .role-card:active { transform: scale(0.95); }
+        .role-icon { width: 50px; height: 50px; border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
+        .role-icon.teknisi { background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.05)); border: 1px solid rgba(16,185,129,0.4); }
+        .role-icon.admin { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); }
+        .role-icon svg { width: 26px; height: 26px; stroke: white; stroke-width: 1.5; fill: none; }
+        .role-name { font-size: 16px; font-weight: 600; color: white; margin-bottom: 4px; }
+        .role-desc { font-size: 10px; color: var(--text-muted); }
+        .admin-form { display: none; width: 100%; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 30px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); opacity: 0; transform: translateY(20px); transition: all 0.5s var(--spring); }
+        .admin-form.active { display: block; opacity: 1; transform: translateY(0); }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 25px; transition: color 0.3s; }
+        .back-link:hover { color: var(--text-main); }
+        .back-link svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-label { display: block; font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
+        .input-field { width: 100%; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: white; font-size: 14px; font-family: var(--font-main); transition: all 0.3s; outline: none; }
+        .input-field:focus { border-color: var(--accent-gold); background: rgba(201,169,97,0.05); box-shadow: 0 0 15px rgba(201,169,97,0.1); }
+        .input-field::placeholder { color: rgba(255,255,255,0.3); }
+        .password-toggle { position: absolute; right: 16px; top: 38px; background: none; border: none; cursor: pointer; color: var(--text-muted); transition: color 0.3s; }
+        .password-toggle:hover { color: var(--accent-gold); }
+        .password-toggle svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s var(--spring); margin-top: 10px; position: relative; overflow: hidden; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(201,169,97,0.3); }
+        .btn-primary:active { transform: scale(0.95); }
+        .error-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 12px; font-weight: 500; display: none; text-align: center; }
+        @keyframes bounceIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="bg-layer">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
+
+    <div class="top-nav">
+        <button class="nav-btn" onclick="window.location.href='index.html'">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+
+    <div class="login-container">
+        <div class="logo-box">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h1 class="login-title">Data PSB</h1>
+        <p class="login-subtitle">Pilih Aksés</p>
+
+        <div id="roleSelector" class="role-selector">
+            <div class="role-card" onclick="masukTeknisi()">
+                <div class="role-icon teknisi">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="role-name">Téknisi</div>
+                <div class="role-desc">Tandaan alat dipasang</div>
+            </div>
+            <div class="role-card" onclick="tampilkanFormAdmin()">
+                <div class="role-icon admin">
+                    <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+                <div class="role-name">Admin</div>
+                <div class="role-desc">Manajemén terpusat</div>
+            </div>
+        </div>
+
+        <div id="adminForm" class="admin-form">
+            <div class="back-link" onclick="kembaliKePilihan()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Wangsul ka pilihan
+            </div>
+            <div id="errorMsg" class="error-banner"></div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label class="input-label">Nami Pamaké</label>
+                    <input type="text" id="username" class="input-field" placeholder="Lebetkeun ID aksés" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Sandi</label>
+                    <input type="password" id="password" class="input-field" placeholder="Lebetkeun kecap sandi" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <button type="submit" class="btn-primary">Vérifikasi Asup</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const roleSelector = document.getElementById('roleSelector');
+        const adminForm = document.getElementById('adminForm');
+
+        function masukTeknisi() {
+            localStorage.setItem('userLoggedIn', JSON.stringify({ id: 'teknisi-' + Date.now(), username: 'teknisi', nama: 'Teknisi', role: 'teknisi' }));
+            document.body.style.opacity = '0';
+            setTimeout(() => window.location.href = 'psb.html', 400);
+        }
+
+        function tampilkanFormAdmin() {
+            roleSelector.style.opacity = '0';
+            roleSelector.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                roleSelector.style.display = 'none';
+                adminForm.classList.add('active');
+            }, 300);
+        }
+
+        function kembaliKePilihan() {
+            adminForm.classList.remove('active');
+            setTimeout(() => {
+                roleSelector.style.display = 'grid';
+                setTimeout(() => {
+                    roleSelector.style.opacity = '1';
+                    roleSelector.style.transform = 'scale(1)';
+                }, 50);
+            }, 400);
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = e.target.querySelector('.btn-primary');
+            
+            errorMsg.style.display = 'none';
+            btn.textContent = 'Mverifikasi...';
+            btn.style.opacity = '0.7';
+
+            if (username === 'admin' && password === 'admin') {
+                localStorage.setItem('userLoggedIn', JSON.stringify({ id: 'admin-001', username: 'admin', nama: 'Administrator', role: 'admin' }));
+                document.body.style.opacity = '0';
+                setTimeout(() => window.location.href = 'psb.html', 400);
+                return;
+            }
+
+            try {
+                const { data: user, error } = await supabaseClient.from('profiles').select('id, username, password_hash, nama, role').eq('username', username).eq('role', 'admin').single();
+                if (error || !user) throw new Error('Aksés ditolak: Data teu valid');
+                if (user.password_hash !== password) throw new Error('Aksés ditolak: Kecap sandi lepat');
+                
+                localStorage.setItem('userLoggedIn', JSON.stringify({ id: user.id, username: user.username, nama: user.nama, role: user.role }));
+                document.body.style.opacity = '0';
+                setTimeout(() => window.location.href = 'psb.html', 400);
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.style.display = 'block';
+                btn.textContent = 'Vérifikasi Asup';
+                btn.style.opacity = '1';
+                
+                adminForm.style.transform = 'translateX(10px)';
+                setTimeout(() => adminForm.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => adminForm.style.transform = 'translateX(10px)', 200);
+                setTimeout(() => adminForm.style.transform = 'translateY(0)', 300);
+            }
+        });
+    </script>
+</body>
+</html>
