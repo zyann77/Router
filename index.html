@@ -120,6 +120,36 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
         .page-transit.active { opacity: 1; pointer-events: all; }
+
+        /* ==========================================
+           STYLE KANGGO MASKOT ANIME
+           ========================================== */
+        .anime-mascot {
+            position: fixed;
+            bottom: 100px;      /* Posisi ti handap (diluhureun tombol kaluar) */
+            right: 20px;        /* Posisi ti pojok katuhu */
+            width: 100px;       /* Ukuran badagna video */
+            height: 100px;
+            border-radius: 50%; /* Jantenkeun buleud */
+            object-fit: cover;  /* Sangkan pas dina buleudan */
+            z-index: 9998;
+            pointer-events: none; /* Sangkan teu ngahalangan klik menu */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(201,169,97,0.3); /* Kalangkang emas */
+            border: 2px solid var(--accent-gold); /* Garis sisina warna emas */
+            opacity: 0;
+            transition: opacity 1s;
+            animation: ngalayang 4s ease-in-out infinite; /* Efek mumbul lalaunan */
+        }
+
+        /* Tampilkeun maskot saatos lebet ka dasbor */
+        .home-screen.active ~ .anime-mascot {
+            opacity: 1;
+        }
+
+        @keyframes ngalayang {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); } /* Ngalayang ka luhur sakedik */
+        }
     </style>
 </head>
 <body>
@@ -192,7 +222,6 @@
                     <div class="w-title">Ihtisar Sistem</div>
                     <div class="w-status"><div class="dot"></div> Online</div>
                 </div>
-                <!-- TOTAL PELANGGAN -->
                 <div class="widget-stat">
                     <div class="stat-val" data-target="0" id="countPelanggan">0</div>
                     <div class="stat-lbl">Total Pelanggan</div>
@@ -202,7 +231,6 @@
                     <div class="stat-lbl" id="hsDate">Dinten ieu</div>
                 </div>
                 
-                <!-- KOTAK TARIKAN PERANGKAT (EUREUN LANGGANAN) -->
                 <div class="stat-grid">
                     <div class="sg-box">
                         <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
@@ -247,6 +275,10 @@
             </div>
         </div>
     </div>
+
+    <video class="anime-mascot" autoplay loop muted playsinline>
+        <source src="maskot.mp4" type="video/mp4">
+    </video>
 
     <div class="dock-container" id="dock">
         <div class="dock-item" onclick="prosesLogout()">
@@ -329,27 +361,16 @@
             }, 500);
         }
 
-        // ==========================================
-        // FUNGSI KALKULATOR TOTAL PELANGGAN 100% AKURAT
-        // ==========================================
         async function kalkulasiTotalPelanggan() {
             try {
-                // 1. Candak data PSB ti Database
                 const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
-                
-                // 2. Candak data Tarikan ti Database
                 const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // =====================================
-                // RUMUS TOTAL PELANGGAN: 936 + PSB(29) - Tarikan(0) = 965
                 const angkaDasar = 936; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
-                // =====================================
 
-                // =====================================
-                // RUMUS TARIKAN AGUSTUS: 19 + Tarikan Bulan Ieu di Database
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     const now = new Date();
@@ -366,7 +387,6 @@
                 const tarikanManualAgustus = 19;
                 const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
                 document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
-                // =====================================
 
                 animateCounters(); 
 
