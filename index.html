@@ -56,7 +56,7 @@
         @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
         @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* Login Screen (Muncul saatos diusap) */
+        /* Login Screen */
         .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
         .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
         .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
@@ -121,20 +121,6 @@
         .dock-item { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
         .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); stroke-width: 2; fill: none; }
         
-        .notif-badge { position: absolute; top: 10px; right: 10px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; display: none; }
-        .notif-badge.active { display: block; }
-        
-        .notif-popup { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9); width: 300px; background: rgba(18, 18, 24, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; display: none; z-index: 1000; opacity: 0; transition: 0.3s; }
-        .notif-popup.active { display: block; opacity: 1; transform: translateX(-50%) scale(1); }
-        .notif-popup-header { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
-        .clear-all { color: var(--accent-gold); font-size: 11px; cursor: pointer; }
-        .notif-list { max-height: 250px; overflow-y: auto; }
-        .notif-item { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; }
-        .notif-item-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: var(--success); display: flex; align-items: center; justify-content: center; }
-        .notif-item-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-        .notif-item-time { font-size: 10px; color: var(--text-muted); }
-        .notif-empty { padding: 30px; text-align: center; color: var(--text-muted); font-size: 12px; }
-
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 20px; border-radius: 14px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
         .toast.show { transform: translateX(-50%) translateY(0); }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
@@ -214,8 +200,9 @@
                     <div class="w-title">Ihtisar Sistem</div>
                     <div class="w-status"><div class="dot"></div> Online</div>
                 </div>
+                <!-- TOTAL PELANGGAN (BAKAL DIUPDATE OTOMATIS KU SCRIPT) -->
                 <div class="widget-stat">
-                    <div class="stat-val" data-target="1254" id="countPelanggan">0</div>
+                    <div class="stat-val" data-target="0" id="countPelanggan">0</div>
                     <div class="stat-lbl">Total Pelanggan</div>
                 </div>
                 <div class="widget-stat">
@@ -251,7 +238,7 @@
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                     <div class="app-label">Pelanggan</div>
                 </a>
-                <a href="dashboard.html" id="linkDashboard" class="app-icon-wrapper transit-link">
+                <a href="dashboard.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
                     <div class="app-label">Dasbor</div>
                 </a>
@@ -267,27 +254,11 @@
         </div>
     </div>
 
-    <!-- FLOATING DOCK & NOTIF -->
+    <!-- FLOATING DOCK -->
     <div class="dock-container" id="dock">
         <!-- TOMBOL KELUAR -->
-        <div class="dock-item" onclick="prosesLogout()" style="margin-right: 15px;">
+        <div class="dock-item" onclick="prosesLogout()">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
-
-        <!-- NOTIF -->
-        <div class="dock-item" id="notifBtn" onclick="toggleNotifPopup(event)">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <div class="notif-badge" id="notifBadge"></div>
-            
-            <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
-                <div class="notif-popup-header">
-                    <span>Béwara Anyar</span>
-                    <span class="clear-all" onclick="clearAllNotifs(event)">Beresihan</span>
-                </div>
-                <div class="notif-list" id="notifList">
-                    <div class="notif-empty">Teu acan aya béwara anyar.</div>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -301,7 +272,6 @@
             t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
         }
 
-        // --- CLOCK & DATE LOGIC ---
         function updateClocks() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
@@ -317,7 +287,6 @@
         }
         setInterval(updateClocks, 1000); updateClocks();
 
-        // --- SYSTEM UNLOCK & LOGIN LOGIC ---
         const lockScreen = document.getElementById('lockScreen');
         const loginScreen = document.getElementById('loginScreen');
         const homeScreen = document.getElementById('homeScreen');
@@ -336,17 +305,14 @@
 
             const userStr = localStorage.getItem('userLoggedIn');
             if (userStr) {
-                // Pami tos asup, langsung ka Dasbor Home
                 setupLauncherLinks(JSON.parse(userStr));
                 showHome();
             } else {
-                // Pami can asup, nembongkeun form login
                 loginScreen.style.display = 'flex';
                 setTimeout(() => loginScreen.style.opacity = '1', 50);
             }
         }
 
-        // FUNGSI PIKEUN NGARAHKEUN LINK DUMASAR PERAN
         function setupLauncherLinks(user) {
             const linkPenarikan = document.getElementById('linkPenarikan');
             if(user.role === 'admin') {
@@ -363,16 +329,48 @@
                 homeScreen.classList.add('active');
                 dock.style.opacity = '1';
                 dock.style.pointerEvents = 'all';
-                animateCounters();
+                
+                // MANGGIL FUNGSI KALKULATOR TOTAL PELANGGAN
+                kalkulasiTotalPelanggan();
             }, 500);
         }
 
+        // ==========================================
+        // FUNGSI KALKULATOR TOTAL PELANGGAN OTOMATIS
+        // ==========================================
+        async function kalkulasiTotalPelanggan() {
+            try {
+                // 1. Candak total Data PSB
+                const { count: countPSB } = await supabaseClient
+                    .from('psb')
+                    .select('*', { count: 'exact', head: true });
+
+                // 2. Candak total Router anu tos ditarik (status Selesai dina tabel pelanggan)
+                const { count: countTarikan } = await supabaseClient
+                    .from('pelanggan')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'Selesai');
+
+                // 3. RUMUS: Total = Angka Dasar + PSB - Tarikan
+                const angkaDasar = 938; // Kusabab ayeuna aya 27 psb & targetna 965 (938+27=965)
+                const totalAyeuna = angkaDasar + (countPSB || 0) - (countTarikan || 0);
+
+                // 4. Lebetkeun hasilna kana Dasbor teras puter animasina
+                document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
+                animateCounters(); 
+
+            } catch (error) {
+                console.error("Gagal ngitung total palanggan", error);
+                animateCounters(); // Tetep play animasi walau error
+            }
+        }
+        // ==========================================
+
         function prosesLogout() {
             localStorage.removeItem('userLoggedIn');
-            window.location.reload(); // Balik deui ka mimiti
+            window.location.reload(); 
         }
 
-        // --- LOGIN FORMS ---
         const roleSelector = document.getElementById('roleSelector');
         const adminForm = document.getElementById('adminForm');
 
@@ -426,7 +424,6 @@
             }
         });
 
-        // --- ANIMASI COUNTER ---
         function animateCounters() {
             const counters = [ document.getElementById('countPelanggan'), document.getElementById('cOnline'), document.getElementById('cPending'), document.getElementById('cOffline') ];
             counters.forEach(counter => {
@@ -441,7 +438,6 @@
             });
         }
 
-        // --- SMOOTH PAGE TRANSITION ---
         const pageTransit = document.getElementById('pageTransit');
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) {
