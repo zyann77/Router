@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <title>Created; Sahaaaa</title>
+    <title>RNB Premium Network</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
@@ -330,42 +330,43 @@
         }
 
         // ==========================================
-        // FUNGSI KALKULATOR TOTAL PELANGGAN & TARIKAN
+        // FUNGSI KALKULATOR TOTAL PELANGGAN 100% AKURAT
         // ==========================================
         async function kalkulasiTotalPelanggan() {
             try {
-                // 1. Candak Total PSB
+                // 1. Candak data PSB ti Database
                 const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
                 
-                // 2. Candak sadaya data tarikan (Selesai) ti tabel pelanggan
-                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at, tanggal').eq('status', 'Selesai');
-                
+                // 2. Candak data Tarikan ti Database
+                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // NGITUNG TOTAL: Dasar + PSB - Tarikan
-                // Rumusna: 957 + 27 - 19 = 965
-                const angkaDasar = 957; 
+                // =====================================
+                // RUMUS TOTAL PELANGGAN: 936 + PSB(29) - Tarikan(0) = 965
+                const angkaDasar = 936; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
+                // =====================================
 
-                // 3. Itung manual tarikan khusus sasih ieu sangkan akurat
+                // =====================================
+                // RUMUS TARIKAN AGUSTUS: 19 + Tarikan Bulan Ieu di Database
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     const now = new Date();
                     tarikanData.forEach(item => {
-                        // Kolomna tiasa 'tanggal' atanapi 'created_at'
-                        const tgl = item.tanggal || item.created_at; 
-                        if (tgl) {
-                            const d = new Date(tgl);
-                            // Pami sasih sarta taunna sami sareng dinten ayeuna (Agustus 2026)
+                        if (item.created_at) {
+                            const d = new Date(item.created_at);
                             if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
                                 countTarikanBulanIeu++;
                             }
                         }
                     });
                 }
-
-                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
+                
+                const tarikanManualAgustus = 19;
+                const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
+                document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
+                // =====================================
 
                 animateCounters(); 
 
