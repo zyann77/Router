@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <title>RNB Premium Network</title>
+    <title>Created; Iyann</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
@@ -95,11 +95,11 @@
         .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
         .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
         
-        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
-        .sg-box { text-align: center; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
-        .sg-val { font-size: 18px; font-weight: 600; color: white; }
-        .sg-lbl { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
-        .sg-val.online { color: var(--success); } .sg-val.pending { color: var(--warning); } .sg-val.offline { color: var(--danger); }
+        /* GANTI GRID 3 KOTAK JADI 1 KOTAK PANJANG */
+        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
+        .sg-box { display: flex; align-items: center; justify-content: space-between; background: rgba(239, 68, 68, 0.05); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.15); }
+        .sg-val { font-size: 22px; font-weight: 700; color: var(--danger); }
+        .sg-lbl { font-size: 11px; font-weight: 600; color: #FCA5A5; text-transform: uppercase; letter-spacing: 0.5px;}
 
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
         .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
@@ -205,10 +205,13 @@
                     <div class="stat-val" style="color:white;" id="hsClock">00:00</div>
                     <div class="stat-lbl" id="hsDate">Dinten ieu</div>
                 </div>
+                
+                <!-- KOTAK TARIKAN PERANGKAT (EUREUN LANGGANAN) -->
                 <div class="stat-grid">
-                    <div class="sg-box"><div class="sg-val online" data-target="48" id="cOnline">0</div><div class="sg-lbl">Online</div></div>
-                    <div class="sg-box"><div class="sg-val pending" data-target="12" id="cPending">0</div><div class="sg-lbl">Katunda</div></div>
-                    <div class="sg-box"><div class="sg-val offline" data-target="3" id="cOffline">0</div><div class="sg-lbl">Pareum</div></div>
+                    <div class="sg-box">
+                        <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
+                        <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
+                    </div>
                 </div>
             </div>
 
@@ -267,18 +270,22 @@
             t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
         }
 
+        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+
         function updateClocks() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
             const mins = String(now.getMinutes()).padStart(2, '0');
             const days = ['Minggon','Senén','Salasa','Rebo','Kemis','Jumaah','Saptu'];
-            const months = ['Januari','Pébruari','Maret','April','Méi','Juni','Juli','Agustus','Séptémber','Oktober','Nopémber','Desémber'];
-            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${namaBulanArr[now.getMonth()]}`;
 
             document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
             document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
             document.getElementById('lsDate').textContent = dateStr;
             document.getElementById('hsDate').textContent = dateStr;
+            
+            // Set label Eureun Langganan dumasar bulan ayeuna
+            document.getElementById('labelEureunLangganan').textContent = `Berhenti Berlangganan (${namaBulanArr[now.getMonth()]})`;
         }
         setInterval(updateClocks, 1000); updateClocks();
 
@@ -330,20 +337,32 @@
         }
 
         // ==========================================
-        // FUNGSI KALKULATOR TOTAL PELANGGAN OTOMATIS
+        // FUNGSI KALKULATOR TOTAL PELANGGAN & TARIKAN SASIH IEU
         // ==========================================
         async function kalkulasiTotalPelanggan() {
             try {
+                // 1. Candak Total PSB
                 const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
-                const { count: countTarikan } = await supabaseClient.from('pelanggan').select('*', { count: 'exact', head: true }).eq('status', 'Selesai');
+                // 2. Candak Total Tarikan sadayana
+                const { count: countTarikanAll } = await supabaseClient.from('pelanggan').select('*', { count: 'exact', head: true }).eq('status', 'Selesai');
 
-                // --- CATETAN PENTING KANGGO KANG DIAN ---
-                // Pami totalna ka payun salah ngitung deui, kantun robih angka 936 ieu di handap.
-                // Contona: Pami hasilna 964 padahal kedahna 965, robih 936 janten 937.
+                // Ngitung Total Pelanggan Ayeuna (Angka 936 dirumus tina target 965 - 29 psb nu tos asup + 0 tarikan)
                 const angkaDasar = 936; 
-                const totalAyeuna = angkaDasar + (countPSB || 0) - (countTarikan || 0);
-
+                const totalAyeuna = angkaDasar + (countPSB || 0) - (countTarikanAll || 0);
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
+
+                // 3. Candak Tarikan (Berhenti) Khusus Sasih Ieu
+                const now = new Date();
+                const yearBulanStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
+                
+                const { count: countTarikanBulanIeu } = await supabaseClient
+                    .from('pelanggan')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'Selesai')
+                    .like('tanggal', `${yearBulanStr}%`);
+
+                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu || 0);
+
                 animateCounters(); 
 
             } catch (error) {
@@ -351,7 +370,6 @@
                 animateCounters(); 
             }
         }
-        // ==========================================
 
         function prosesLogout() {
             localStorage.removeItem('userLoggedIn');
@@ -412,8 +430,10 @@
         });
 
         function animateCounters() {
-            const counters = [ document.getElementById('countPelanggan'), document.getElementById('cOnline'), document.getElementById('cPending'), document.getElementById('cOffline') ];
+            // Ngan ngajalankeun animasi kana 2 id ieu
+            const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan') ];
             counters.forEach(counter => {
+                if(!counter) return;
                 const target = +counter.getAttribute('data-target');
                 const start = performance.now();
                 function update(currentTime) {
