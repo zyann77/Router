@@ -426,7 +426,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let allData = [];
 
-        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'login.html'; }
+        function logout() { localStorage.removeItem('userLoggedIn'); window.location.href = 'index.html'; }
         function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => { t.className = 'toast'; }, 3000); }
 
         // --- Logika Notifikasi (Hanya dieksekusi jika Admin) ---
