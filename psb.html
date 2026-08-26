@@ -35,17 +35,12 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        .btn-add { width: 100%; padding: 16px; border-radius: 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; border: none; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(201,169,97,0.2); }
+        .btn-add { width: 100%; padding: 16px; border-radius: 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; border: none; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(201,169,97,0.2); }
         .btn-add svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-        /* TABS */
-        .main-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .main-tab { padding: 14px; border-radius: 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .main-tab.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
-
         /* FILTER SASIH (CHIPS) */
-        .filter-label { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 10px; font-weight: 600; display: none; }
-        .chips-container { display: none; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
+        .filter-label { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 10px; font-weight: 600; display: block; }
+        .chips-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
         .chip { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.3s; }
         .chip.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: 600; }
 
@@ -84,20 +79,15 @@
 
     <div class="top-header">
         <a href="index.html" class="nav-btn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
-        <div class="header-title-box"><div class="header-title">Data PSB Anyar</div></div>
+        <div class="header-title-box"><div class="header-title">Data PSB</div></div>
         <div style="width: 40px;"></div>
     </div>
 
     <div class="container">
         <!-- TOMBOL INPUT PSB -->
-        <button class="btn-add" onclick="openModal()">
+        <button id="btnInputPSB" class="btn-add" onclick="openModal()">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Input PSB
         </button>
-
-        <div class="main-tabs">
-            <div class="main-tab active" onclick="switchTab('Belum', this)">Antrian Pasang</div>
-            <div class="main-tab" onclick="switchTab('Selesai', this)">Tos Dipasang</div>
-        </div>
 
         <!-- FILTER SASIH -->
         <div class="filter-label" id="labelBulan">Saringan Sasih Dipasang</div>
@@ -125,7 +115,6 @@
                         <option value="Perum / Flamboyan">Perum / Flamboyan</option>
                     </select>
                 </div>
-                <!-- RUBAH LABEL SARENG PLACEHOLDER PAKET -->
                 <div class="input-group">
                     <label class="input-label">Pakét</label>
                     <input type="text" id="paket" class="input-field" placeholder="Cth: 10 Mbps">
@@ -141,8 +130,19 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        // CEK LOGIN SAMA SEPERTI ADMIN & TEKNISI
+        const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
+        if (!userLoggedIn) { window.location.href = 'login.html'; }
+        
+        // CEK ROLE ADMIN
+        const isAdmin = userLoggedIn.role === 'admin';
+        
+        // Jika bukan admin (Teknisi), sembunyikan tombol Input PSB
+        if (!isAdmin) {
+            document.getElementById('btnInputPSB').style.display = 'none';
+        }
+
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentTab = 'Belum';
         let currentBulan = 'all';
         let allPsb = [];
         const namaBulan = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
@@ -150,22 +150,6 @@
         function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
         function openModal() { document.getElementById('psbForm').reset(); document.getElementById('editId').value = ''; document.getElementById('formTitle').textContent = 'Input Data PSB'; document.getElementById('modalForm').classList.add('active'); }
         function closeModal() { document.getElementById('modalForm').classList.remove('active'); }
-
-        function switchTab(tab, el) { 
-            currentTab = tab; 
-            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active')); 
-            el.classList.add('active'); 
-            
-            if (tab === 'Selesai') {
-                document.getElementById('labelBulan').style.display = 'block';
-                document.getElementById('bulanChips').style.display = 'flex';
-            } else {
-                document.getElementById('labelBulan').style.display = 'none';
-                document.getElementById('bulanChips').style.display = 'none';
-            }
-            
-            renderList(); 
-        }
 
         function renderBulanChips() { 
             const container = document.getElementById('bulanChips'); 
@@ -204,17 +188,26 @@
 
         function renderList() {
             const list = document.getElementById('psbList');
-            let filtered = allPsb.filter(p => currentTab === 'Belum' ? p.status !== 'Selesai' : p.status === 'Selesai');
+            let filtered = allPsb;
             
-            if (currentTab === 'Selesai' && currentBulan !== 'all') {
-                filtered = filtered.filter(p => p.tanggal_pasang && String(new Date(p.tanggal_pasang).getMonth()) === currentBulan);
+            if (currentBulan !== 'all') {
+                filtered = filtered.filter(p => {
+                    if (p.status === 'Belum') return true; // Data nu can dipasang tetep ditampilkeun
+                    if (p.status === 'Selesai' && p.tanggal_pasang) {
+                        return String(new Date(p.tanggal_pasang).getMonth()) === currentBulan;
+                    }
+                    return false;
+                });
             }
             
             if (filtered.length === 0) { list.innerHTML = '<p style="text-align:center; color:gray; font-size: 13px;">Teu aya data di saringan ieu.</p>'; return; }
             
-            if (currentTab === 'Selesai') {
-                filtered.sort((a,b) => new Date(b.tanggal_pasang || b.created_at) - new Date(a.tanggal_pasang || a.created_at));
-            }
+            // Ngurutkeun: Anu 'Belum' di luhur, 'Selesai' di handap
+            filtered.sort((a,b) => {
+                if (a.status === 'Belum' && b.status === 'Selesai') return -1;
+                if (a.status === 'Selesai' && b.status === 'Belum') return 1;
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
 
             list.innerHTML = '';
             filtered.forEach(p => {
@@ -226,14 +219,25 @@
                     tanggalInfo = `<div class="cust-info" style="color: var(--success); font-weight: 500;"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Dipasang: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`;
                 }
 
-                let actionButtons = `
-                    <div class="cust-actions">
+                // LOGIK TOMBOL DUMASAR AKSES (ADMIN WUNGKUL NU TIASA EDIT/HAPUS)
+                let actionButtons = `<div class="cust-actions">`;
+                
+                if (isAdmin) {
+                    actionButtons += `
                         <button class="btn-action btn-edit" onclick="editData('${p.id}')">Édit</button>
                         <button class="btn-action btn-delete" onclick="deleteData('${p.id}')">Hapus</button>
-                    </div>`;
-
+                    `;
+                }
+                
                 if (p.status !== 'Selesai') {
                     actionButtons += `<button class="btn-action btn-done" onclick="markDone('${p.id}')">Tandaan Tos Dipasang</button>`;
+                }
+                
+                actionButtons += `</div>`;
+                
+                // Mun Teknisi jeung status tos rengse, ulah nyieun garis action kosong
+                if (!isAdmin && p.status === 'Selesai') {
+                    actionButtons = '';
                 }
 
                 list.innerHTML += `
@@ -258,7 +262,6 @@
                 status: id ? undefined : 'Belum' 
             };
 
-            // Eusian string kosong kanggo kolom nu dihapus di UI sangkan database teu error NOT NULL (Pami aya constraint)
             payload.hp = "-"; 
             payload.alamat = "-";
 
