@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <title>Created; Iyann</title>
+    <title>RNB Premium Network</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
@@ -32,7 +32,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); width: 100vw; height: 100vh; overflow: hidden; position: relative; }
 
-        /* Background */
         .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
         .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
         .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
@@ -40,7 +39,6 @@
         .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
         @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
 
-        /* Lock Screen */
         .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s var(--smooth); }
         .lock-screen.unlocked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .ls-header { text-align: center; }
@@ -56,7 +54,6 @@
         @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
         @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* Login Screen */
         .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
         .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
         .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
@@ -83,7 +80,6 @@
         .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .error-banner { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: none; text-align: center; }
 
-        /* Home Screen */
         .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s var(--spring); }
         .home-screen.active { opacity: 1; transform: scale(1); pointer-events: all; }
         .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 30px; }
@@ -200,7 +196,7 @@
                     <div class="w-title">Ihtisar Sistem</div>
                     <div class="w-status"><div class="dot"></div> Online</div>
                 </div>
-                <!-- TOTAL PELANGGAN (BAKAL DIUPDATE OTOMATIS KU SCRIPT) -->
+                <!-- TOTAL PELANGGAN -->
                 <div class="widget-stat">
                     <div class="stat-val" data-target="0" id="countPelanggan">0</div>
                     <div class="stat-lbl">Total Pelanggan</div>
@@ -217,7 +213,7 @@
             </div>
 
             <div class="app-grid">
-                <!-- Tautan Ieu Bakal Otomatis Diatur ku Script Dumasar Peran (Admin/Teknisi) -->
+                <!-- Tautan -->
                 <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
                     <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="app-label">Panarikan<br>Perangkat</div>
@@ -254,7 +250,6 @@
         </div>
     </div>
 
-    <!-- FLOATING DOCK -->
     <div class="dock-container" id="dock">
         <!-- TOMBOL KELUAR -->
         <div class="dock-item" onclick="prosesLogout()">
@@ -330,7 +325,6 @@
                 dock.style.opacity = '1';
                 dock.style.pointerEvents = 'all';
                 
-                // MANGGIL FUNGSI KALKULATOR TOTAL PELANGGAN
                 kalkulasiTotalPelanggan();
             }, 500);
         }
@@ -340,28 +334,21 @@
         // ==========================================
         async function kalkulasiTotalPelanggan() {
             try {
-                // 1. Candak total Data PSB
-                const { count: countPSB } = await supabaseClient
-                    .from('psb')
-                    .select('*', { count: 'exact', head: true });
+                const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
+                const { count: countTarikan } = await supabaseClient.from('pelanggan').select('*', { count: 'exact', head: true }).eq('status', 'Selesai');
 
-                // 2. Candak total Router anu tos ditarik (status Selesai dina tabel pelanggan)
-                const { count: countTarikan } = await supabaseClient
-                    .from('pelanggan')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('status', 'Selesai');
-
-                // 3. RUMUS: Total = Angka Dasar + PSB - Tarikan
-                const angkaDasar = 938; // Kusabab ayeuna aya 27 psb & targetna 965 (938+27=965)
+                // --- CATETAN PENTING KANGGO KANG DIAN ---
+                // Pami totalna ka payun salah ngitung deui, kantun robih angka 936 ieu di handap.
+                // Contona: Pami hasilna 964 padahal kedahna 965, robih 936 janten 937.
+                const angkaDasar = 936; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - (countTarikan || 0);
 
-                // 4. Lebetkeun hasilna kana Dasbor teras puter animasina
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
                 animateCounters(); 
 
             } catch (error) {
                 console.error("Gagal ngitung total palanggan", error);
-                animateCounters(); // Tetep play animasi walau error
+                animateCounters(); 
             }
         }
         // ==========================================
