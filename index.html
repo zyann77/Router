@@ -1,452 +1,483 @@
 <!DOCTYPE html>
 <html lang="su" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050505">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="google" content="notranslate">
-    <title>RNB Premium Network</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <title>RNB Premium Network</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
 
-    <style>
-        :root {
-            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6; --accent-gold: #C9A961;
-            --accent-gold-light: #E5C97A; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
-            --text-main: #FFFFFF; --text-muted: #A1A1AA;
-            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --smooth: cubic-bezier(0.25, 1, 0.25, 1);
-        }
+    <style>
+        :root {
+            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6; --accent-gold: #C9A961;
+            --accent-gold-light: #E5C97A; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+            --text-main: #FFFFFF; --text-muted: #A1A1AA;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --smooth: cubic-bezier(0.25, 1, 0.25, 1);
+        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); width: 100vw; height: 100vh; overflow: hidden; position: relative; }
 
-        .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
-        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
-        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
-        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
+        .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
+        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
 
-        .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s var(--smooth); }
-        .lock-screen.unlocked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .ls-header { text-align: center; }
-        .ls-clock { font-size: 80px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 5px; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .ls-date { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); }
-        .ls-brand { text-align: center; margin-top: 40px; animation: pulseGlow 3s infinite alternate; }
-        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--text-main), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .ls-brand p { font-size: 10px; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold-light); text-transform: uppercase; margin-top: 4px; }
-        .ls-action { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; padding: 20px; animation: bounceFloat 2s infinite ease-in-out; }
-        .ls-action span { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
-        .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; }
+        .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s var(--smooth); }
+        .lock-screen.unlocked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .ls-header { text-align: center; }
+        .ls-clock { font-size: 80px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 5px; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .ls-date { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); }
+        .ls-brand { text-align: center; margin-top: 40px; animation: pulseGlow 3s infinite alternate; }
+        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--text-main), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .ls-brand p { font-size: 10px; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold-light); text-transform: uppercase; margin-top: 4px; }
+        .ls-action { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; padding: 20px; animation: bounceFloat 2s infinite ease-in-out; }
+        .ls-action span { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
+        .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; }
 
-        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
-        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
+        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
-        .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
-        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
-        .logo-box svg { width: 40px; height: 40px; stroke: var(--accent-gold-light); stroke-width: 1.5; fill: none; }
-        .login-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 5px; color: white; }
-        .login-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
-        
-        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s var(--smooth); }
-        .role-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .role-card:active { transform: scale(0.95); }
-        .role-icon { width: 50px; height: 50px; border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
-        .role-icon.teknisi { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
-        .role-icon.admin { background: rgba(201,169,97,0.15); border: 1px solid rgba(201,169,97,0.4); }
-        .role-icon svg { width: 26px; height: 26px; stroke: white; stroke-width: 1.5; fill: none; }
-        .role-name { font-size: 16px; font-weight: 600; color: white; }
+        .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
+        .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
+        .logo-box svg { width: 40px; height: 40px; stroke: var(--accent-gold-light); stroke-width: 1.5; fill: none; }
+        .login-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 5px; color: white; }
+        .login-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
+        
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s var(--smooth); }
+        .role-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .role-card:active { transform: scale(0.95); }
+        .role-icon { width: 50px; height: 50px; border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
+        .role-icon.teknisi { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
+        .role-icon.admin { background: rgba(201,169,97,0.15); border: 1px solid rgba(201,169,97,0.4); }
+        .role-icon svg { width: 26px; height: 26px; stroke: white; stroke-width: 1.5; fill: none; }
+        .role-name { font-size: 16px; font-weight: 600; color: white; }
 
-        .admin-form { display: none; width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 28px; padding: 30px 20px; opacity: 0; transform: translateY(20px); transition: all 0.5s; }
-        .admin-form.active { display: block; opacity: 1; transform: translateY(0); }
-        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; position: relative; }
-        .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; font-weight: 600; }
-        .input-field { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: white; font-size: 14px; outline: none; }
-        .input-field:focus { border-color: var(--accent-gold); }
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .error-banner { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: none; text-align: center; }
+        .admin-form { display: none; width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 28px; padding: 30px 20px; opacity: 0; transform: translateY(20px); transition: all 0.5s; }
+        .admin-form.active { display: block; opacity: 1; transform: translateY(0); }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; font-weight: 600; }
+        .input-field { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: white; font-size: 14px; outline: none; }
+        .input-field:focus { border-color: var(--accent-gold); }
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .error-banner { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: none; text-align: center; }
 
-        .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s var(--spring); }
-        .home-screen.active { opacity: 1; transform: scale(1); pointer-events: all; }
-        .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 30px; }
+        .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s var(--spring); }
+        .home-screen.active { opacity: 1; transform: scale(1); pointer-events: all; }
+        .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 30px; }
 
-        .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
-        .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
+        .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
-        .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
-        .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
-        
-        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
-        .sg-box { display: flex; align-items: center; justify-content: space-between; background: rgba(239, 68, 68, 0.05); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.15); }
-        .sg-val { font-size: 22px; font-weight: 700; color: var(--danger); }
-        .sg-lbl { font-size: 11px; font-weight: 600; color: #FCA5A5; text-transform: uppercase; letter-spacing: 0.5px;}
+        .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
+        .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
+        .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+        
+        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
+        .sg-box { display: flex; align-items: center; justify-content: space-between; background: rgba(239, 68, 68, 0.05); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.15); }
+        .sg-val { font-size: 22px; font-weight: 700; color: var(--danger); }
+        .sg-lbl { font-size: 11px; font-weight: 600; color: #FCA5A5; text-transform: uppercase; letter-spacing: 0.5px;}
 
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
-        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
-        .app-squircle { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border-radius: 22.5%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); transition: all 0.4s var(--spring); }
-        .app-icon-wrapper:active .app-squircle { transform: scale(0.9); }
-        .app-squircle svg { width: 30px; height: 30px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
-        .app-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; line-height: 1.2; letter-spacing: 0.3px; width: 110%; }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
+        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
+        .app-squircle { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border-radius: 22.5%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); transition: all 0.4s var(--spring); }
+        .app-icon-wrapper:active .app-squircle { transform: scale(0.9); }
+        .app-squircle svg { width: 30px; height: 30px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
+        .app-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; line-height: 1.2; letter-spacing: 0.3px; width: 110%; }
 
-        .app-squircle.gold-glow { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border-color: rgba(201,169,97,0.4); }
-        .app-squircle.gold-glow svg { stroke: var(--accent-gold-light); }
-        .app-squircle.blue-glow { background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border-color: rgba(59,130,246,0.4); }
-        .app-squircle.blue-glow svg { stroke: #93C5FD; }
+        .app-squircle.gold-glow { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border-color: rgba(201,169,97,0.4); }
+        .app-squircle.gold-glow svg { stroke: var(--accent-gold-light); }
+        .app-squircle.blue-glow { background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border-color: rgba(59,130,246,0.4); }
+        .app-squircle.blue-glow svg { stroke: #93C5FD; }
 
-        .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; padding: 12px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; z-index: 50; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
-        .dock-item { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
-        .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); stroke-width: 2; fill: none; }
-        
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 20px; border-radius: 14px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
-        .page-transit.active { opacity: 1; pointer-events: all; }
-    </style>
+        .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; padding: 12px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; z-index: 50; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        .dock-item { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); stroke-width: 2; fill: none; }
+        
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 20px; border-radius: 14px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .page-transit.active { opacity: 1; pointer-events: all; }
+
+        /* ==========================================
+           STYLE KANGGO MASKOT ANIME
+           ========================================== */
+        .anime-mascot {
+            position: fixed;
+            bottom: 100px;      /* Posisi ti handap (diluhureun tombol kaluar) */
+            right: 20px;        /* Posisi ti pojok katuhu */
+            width: 100px;       /* Ukuran badagna video */
+            height: 100px;
+            border-radius: 50%; /* Jantenkeun buleud */
+            object-fit: cover;  /* Sangkan pas dina buleudan */
+            z-index: 9998;
+            pointer-events: none; /* Sangkan teu ngahalangan klik menu */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(201,169,97,0.3); /* Kalangkang emas */
+            border: 2px solid var(--accent-gold); /* Garis sisina warna emas */
+            opacity: 0;
+            transition: opacity 1s;
+            animation: ngalayang 4s ease-in-out infinite; /* Efek mumbul lalaunan */
+        }
+
+        /* Tampilkeun maskot saatos lebet ka dasbor */
+        .home-screen.active ~ .anime-mascot {
+            opacity: 1;
+        }
+
+        @keyframes ngalayang {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); } /* Ngalayang ka luhur sakedik */
+        }
+    </style>
 </head>
 <body>
 
-    <div class="bg-layer"><div class="aurora-blob blob-1"></div><div class="aurora-blob blob-2"></div><div class="aurora-blob blob-3"></div></div>
-    <div class="page-transit" id="pageTransit"></div>
+    <div class="bg-layer"><div class="aurora-blob blob-1"></div><div class="aurora-blob blob-2"></div><div class="aurora-blob blob-3"></div></div>
+    <div class="page-transit" id="pageTransit"></div>
 
-    <div class="lock-screen" id="lockScreen">
-        <div class="ls-header">
-            <div class="ls-clock" id="lsClock">00:00</div>
-            <div class="ls-date" id="lsDate">Nuju ngamuat...</div>
-        </div>
-        <div class="ls-brand">
-            <h1>RNB NETWORK</h1>
-            <p>Premium Network System</p>
-        </div>
-        <div class="ls-action" id="unlockBtn">
-            <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
-            <span>Usap ka Luhur pikeun Muka</span>
-        </div>
-    </div>
+    <div class="lock-screen" id="lockScreen">
+        <div class="ls-header">
+            <div class="ls-clock" id="lsClock">00:00</div>
+            <div class="ls-date" id="lsDate">Nuju ngamuat...</div>
+        </div>
+        <div class="ls-brand">
+            <h1>RNB NETWORK</h1>
+            <p>Premium Network System</p>
+        </div>
+        <div class="ls-action" id="unlockBtn">
+            <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            <span>Usap ka Luhur pikeun Muka</span>
+        </div>
+    </div>
 
-    <div class="login-screen" id="loginScreen">
-        <div class="login-container">
-            <div class="logo-box">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <h1 class="login-title">Aksés Sistem</h1>
-            <p class="login-subtitle">Pilih Peran Anjeun</p>
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="logo-box">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h1 class="login-title">Aksés Sistem</h1>
+            <p class="login-subtitle">Pilih Peran Anjeun</p>
 
-            <div id="roleSelector" class="role-selector">
-                <div class="role-card" onclick="masukTeknisi()">
-                    <div class="role-icon teknisi">
-                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <div class="role-name">Téknisi</div>
-                </div>
-                <div class="role-card" onclick="tampilkanFormAdmin()">
-                    <div class="role-icon admin">
-                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                    </div>
-                    <div class="role-name">Admin</div>
-                </div>
-            </div>
+            <div id="roleSelector" class="role-selector">
+                <div class="role-card" onclick="masukTeknisi()">
+                    <div class="role-icon teknisi">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="role-name">Téknisi</div>
+                </div>
+                <div class="role-card" onclick="tampilkanFormAdmin()">
+                    <div class="role-icon admin">
+                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <div class="role-name">Admin</div>
+                </div>
+            </div>
 
-            <div id="adminForm" class="admin-form">
-                <div class="back-link" onclick="kembaliKePilihan()">
-                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg> Wangsul
-                </div>
-                <div id="errorMsg" class="error-banner"></div>
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label class="input-label">Nami Pamaké</label>
-                        <input type="text" id="username" class="input-field" placeholder="ID Aksés" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Sandi</label>
-                        <input type="password" id="password" class="input-field" placeholder="Sandi" required>
-                    </div>
-                    <button type="submit" class="btn-primary">Asup</button>
-                </form>
-            </div>
-        </div>
-    </div>
+            <div id="adminForm" class="admin-form">
+                <div class="back-link" onclick="kembaliKePilihan()">
+                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg> Wangsul
+                </div>
+                <div id="errorMsg" class="error-banner"></div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label class="input-label">Nami Pamaké</label>
+                        <input type="text" id="username" class="input-field" placeholder="ID Aksés" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Sandi</label>
+                        <input type="password" id="password" class="input-field" placeholder="Sandi" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Asup</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <div class="home-screen" id="homeScreen">
-        <div class="home-container">
-            <div class="widget-panel">
-                <div class="widget-header">
-                    <div class="w-title">Ihtisar Sistem</div>
-                    <div class="w-status"><div class="dot"></div> Online</div>
-                </div>
-                <div class="widget-stat">
-                    <div class="stat-val" data-target="0" id="countPelanggan">0</div>
-                    <div class="stat-lbl">Total Pelanggan</div>
-                </div>
-                <div class="widget-stat">
-                    <div class="stat-val" style="color:white;" id="hsClock">00:00</div>
-                    <div class="stat-lbl" id="hsDate">Dinten ieu</div>
-                </div>
-                
-                <div class="stat-grid">
-                    <div class="sg-box">
-                        <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
-                        <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
-                    </div>
-                </div>
-            </div>
+    <div class="home-screen" id="homeScreen">
+        <div class="home-container">
+            <div class="widget-panel">
+                <div class="widget-header">
+                    <div class="w-title">Ihtisar Sistem</div>
+                    <div class="w-status"><div class="dot"></div> Online</div>
+                </div>
+                <div class="widget-stat">
+                    <div class="stat-val" data-target="0" id="countPelanggan">0</div>
+                    <div class="stat-lbl">Total Pelanggan</div>
+                </div>
+                <div class="widget-stat">
+                    <div class="stat-val" style="color:white;" id="hsClock">00:00</div>
+                    <div class="stat-lbl" id="hsDate">Dinten ieu</div>
+                </div>
+                
+                <div class="stat-grid">
+                    <div class="sg-box">
+                        <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
+                        <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="app-grid">
-                <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-                    <div class="app-label">Panarikan<br>Perangkat</div>
-                </a>
-                <a href="https://bot-production-ee35.up.railway.app/" class="app-icon-wrapper">
-                    <div class="app-squircle blue-glow"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
-                    <div class="app-label">Cék<br>Redaman</div>
-                </a>
-                <a href="https://zyann77.github.io/kalkulator_Redaman/" class="app-icon-wrapper">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
-                    <div class="app-label">Kalkulator<br>Redaman</div>
-                </a>
-                <a href="https://generatorwan.netlify.app/" class="app-icon-wrapper">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg></div>
-                    <div class="app-label">Pangaturan<br>Router</div>
-                </a>
-                <a href="https://home.pmynet.id/pppoe/users" class="app-icon-wrapper">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                    <div class="app-label">Pelanggan</div>
-                </a>
-                <a href="dashboard.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-                    <div class="app-label">Dasbor</div>
-                </a>
-                <a href="https://zyann77.github.io/TitikODP/" class="app-icon-wrapper">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-                    <div class="app-label">Titik ODP</div>
-                </a>
-                <a href="psb.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-                    <div class="app-label">Data PSB</div>
-                </a>
-            </div>
-        </div>
-    </div>
+            <div class="app-grid">
+                <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                    <div class="app-label">Panarikan<br>Perangkat</div>
+                </a>
+                <a href="https://bot-production-ee35.up.railway.app/" class="app-icon-wrapper">
+                    <div class="app-squircle blue-glow"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+                    <div class="app-label">Cék<br>Redaman</div>
+                </a>
+                <a href="https://zyann77.github.io/kalkulator_Redaman/" class="app-icon-wrapper">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
+                    <div class="app-label">Kalkulator<br>Redaman</div>
+                </a>
+                <a href="https://generatorwan.netlify.app/" class="app-icon-wrapper">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg></div>
+                    <div class="app-label">Pangaturan<br>Router</div>
+                </a>
+                <a href="https://home.pmynet.id/pppoe/users" class="app-icon-wrapper">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="app-label">Pelanggan</div>
+                </a>
+                <a href="dashboard.html" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                    <div class="app-label">Dasbor</div>
+                </a>
+                <a href="https://zyann77.github.io/TitikODP/" class="app-icon-wrapper">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                    <div class="app-label">Titik ODP</div>
+                </a>
+                <a href="psb.html" class="app-icon-wrapper transit-link">
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                    <div class="app-label">Data PSB</div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-    <div class="visme_d" data-title="Sample Custom Form" data-url="8k77vn7q-sample-custom-form?sidebar=true" data-domain="forms" data-full-page="false" data-min-height="600px" data-form-id="196595"></div>
-    <script src="https://static-bundles.visme.co/forms/vismeforms-embed.js"></script>
+    <video class="anime-mascot" autoplay loop muted playsinline>
+        <source src="maskot.mp4" type="video/mp4">
+    </video>
 
-    <div class="dock-container" id="dock">
-        <div class="dock-item" onclick="prosesLogout()">
-            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
-    </div>
-    
-    <div id="toast" class="toast"></div>
+    <div class="dock-container" id="dock">
+        <div class="dock-item" onclick="prosesLogout()">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
 
-    <script>
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        function showToast(msg) {
-            const t = document.getElementById('toast'); t.textContent = msg; 
-            t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
-        }
+    <script>
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function showToast(msg) {
+            const t = document.getElementById('toast'); t.textContent = msg; 
+            t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
+        }
 
-        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
 
-        function updateClocks() {
-            const now = new Date();
-            const hrs = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            const days = ['Minggon','Senén','Salasa','Rebo','Kemis','Jumaah','Saptu'];
-            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${namaBulanArr[now.getMonth()]}`;
+        function updateClocks() {
+            const now = new Date();
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const days = ['Minggon','Senén','Salasa','Rebo','Kemis','Jumaah','Saptu'];
+            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${namaBulanArr[now.getMonth()]}`;
 
-            document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
-            document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
-            document.getElementById('lsDate').textContent = dateStr;
-            document.getElementById('hsDate').textContent = dateStr;
-            
-            document.getElementById('labelEureunLangganan').textContent = `Berhenti Berlangganan (${namaBulanArr[now.getMonth()]})`;
-        }
-        setInterval(updateClocks, 1000); updateClocks();
+            document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
+            document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
+            document.getElementById('lsDate').textContent = dateStr;
+            document.getElementById('hsDate').textContent = dateStr;
+            
+            document.getElementById('labelEureunLangganan').textContent = `Berhenti Berlangganan (${namaBulanArr[now.getMonth()]})`;
+        }
+        setInterval(updateClocks, 1000); updateClocks();
 
-        const lockScreen = document.getElementById('lockScreen');
-        const loginScreen = document.getElementById('loginScreen');
-        const homeScreen = document.getElementById('homeScreen');
-        const dock = document.getElementById('dock');
-        let unlocked = false;
+        const lockScreen = document.getElementById('lockScreen');
+        const loginScreen = document.getElementById('loginScreen');
+        const homeScreen = document.getElementById('homeScreen');
+        const dock = document.getElementById('dock');
+        let unlocked = false;
 
-        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
-        let touchStartY = 0;
-        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
-        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
+        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+        let touchStartY = 0;
+        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
 
-        function doUnlock() {
-            if(unlocked) return;
-            unlocked = true;
-            lockScreen.classList.add('unlocked');
+        function doUnlock() {
+            if(unlocked) return;
+            unlocked = true;
+            lockScreen.classList.add('unlocked');
 
-            const userStr = localStorage.getItem('userLoggedIn');
-            if (userStr) {
-                setupLauncherLinks(JSON.parse(userStr));
-                showHome();
-            } else {
-                loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.style.opacity = '1', 50);
-            }
-        }
+            const userStr = localStorage.getItem('userLoggedIn');
+            if (userStr) {
+                setupLauncherLinks(JSON.parse(userStr));
+                showHome();
+            } else {
+                loginScreen.style.display = 'flex';
+                setTimeout(() => loginScreen.style.opacity = '1', 50);
+            }
+        }
 
-        function setupLauncherLinks(user) {
-            const linkPenarikan = document.getElementById('linkPenarikan');
-            if(user.role === 'admin') {
-                linkPenarikan.href = 'admin.html';
-            } else {
-                linkPenarikan.href = 'teknisi.html';
-            }
-        }
+        function setupLauncherLinks(user) {
+            const linkPenarikan = document.getElementById('linkPenarikan');
+            if(user.role === 'admin') {
+                linkPenarikan.href = 'admin.html';
+            } else {
+                linkPenarikan.href = 'teknisi.html';
+            }
+        }
 
-        function showHome() {
-            loginScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginScreen.style.display = 'none';
-                homeScreen.classList.add('active');
-                dock.style.opacity = '1';
-                dock.style.pointerEvents = 'all';
-                
-                kalkulasiTotalPelanggan();
-            }, 500);
-        }
+        function showHome() {
+            loginScreen.style.opacity = '0';
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                homeScreen.classList.add('active');
+                dock.style.opacity = '1';
+                dock.style.pointerEvents = 'all';
+                
+                kalkulasiTotalPelanggan();
+            }, 500);
+        }
 
-        async function kalkulasiTotalPelanggan() {
-            try {
-                const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
-                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
-                const countTarikanAll = tarikanData ? tarikanData.length : 0;
+        async function kalkulasiTotalPelanggan() {
+            try {
+                const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
+                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
+                const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                const angkaDasar = 936; 
-                const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
-                document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
+                const angkaDasar = 936; 
+                const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
+                document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
-                let countTarikanBulanIeu = 0;
-                if (tarikanData) {
-                    const now = new Date();
-                    tarikanData.forEach(item => {
-                        if (item.created_at) {
-                            const d = new Date(item.created_at);
-                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                                countTarikanBulanIeu++;
-                            }
-                        }
-                    });
-                }
-                
-                const tarikanManualAgustus = 19;
-                const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
-                document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
+                let countTarikanBulanIeu = 0;
+                if (tarikanData) {
+                    const now = new Date();
+                    tarikanData.forEach(item => {
+                        if (item.created_at) {
+                            const d = new Date(item.created_at);
+                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                                countTarikanBulanIeu++;
+                            }
+                        }
+                    });
+                }
+                
+                const tarikanManualAgustus = 19;
+                const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
+                document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
 
-                animateCounters(); 
+                animateCounters(); 
 
-            } catch (error) {
-                console.error("Gagal ngitung total palanggan", error);
-                animateCounters(); 
-            }
-        }
+            } catch (error) {
+                console.error("Gagal ngitung total palanggan", error);
+                animateCounters(); 
+            }
+        }
 
-        function prosesLogout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.reload(); 
-        }
+        function prosesLogout() {
+            localStorage.removeItem('userLoggedIn');
+            window.location.reload(); 
+        }
 
-        const roleSelector = document.getElementById('roleSelector');
-        const adminForm = document.getElementById('adminForm');
+        const roleSelector = document.getElementById('roleSelector');
+        const adminForm = document.getElementById('adminForm');
 
-        function masukTeknisi() {
-            const user = { id: 'teknisi-' + Date.now(), username: 'teknisi', nama: 'Teknisi', role: 'teknisi' };
-            localStorage.setItem('userLoggedIn', JSON.stringify(user));
-            setupLauncherLinks(user);
-            showHome();
-        }
+        function masukTeknisi() {
+            const user = { id: 'teknisi-' + Date.now(), username: 'teknisi', nama: 'Teknisi', role: 'teknisi' };
+            localStorage.setItem('userLoggedIn', JSON.stringify(user));
+            setupLauncherLinks(user);
+            showHome();
+        }
 
-        function tampilkanFormAdmin() {
-            roleSelector.style.opacity = '0'; roleSelector.style.transform = 'scale(0.9)';
-            setTimeout(() => { roleSelector.style.display = 'none'; adminForm.classList.add('active'); }, 300);
-        }
+        function tampilkanFormAdmin() {
+            roleSelector.style.opacity = '0'; roleSelector.style.transform = 'scale(0.9)';
+            setTimeout(() => { roleSelector.style.display = 'none'; adminForm.classList.add('active'); }, 300);
+        }
 
-        function kembaliKePilihan() {
-            adminForm.classList.remove('active');
-            setTimeout(() => { roleSelector.style.display = 'grid'; setTimeout(() => { roleSelector.style.opacity = '1'; roleSelector.style.transform = 'scale(1)'; }, 50); }, 400);
-            document.getElementById('errorMsg').style.display = 'none';
-        }
+        function kembaliKePilihan() {
+            adminForm.classList.remove('active');
+            setTimeout(() => { roleSelector.style.display = 'grid'; setTimeout(() => { roleSelector.style.opacity = '1'; roleSelector.style.transform = 'scale(1)'; }, 50); }, 400);
+            document.getElementById('errorMsg').style.display = 'none';
+        }
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
-            const btn = e.target.querySelector('.btn-primary');
-            
-            errorMsg.style.display = 'none'; btn.textContent = 'Mverifikasi...'; btn.style.opacity = '0.7';
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = e.target.querySelector('.btn-primary');
+            
+            errorMsg.style.display = 'none'; btn.textContent = 'Mverifikasi...'; btn.style.opacity = '0.7';
 
-            if (username === 'admin' && password === 'admin') {
-                const user = { id: 'admin-001', username: 'admin', nama: 'Administrator', role: 'admin' };
-                localStorage.setItem('userLoggedIn', JSON.stringify(user));
-                setupLauncherLinks(user); showHome(); return;
-            }
+            if (username === 'admin' && password === 'admin') {
+                const user = { id: 'admin-001', username: 'admin', nama: 'Administrator', role: 'admin' };
+                localStorage.setItem('userLoggedIn', JSON.stringify(user));
+                setupLauncherLinks(user); showHome(); return;
+            }
 
-            try {
-                const { data: user, error } = await supabaseClient.from('profiles').select('*').eq('username', username).eq('role', 'admin').single();
-                if (error || !user) throw new Error('Aksés ditolak!');
-                if (user.password_hash !== password) throw new Error('Sandi lepat!');
-                
-                localStorage.setItem('userLoggedIn', JSON.stringify(user));
-                setupLauncherLinks(user); showHome();
-            } catch (err) {
-                errorMsg.textContent = err.message; errorMsg.style.display = 'block';
-                btn.textContent = 'Asup'; btn.style.opacity = '1';
-                adminForm.style.transform = 'translateX(10px)';
-                setTimeout(() => adminForm.style.transform = 'translateX(-10px)', 100);
-                setTimeout(() => adminForm.style.transform = 'translateX(10px)', 200);
-                setTimeout(() => adminForm.style.transform = 'translateY(0)', 300);
-            }
-        });
+            try {
+                const { data: user, error } = await supabaseClient.from('profiles').select('*').eq('username', username).eq('role', 'admin').single();
+                if (error || !user) throw new Error('Aksés ditolak!');
+                if (user.password_hash !== password) throw new Error('Sandi lepat!');
+                
+                localStorage.setItem('userLoggedIn', JSON.stringify(user));
+                setupLauncherLinks(user); showHome();
+            } catch (err) {
+                errorMsg.textContent = err.message; errorMsg.style.display = 'block';
+                btn.textContent = 'Asup'; btn.style.opacity = '1';
+                adminForm.style.transform = 'translateX(10px)';
+                setTimeout(() => adminForm.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => adminForm.style.transform = 'translateX(10px)', 200);
+                setTimeout(() => adminForm.style.transform = 'translateY(0)', 300);
+            }
+        });
 
-        function animateCounters() {
-            const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan') ];
-            counters.forEach(counter => {
-                if(!counter) return;
-                const target = +counter.getAttribute('data-target');
-                const start = performance.now();
-                function update(currentTime) {
-                    const progress = Math.min((currentTime - start) / 1500, 1);
-                    counter.innerText = Math.floor((1 - Math.pow(1 - progress, 4)) * target).toLocaleString('id-ID');
-                    if (progress < 1) requestAnimationFrame(update);
-                }
-                requestAnimationFrame(update);
-            });
-        }
+        function animateCounters() {
+            const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan') ];
+            counters.forEach(counter => {
+                if(!counter) return;
+                const target = +counter.getAttribute('data-target');
+                const start = performance.now();
+                function update(currentTime) {
+                    const progress = Math.min((currentTime - start) / 1500, 1);
+                    counter.innerText = Math.floor((1 - Math.pow(1 - progress, 4)) * target).toLocaleString('id-ID');
+                    if (progress < 1) requestAnimationFrame(update);
+                }
+                requestAnimationFrame(update);
+            });
+        }
 
-        const pageTransit = document.getElementById('pageTransit');
-        document.querySelectorAll('.transit-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if(this.getAttribute('target') === '_blank') return; 
-                e.preventDefault(); const href = this.getAttribute('href');
-                pageTransit.classList.add('active'); setTimeout(() => window.location.href = href, 400);
-            });
-        });
-        window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
-    </script>
+        const pageTransit = document.getElementById('pageTransit');
+        document.querySelectorAll('.transit-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if(this.getAttribute('target') === '_blank') return; 
+                e.preventDefault(); const href = this.getAttribute('href');
+                pageTransit.classList.add('active'); setTimeout(() => window.location.href = href, 400);
+            });
+        });
+        window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
+    </script>
 </body>
 </html>
