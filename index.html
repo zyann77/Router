@@ -7,58 +7,62 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <title>Created iyann</title>
+    <title>CREATED Iyann</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2888/2888447.png">
     
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 
     <style>
-        /* ==============================================================
-           GAYA KHUSUS HALAMAN UTAMA (LOCKSCREEN, LOGIN, DASHBOARD APP)
-           Sangkan teu acak-acakan mun dipisah CSS-na.
-           ============================================================== */
         :root {
-            --accent-gold: #C9A961;
-            --accent-gold-light: #E5C97A;
-            --success-color: #10B981;
-            --danger-color: #EF4444;
+            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6; --accent-gold: #C9A961;
+            --accent-gold-light: #E5C97A; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+            --text-main: #FFFFFF; --text-muted: #A1A1AA;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --smooth: cubic-bezier(0.25, 1, 0.25, 1);
         }
-        
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #050505; color: #FFFFFF; font-family: 'Poppins', sans-serif; }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+
         .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
         .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
-        .blob-1 { width: 450px; height: 450px; background: #8B5CF6; top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: #3B82F6; bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
         .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
         @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
 
-        .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s; }
+        .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s var(--smooth); }
         .lock-screen.unlocked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .ls-header { text-align: center; }
         .ls-clock { font-size: 80px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 5px; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .ls-date { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); }
         .ls-brand { text-align: center; margin-top: 40px; animation: pulseGlow 3s infinite alternate; }
-        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, #FFFFFF, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--text-main), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .ls-brand p { font-size: 10px; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold-light); text-transform: uppercase; margin-top: 4px; }
         .ls-action { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; padding: 20px; animation: bounceFloat 2s infinite ease-in-out; }
         .ls-action span { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
         .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; }
 
-        .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s; }
+        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
+        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
         .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
-        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
         .logo-box svg { width: 40px; height: 40px; stroke: var(--accent-gold-light); stroke-width: 1.5; fill: none; }
         .login-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 5px; color: white; }
-        .login-subtitle { font-size: 13px; color: #A1A1AA; text-align: center; margin-bottom: 30px; }
+        .login-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
         
-        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s; }
-        .role-card { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s var(--smooth); }
+        .role-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.3s; }
         .role-card:active { transform: scale(0.95); }
         .role-icon { width: 50px; height: 50px; border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
         .role-icon.teknisi { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
@@ -66,51 +70,51 @@
         .role-icon svg { width: 26px; height: 26px; stroke: white; stroke-width: 1.5; fill: none; }
         .role-name { font-size: 16px; font-weight: 600; color: white; }
 
-        .admin-form { display: none; width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; padding: 30px 20px; opacity: 0; transform: translateY(20px); transition: all 0.5s; }
+        .admin-form { display: none; width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 28px; padding: 30px 20px; opacity: 0; transform: translateY(20px); transition: all 0.5s; }
         .admin-form.active { display: block; opacity: 1; transform: translateY(0); }
-        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #A1A1AA; font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; font-weight: 600; }
         .input-field { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: white; font-size: 14px; outline: none; }
         .input-field:focus { border-color: var(--accent-gold); }
         .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .error-banner { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: none; text-align: center; }
 
-        .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s; }
+        .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s var(--spring); }
         .home-screen.active { opacity: 1; transform: scale(1); pointer-events: all; }
-        .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 20px; }
+        .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 30px; }
 
-        .widget-panel { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .w-title { font-size: 11px; color: #A1A1AA; text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success-color); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
-        .w-status .dot { width: 6px; height: 6px; background: var(--success-color); border-radius: 50%; animation: blink 1.5s infinite; }
+        .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
+        .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
         .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
-        .stat-lbl { font-size: 10px; color: #A1A1AA; font-weight: 500; }
+        .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
         
-        .stat-grid { grid-column: span 2; display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
+        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
         .sg-box { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-radius: 16px; }
         .sg-val { font-size: 22px; font-weight: 700; }
         .sg-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
-
-        /* KOTAK PSB WARNA HIJAU */
+        
+        /* Kotak Warna Hijau (PSB) */
         .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); }
-        .sg-box.success .sg-val { color: var(--success-color); }
+        .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
 
-        /* KOTAK BERHENTI WARNA MERAH */
+        /* Kotak Warna Merah (Berhenti) */
         .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); }
-        .sg-box.danger .sg-val { color: var(--danger-color); }
+        .sg-box.danger .sg-val { color: var(--danger); }
         .sg-box.danger .sg-lbl { color: #FCA5A5; }
 
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
         .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
-        .app-squircle { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border-radius: 22.5%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); transition: all 0.4s; }
+        .app-squircle { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border-radius: 22.5%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); transition: all 0.4s var(--spring); }
         .app-icon-wrapper:active .app-squircle { transform: scale(0.9); }
-        .app-squircle svg { width: 30px; height: 30px; stroke: #FFFFFF; stroke-width: 1.5; fill: none; }
+        .app-squircle svg { width: 30px; height: 30px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
         .app-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; line-height: 1.2; letter-spacing: 0.3px; width: 110%; }
 
         .app-squircle.gold-glow { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border-color: rgba(201,169,97,0.4); }
@@ -126,9 +130,6 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
         .page-transit.active { opacity: 1; pointer-events: all; }
-
-        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
-        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
@@ -211,11 +212,13 @@
                 </div>
                 
                 <div class="stat-grid">
+                    <!-- KOTAK PSB BARU (WARNA HIJAU) -->
                     <div class="sg-box success">
                         <div class="sg-lbl" id="labelPSBBulan">Total PSB (...)</div>
                         <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
                     </div>
                     
+                    <!-- KOTAK BERHENTI (WARNA MERAH) -->
                     <div class="sg-box danger">
                         <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
                         <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
@@ -259,9 +262,6 @@
             </div>
         </div>
     </div>
-
-    <div class="visme_d" data-title="Sample Custom Form" data-url="8k77vn7q-sample-custom-form?sidebar=true" data-domain="forms" data-full-page="false" data-min-height="600px" data-form-id="196595"></div>
-    <script src="https://static-bundles.visme.co/forms/vismeforms-embed.js"></script>
 
     <div class="dock-container" id="dock">
         <div class="dock-item" onclick="prosesLogout()">
@@ -354,14 +354,13 @@
                 const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // KALKULASI TOTAL PELANGGAN
                 const angkaDasar = 936; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
                 const now = new Date();
-                
-                // KALKULASI TARIKAN BULAN INI
+
+                // HITUNG TARIKAN BULAN INI
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
@@ -377,7 +376,7 @@
                 const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
                 document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
 
-                // KALKULASI PSB BULAN INI
+                // HITUNG PSB BULAN INI
                 let countPSBBulanIeu = 0;
                 if (psbData) {
                     psbData.forEach(item => {
