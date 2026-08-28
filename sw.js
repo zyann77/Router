@@ -1,8 +1,7 @@
-const CACHE_NAME = 'iyann-rnb-v3';
+const CACHE_NAME = 'iyann-rnb-v4'; // Versi ditaikkeun janten v4
 const urlsToCache = [
   './',
   './index.html',
-  './login.html',
   './assets/css/style.css',
   './config.js'
 ];
