@@ -67,7 +67,7 @@
         .modal-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
         .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 5px; text-transform: uppercase; }
-        .input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-family: inherit; outline: none;}
+        .input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-family: inherit; outline: none; color-scheme: dark;}
         .input-field:focus { border-color: var(--accent-gold); }
         
         .toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 24px; border-radius: 16px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
@@ -108,7 +108,7 @@
         <div id="psbList"></div>
     </div>
 
-    <!-- Modal Form (Lengkep sareng Harga) -->
+    <!-- Modal Form (Lengkep sareng Harga & Tanggal) -->
     <div class="modal-overlay" id="modalForm">
         <div class="modal-content">
             <div class="modal-title" id="formTitle">Input Data PSB</div>
@@ -127,6 +127,11 @@
                         <option value="Panglejar">Panglejar</option>
                         <option value="Perum / Flamboyan">Perum / Flamboyan</option>
                     </select>
+                </div>
+                <!-- Input Tanggal Pasang Tambahan Baru -->
+                <div class="input-group">
+                    <label class="input-label">Kaping Pasang (Tanggal PSB) *</label>
+                    <input type="date" id="tanggal_pasang" class="input-field" required>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Pakét</label>
@@ -163,7 +168,16 @@
         const namaBulan = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
 
         function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-        function openModal() { document.getElementById('psbForm').reset(); document.getElementById('editId').value = ''; document.getElementById('formTitle').textContent = 'Input Data PSB'; document.getElementById('modalForm').classList.add('active'); }
+        
+        function openModal() { 
+            document.getElementById('psbForm').reset(); 
+            document.getElementById('editId').value = ''; 
+            // Otomatis kaeusi kaping dinten ieu
+            document.getElementById('tanggal_pasang').value = new Date().toISOString().split('T')[0];
+            document.getElementById('formTitle').textContent = 'Input Data PSB'; 
+            document.getElementById('modalForm').classList.add('active'); 
+        }
+        
         function closeModal() { document.getElementById('modalForm').classList.remove('active'); }
 
         function renderBulanChips() { 
@@ -274,12 +288,9 @@
                 wilayah: document.getElementById('wilayah').value,
                 paket: document.getElementById('paket').value,
                 harga: document.getElementById('harga').value || '0',
+                tanggal_pasang: document.getElementById('tanggal_pasang').value, // Maca input kaping
                 status: 'Selesai'
             };
-
-            if (!id) {
-                payload.tanggal_pasang = new Date().toISOString();
-            }
 
             payload.hp = "-"; 
             payload.alamat = "-";
@@ -307,7 +318,15 @@
                 document.getElementById('editId').value = data.id;
                 document.getElementById('nama').value = data.nama;
                 document.getElementById('wilayah').value = data.wilayah;
-                document.getElementById('paket').value = data.paket;
+                
+                // Maca input tanggal pami di-edit
+                if (data.tanggal_pasang) {
+                    document.getElementById('tanggal_pasang').value = data.tanggal_pasang.split('T')[0];
+                } else if (data.created_at) {
+                    document.getElementById('tanggal_pasang').value = data.created_at.split('T')[0];
+                }
+
+                document.getElementById('paket').value = data.paket || '';
                 document.getElementById('harga').value = data.harga || '';
                 document.getElementById('formTitle').textContent = 'Édit Data PSB';
                 document.getElementById('modalForm').classList.add('active');
