@@ -353,27 +353,28 @@
                 // DATA TARIKAN (Mung milari status 'Sudah Diambil' anu aya 'Router')
                 const { data: tarikanData } = await supabaseClient
                     .from('pelanggan')
-                    .select('created_at, perangkat')
+                    .select('created_at, perangkat, tanggal_penarikan')
                     .eq('status', 'Sudah Diambil')
                     .ilike('perangkat', '%Router%');
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
                 // KALKULASI TOTAL PELANGGAN
-                // Angka patokan awal dirobih ka 967. 
-                // Catetan: Pami di layar angkana janten 970 (margi katinggang data Supabase), akang kantun ngirangan angka 967 ieu janten 964.
-                const angkaDasar = 967; 
+                // Supados pas 967, angka dasar diset ka 954 (Margi 954 + data PSB & Tarikan ti DB = 967)
+                const angkaDasar = 954; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
                 const now = new Date();
 
-                // HITUNG TARIKAN BULAN INI
+                // HITUNG TARIKAN BULAN INI (MURNI TINA DATABASE)
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
-                        if (item.created_at) {
-                            const d = new Date(item.created_at);
+                        // Maca tina tanggal penarikan (atanapi created_at pami kosong)
+                        const tgl = item.tanggal_penarikan || item.created_at;
+                        if (tgl) {
+                            const d = new Date(tgl);
                             if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
                                 countTarikanBulanIeu++;
                             }
@@ -381,11 +382,8 @@
                     });
                 }
                 
-                // KALKULASI TARIKAN AGUSTUS
-                // Patokan manual dirobih ka 21. Pami kalangkungan, kantun kurangan angkana.
-                const tarikanManualAgustus = 21;
-                const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
-                document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
+                // Tampilkeun murni naon anu aya di database (moal ditambih manual deui)
+                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
 
                 // HITUNG PSB BULAN INI
                 const { data: psbData } = await supabaseClient.from('psb').select('tanggal_pasang, created_at');
