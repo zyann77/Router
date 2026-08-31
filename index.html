@@ -348,17 +348,21 @@
         async function kalkulasiTotalPelanggan() {
             try {
                 // DATA PSB
-                const { data: psbData, count: countPSB } = await supabaseClient.from('psb').select('tanggal_pasang, created_at', { count: 'exact' });
+                const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
                 
-                // DATA TARIKAN
+                // DATA TARIKAN (Mung milari status 'Sudah Diambil' anu aya 'Router')
                 const { data: tarikanData } = await supabaseClient
-    .from('pelanggan')
-    .select('created_at, perangkat')
-    .eq('status', 'Sudah Diambil')
-    .ilike('perangkat', '%Router%');
+                    .from('pelanggan')
+                    .select('created_at, perangkat')
+                    .eq('status', 'Sudah Diambil')
+                    .ilike('perangkat', '%Router%');
+                    
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                const angkaDasar = 936; 
+                // KALKULASI TOTAL PELANGGAN
+                // Angka patokan awal dirobih ka 967. 
+                // Catetan: Pami di layar angkana janten 970 (margi katinggang data Supabase), akang kantun ngirangan angka 967 ieu janten 964.
+                const angkaDasar = 967; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
@@ -376,11 +380,15 @@
                         }
                     });
                 }
-                const tarikanManualAgustus = 19;
+                
+                // KALKULASI TARIKAN AGUSTUS
+                // Patokan manual dirobih ka 21. Pami kalangkungan, kantun kurangan angkana.
+                const tarikanManualAgustus = 21;
                 const totalTarikanTampil = tarikanManualAgustus + countTarikanBulanIeu;
                 document.getElementById('countTarikanBulan').setAttribute('data-target', totalTarikanTampil);
 
                 // HITUNG PSB BULAN INI
+                const { data: psbData } = await supabaseClient.from('psb').select('tanggal_pasang, created_at');
                 let countPSBBulanIeu = 0;
                 if (psbData) {
                     psbData.forEach(item => {
