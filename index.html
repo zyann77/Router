@@ -351,7 +351,11 @@
                 const { data: psbData, count: countPSB } = await supabaseClient.from('psb').select('tanggal_pasang, created_at', { count: 'exact' });
                 
                 // DATA TARIKAN
-                const { data: tarikanData } = await supabaseClient.from('pelanggan').select('created_at').eq('status', 'Selesai');
+                const { data: tarikanData } = await supabaseClient
+    .from('pelanggan')
+    .select('created_at, perangkat')
+    .eq('status', 'Sudah Diambil')
+    .ilike('perangkat', '%Router%');
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
                 const angkaDasar = 936; 
