@@ -514,29 +514,28 @@
         async function editData(id) { const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single(); if (data) openBottomSheet(data); }
         // Fungsi kanggo Admin ngabatalkeun tarikan (Balik deui ka Belum Diambil)
         async function kembalikanKeBelumDiambil(idPelanggan) {
-    if (confirm("Yakin badé ngabatalkeun alat ieu tur diuihkeun ka status 'Belum Diambil'?")) {
-        try {
-            const { error } = await supabaseClient
-                .from('pelanggan')
-                .update({ 
-                    status: 'Belum Diambil',
-                    tanggal_penarikan: null, // Ngosongkeun deui tanggal ditarikna
-                    teknisi: null // Ngosongkeun nami téknisi (opsional)
-                })
-                .eq('id', idPelanggan);
+            if (confirm("Yakin badé ngabatalkeun tarikan ieu tur diuihkeun ka status 'Belum Diambil'?")) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('pelanggan')
+                        .update({ 
+                            status: 'Belum Diambil',
+                            tanggal_penarikan: null, // Ngosongkeun deui tanggal ditarikna
+                            teknisi: null // Ngosongkeun nami téknisi
+                        })
+                        .eq('id', idPelanggan);
 
-            if (error) throw error;
-            
-            alert("Data parantos suksés diuihkeun kana 'Belum Diambil'!");
-            // Panggil fungsi pikeun nga-refresh tabel admin di dieu
-            // loadDataAdmin(); 
-            
-        } catch (err) {
-            console.error("Gagal ngabatalkeun:", err);
-            alert("Gagal ngabatalkeun status.");
+                    if (error) throw error;
+                    
+                    showToast("Suksés diuihkeun kana 'Belum Diambil'!", "success");
+                    loadTable(); // Refresh tabel otomatis
+                    
+                } catch (err) {
+                    console.error("Gagal ngabatalkeun:", err);
+                    showToast("Gagal ngabatalkeun status.", "error");
+                }
+            }
         }
-    }
-}
 
         function doExport(type) {
             let dataToExport = type === 'all' ? allData : allData.filter(p => p.status === 'Sudah Diambil');
