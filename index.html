@@ -96,14 +96,19 @@
         .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
         
         .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
-        .sg-box { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-radius: 16px; }
+        .sg-box { display: flex; flex-direction: column; justify-content: center; padding: 15px 20px; border-radius: 16px; }
+        .sg-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .sg-val { font-size: 22px; font-weight: 700; }
         .sg-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
         
+        /* Teks Rupiah untuk PSB */
+        .sg-sub-val { font-size: 13px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
+
         /* Kotak Warna Hijau (PSB) */
         .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); }
         .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
+        .sg-box.success .sg-sub-val { color: #A7F3D0; }
 
         /* Kotak Warna Merah (Berhenti) */
         .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); }
@@ -214,14 +219,19 @@
                 <div class="stat-grid">
                     <!-- KOTAK PSB BARU (WARNA HIJAU) -->
                     <div class="sg-box success">
-                        <div class="sg-lbl" id="labelPSBBulan">Total PSB (...)</div>
-                        <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
+                        <div class="sg-top-row">
+                            <div class="sg-lbl" id="labelPSBBulan">Total PSB (...)</div>
+                            <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
+                        </div>
+                        <div class="sg-sub-val" id="totalRupiahPSB" data-rp="0">Rp 0</div>
                     </div>
                     
                     <!-- KOTAK BERHENTI (WARNA MERAH) -->
                     <div class="sg-box danger">
-                        <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
-                        <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
+                        <div class="sg-top-row">
+                            <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
+                            <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -360,7 +370,7 @@
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
                 // KALKULASI TOTAL PELANGGAN
-                // Supados pas 967, angka dasar diset ka 954 (Margi 954 + data PSB & Tarikan ti DB = 967)
+                // Supados pas 967, angka dasar diset ka 954
                 const angkaDasar = 954; 
                 const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
@@ -371,7 +381,6 @@
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
-                        // Maca tina tanggal penarikan (atanapi created_at pami kosong)
                         const tgl = item.tanggal_penarikan || item.created_at;
                         if (tgl) {
                             const d = new Date(tgl);
@@ -382,12 +391,13 @@
                     });
                 }
                 
-                // Tampilkeun murni naon anu aya di database (moal ditambih manual deui)
                 document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
 
-                // HITUNG PSB BULAN INI
-                const { data: psbData } = await supabaseClient.from('psb').select('tanggal_pasang, created_at');
+                // HITUNG PSB BULAN INI & TOTAL RUPIAH
+                const { data: psbData } = await supabaseClient.from('psb').select('tanggal_pasang, created_at, harga');
                 let countPSBBulanIeu = 0;
+                let totalRupiahBulanIeu = 0;
+                
                 if (psbData) {
                     psbData.forEach(item => {
                         const tgl = item.tanggal_pasang || item.created_at;
@@ -395,11 +405,15 @@
                             const d = new Date(tgl);
                             if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
                                 countPSBBulanIeu++;
+                                const hargaPaket = parseInt(item.harga) || 0;
+                                totalRupiahBulanIeu += hargaPaket;
                             }
                         }
                     });
                 }
+                
                 document.getElementById('countPSBBulan').setAttribute('data-target', countPSBBulanIeu);
+                document.getElementById('totalRupiahPSB').setAttribute('data-rp', totalRupiahBulanIeu);
 
                 animateCounters(); 
 
@@ -468,6 +482,7 @@
         });
 
         function animateCounters() {
+            // Animasi untuk angka biasa
             const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan'), document.getElementById('countPSBBulan') ];
             counters.forEach(counter => {
                 if(!counter) return;
@@ -480,6 +495,20 @@
                 }
                 requestAnimationFrame(update);
             });
+            
+            // Animasi khusus untuk Rupiah
+            const rpCounter = document.getElementById('totalRupiahPSB');
+            if(rpCounter) {
+                const rpTarget = +rpCounter.getAttribute('data-rp');
+                const startRp = performance.now();
+                function updateRp(currentTime) {
+                    const progress = Math.min((currentTime - startRp) / 1500, 1);
+                    const currentVal = Math.floor((1 - Math.pow(1 - progress, 4)) * rpTarget);
+                    rpCounter.innerText = "Rp " + currentVal.toLocaleString('id-ID');
+                    if (progress < 1) requestAnimationFrame(updateRp);
+                }
+                requestAnimationFrame(updateRp);
+            }
         }
 
         const pageTransit = document.getElementById('pageTransit');
