@@ -454,6 +454,7 @@
                         <div class="cust-actions">
                             ${p.latitude && p.longitude ? `<a href="${mapsLink}" target="_blank" class="btn-action btn-map"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Peta</a>` : ''}
                             <button class="btn-action btn-edit" onclick="editData('${p.id}')">Édit</button>
+                            ${p.status === 'Sudah Diambil' ? `<button class="btn-action" style="background: rgba(139, 92, 246, 0.15); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.3);" onclick="kembalikanKeBelumDiambil('${p.id}')">Batalkeun Tarikan</button>` : ''}
                             <button class="btn-action btn-delete" onclick="deleteData('${p.id}')">Hapus</button>
                         </div>
                     </div>`;
