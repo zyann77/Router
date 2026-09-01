@@ -36,7 +36,7 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px 20px; }
 
-        .btn-add { width: 100%; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; border: none; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(201,169,97,0.2); }
+        .btn-add { width: 100%; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; border: none; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(201,169,97,0.2); }
         .btn-add svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
 
         /* KOTAK PENCARIAN (SEARCH BAR) */
@@ -46,23 +46,24 @@
         .search-box input::placeholder { color: var(--text-muted); }
 
         .filter-label { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; font-weight: 600; }
-        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 15px; scrollbar-width: none; }
+        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
         .chip { padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 500; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.3s; }
         .chip.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: 600; }
 
-        /* UKURAN KOTAK PELANGGAN DIPERKECIL */
-        .cust-card { background: #121215; border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; position: relative; }
-        .cust-name { font-size: 14px; font-weight: 600; color: white; margin-bottom: 2px; }
-        .cust-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
-        .cust-info { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .cust-info svg { width: 14px; height: 14px; stroke: var(--accent-gold); stroke-width: 1.5; fill: none; flex-shrink: 0; }
-        
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 9px; font-weight: 600; margin-bottom: 8px; }
+        /* UKURAN KOTAK PELANGGAN DIPERKECIL & SEJAJAR */
+        .cust-card { background: #121215; border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; position: relative; }
+        .cust-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; gap: 10px; }
+        .cust-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.2; }
+        .badge { display: inline-block; padding: 3px 6px; border-radius: 6px; font-size: 8px; font-weight: 600; margin: 0; white-space: nowrap; height: fit-content; }
         .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-done { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 
-        .cust-actions { display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .btn-action { padding: 6px 12px; border-radius: 10px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; flex: 1; }
+        .cust-sub { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; }
+        .cust-info { display: flex; align-items: flex-start; gap: 6px; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .cust-info svg { width: 14px; height: 14px; stroke: var(--accent-gold); stroke-width: 1.5; fill: none; flex-shrink: 0; }
+
+        .cust-actions { display: flex; gap: 8px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; }
+        .btn-action { padding: 6px 12px; border-radius: 8px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; flex: 1; }
         .btn-edit { background: rgba(59, 130, 246, 0.15); color: #93C5FD; }
         .btn-delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; }
 
@@ -343,10 +344,13 @@
 
                 const hargaFormat = p.harga ? parseInt(p.harga).toLocaleString('id-ID') : '0';
 
+                // TATA LETAK ANYAR (NAMI SARENG BADGE SEJAJAR)
                 list.innerHTML += `
                     <div class="cust-card">
-                        ${badge}
-                        <div class="cust-name">${p.nama}</div>
+                        <div class="cust-header-row">
+                            <div class="cust-name">${p.nama}</div>
+                            ${badge}
+                        </div>
                         <div class="cust-sub">${p.wilayah}</div>
                         ${tanggalInfo}
                         <div class="cust-info"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/></svg> ${p.paket || '-'} • Rp ${hargaFormat}</div>
