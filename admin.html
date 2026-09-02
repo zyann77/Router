@@ -154,10 +154,11 @@
 
     <div class="top-header">
         <div class="nav-buttons">
-            <button class="nav-btn transit-link" href="https://zyann77.github.io/Dashboard/">
+            <!-- TAUTAN DIROBIH JANTEN INDEX.HTML -->
+            <button class="nav-btn transit-link" href="index.html">
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <a href="https://zyann77.github.io/Dashboard/" class="nav-btn transit-link">
+            <a href="index.html" class="nav-btn transit-link">
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </a>
         </div>
@@ -191,7 +192,7 @@
         <div class="customer-list" id="tableContainer"></div>
     </div>
 
-    <!-- FLOATING DOCK (Hanya 2 Tombol: Admin & Teknisi) -->
+    <!-- FLOATING DOCK (Hanya 2 Tombol) -->
     <div class="dock-container">
         <!-- 1. Admin Data (Active) -->
         <div class="dock-item active transit-link" href="admin.html">
@@ -266,7 +267,7 @@
 
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
-        if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'login.html'; }
+        if (!userLoggedIn || userLoggedIn.role !== 'admin') { window.location.href = 'index.html'; }
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let map, marker;
