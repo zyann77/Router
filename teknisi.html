@@ -151,14 +151,6 @@
         .btn-confirm { background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; }
         .btn-confirm.danger { background: var(--danger); color: white; }
 
-        /* Floating Dock */
-        .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; padding: 12px; background: rgba(25, 25, 30, 0.7); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 500; }
-        .dock-item { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
-        .dock-item:active { transform: scale(0.9); }
-        .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 1.5; fill: none; }
-        .dock-item.active { background: rgba(255,255,255,0.1); }
-        .dock-item.active svg { stroke: var(--accent-gold); }
-
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 13px; }
         
         /* Toast */
@@ -289,7 +281,16 @@
     <script>
         const userLoggedIn = JSON.parse(localStorage.getItem('userLoggedIn'));
         if (!userLoggedIn) { window.location.href = 'login.html'; }
-        if (userLoggedIn.role === 'admin') { document.getElementById('btnAdminData').style.display = 'flex'; }
+        
+        // KODE IEU NU DIHAPUS KUSABAB BIKIN ERROR
+        // if (userLoggedIn.role === 'admin') { document.getElementById('btnAdminData').style.display = 'flex'; }
+
+        // Benerin Navigasi tombol back sangkan aman
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            if (userLoggedIn && userLoggedIn.role === 'admin') {
+                btn.setAttribute('href', 'admin.html');
+            }
+        });
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -526,7 +527,13 @@
         });
 
         document.querySelectorAll('.transit-link').forEach(link => {
-            link.addEventListener('click', function(e) { e.preventDefault(); document.getElementById('pageTransit').classList.add('active'); setTimeout(() => window.location.href = this.getAttribute('href'), 400); });
+            link.addEventListener('click', function(e) { 
+                const href = this.getAttribute('href');
+                if(!href || this.getAttribute('target') === '_blank') return; 
+                e.preventDefault(); 
+                document.getElementById('pageTransit').classList.add('active'); 
+                setTimeout(() => window.location.href = href, 400); 
+            });
         });
         window.addEventListener('pageshow', e => { if(e.persisted) document.getElementById('pageTransit').classList.remove('active'); });
 
