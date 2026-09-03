@@ -358,9 +358,10 @@
         async function kalkulasiTotalPelanggan() {
             try {
                 // DATA PSB
-                const { count: countPSB } = await supabaseClient.from('psb').select('*', { count: 'exact', head: true });
+                const { data: psbSemua } = await supabaseClient.from('psb').select('*').order('tanggal_pasang', { ascending: false });
+                const countPSB = psbSemua ? psbSemua.length : 0;
                 
-                // DATA TARIKAN (Mung milari status 'Sudah Diambil' anu aya 'Router')
+                // DATA TARIKAN
                 const { data: tarikanData } = await supabaseClient
                     .from('pelanggan')
                     .select('created_at, perangkat, tanggal_penarikan')
@@ -369,15 +370,15 @@
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // KALKULASI TOTAL PELANGGAN
-                // Supados pas 967, angka dasar diset ka 954
-                const angkaDasar = 954; 
-                const totalAyeuna = angkaDasar + (countPSB || 0) - countTarikanAll;
+                // KALKULASI TOTAL PELANGGAN ANYAR
+                // Angka dasar di-set 942 sangkan hasil ahirna pas nembongkeun 955
+                const angkaDasar = 942; 
+                const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
                 const now = new Date();
 
-                // HITUNG TARIKAN BULAN INI (MURNI TINA DATABASE)
+                // HITUNG TARIKAN BULAN INI
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
@@ -390,16 +391,14 @@
                         }
                     });
                 }
-                
                 document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
 
                 // HITUNG PSB BULAN INI & TOTAL RUPIAH
-                const { data: psbData } = await supabaseClient.from('psb').select('tanggal_pasang, created_at, harga');
                 let countPSBBulanIeu = 0;
                 let totalRupiahBulanIeu = 0;
                 
-                if (psbData) {
-                    psbData.forEach(item => {
+                if (psbSemua) {
+                    psbSemua.forEach(item => {
                         const tgl = item.tanggal_pasang || item.created_at;
                         if (tgl) {
                             const d = new Date(tgl);
