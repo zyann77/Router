@@ -1,4 +1,4 @@
-const CACHE_NAME = 'iyann-rnb-v4'; // Versi ditaikkeun janten v5
+const CACHE_NAME = 'iyann-rnb-v5'; // Versi ditaikkeun janten v6
 const urlsToCache = [
   './',
   './index.html',
