@@ -1,9 +1,8 @@
-const CACHE_NAME = 'iyann-rnb-v5'; // Versi ditaikkeun janten v6
+const CACHE_NAME = 'iyann-rnb-v5';
 const urlsToCache = [
-  './',
-  './index.html',
-  './assets/css/style.css',
-  './config.js'
+  '/Router/index.html',
+  '/Router/config.js',
+  '/Router/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -12,8 +11,9 @@ self.addEventListener('install', (event) => {
       .then((cache) => {
         return cache.addAll(urlsToCache);
       })
+      .catch((err) => console.log('Aya file nu gagal di-cache:', err))
   );
-  // Paksa aktivasi service worker baru
+  // Paksa aktivasi service worker anyar
   self.skipWaiting();
 });
 
