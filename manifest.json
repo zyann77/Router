@@ -1,47 +1,24 @@
 {
-
   "name": "Iyann RnB Network Tools",
-
   "short_name": "Iyann RnB",
-
   "description": "Aplikasi manajemen penarikan perangkat, cek redaman, dan setting router.",
-
   "start_url": "./",
-
   "display": "standalone",
-
   "background_color": "#0A0A0F",
-
   "theme_color": "#0A0A0F",
-
   "orientation": "portrait",
-
   "icons": [
-
     {
-
       "src": "https://i.ibb.co.com/6719mM9F/Logo-Rn-B-removebg-preview-1-v2.png",
-
       "sizes": "192x192",
-
       "type": "image/png",
-
       "purpose": "any maskable"
-
     },
-
     {
-
       "src": "https://i.ibb.co.com/P84m1hT/Logo-Rn-B-removebg-preview-v2.png",
-
       "sizes": "512x512",
-
       "type": "image/png",
-
       "purpose": "any maskable"
-
     }
-
   ]
-
 }
