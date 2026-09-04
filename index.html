@@ -519,6 +519,17 @@
             });
         });
         window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
+        
+        // KODE ANYAR PIKEUN NGA-AKTIFKEUN INSTALL APLIKASI
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/Router/sw.js').then(reg => {
+                    console.log('SW Suksés didaptarkeun', reg.scope);
+                }).catch(err => {
+                    console.log('SW Gagal:', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
