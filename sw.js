@@ -1,4 +1,4 @@
-const CACHE_NAME = 'iyann-rnb-v5';
+const CACHE_NAME = 'iyann-rnb-v6';
 const urlsToCache = [
   '/Router/index.html',
   '/Router/config.js',
