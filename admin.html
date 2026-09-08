@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kelola Data - RNB Premium</title>
+    <title>Kelola Data</title>
     
     <!-- Leaflet & Supabase & SheetJS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -61,6 +61,10 @@
         .search-box input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; font-family: inherit; }
         .search-box input::placeholder { color: var(--text-muted); }
 
+        /* Export Bulanan */
+        .export-box { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .export-box input { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-family: inherit; font-size: 13px; }
+        
         /* Chips */
         .filter-label { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
         .chips-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
@@ -97,7 +101,7 @@
         .btn-map { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
         .btn-edit { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
         .btn-delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .btn-revert { background: rgba(139, 92, 246, 0.15); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.3); } /* Tombol Batal Selesai */
+        .btn-revert { background: rgba(139, 92, 246, 0.15); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.3); } 
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 
@@ -109,18 +113,6 @@
         .dock-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.7); stroke-width: 1.5; fill: none; transition: stroke 0.3s; }
         .dock-item.active svg { stroke: var(--accent-gold); }
         .dock-item.active::after { content: ''; position: absolute; bottom: -6px; width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; }
-
-        /* Notif Popup dalam Dock */
-        .notif-badge { position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; display: none; box-shadow: 0 0 0 2px rgba(25,25,30,1); }
-        .notif-badge.active { display: block; animation: pulseRed 2s infinite; }
-        .notif-popup { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9); width: 320px; background: rgba(18, 18, 24, 0.85); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px; display: none; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); z-index: 1000; cursor: default; opacity: 0; transition: all 0.3s var(--spring); }
-        .notif-popup.active { display: block; opacity: 1; transform: translateX(-50%) scale(1); }
-        .notif-popup-header { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: white; }
-        .clear-all { color: var(--accent-gold); font-size: 11px; cursor: pointer; }
-        .notif-list { max-height: 280px; overflow-y: auto; scrollbar-width: none; }
-        .notif-item { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; gap: 14px; text-align: left; }
-        .notif-item-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .notif-empty { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
 
         /* Bottom Sheet Form */
         .bottom-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
@@ -198,20 +190,23 @@
             <input type="text" id="searchTable" placeholder="Pencarian cerdas...">
         </div>
 
-        <div class="filter-label">Saringan Pancén</div>
+        <!-- Bagian Tambahan Export Bulanan -->
+        <div class="export-box">
+            <input type="month" id="pilihBulan" />
+            <button onclick="exportDataBulan()" class="action-btn btn-export" style="padding: 10px 15px; border-radius: 12px; font-size: 12px; flex-shrink: 0; background: var(--success); color: white; border: none;">Export 3 Kolom</button>
+        </div>
+
+        <div class="filter-label">Filter Data</div>
         <div class="chips-container" id="bulanChips"></div>
 
         <div class="customer-list" id="tableContainer"></div>
     </div>
 
-    <!-- FLOATING DOCK (Hanya 2 Tombol: Admin & Teknisi) -->
+    <!-- FLOATING DOCK -->
     <div class="dock-container">
-        <!-- 1. Admin Data (Active) -->
         <div class="dock-item active transit-link" href="admin.html">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
-        
-        <!-- 2. Teknisi -->
         <div class="dock-item transit-link" href="https://zyann77.github.io/Router/teknisi.html">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
@@ -296,11 +291,9 @@
         function renderBulanChips() { 
             const container = document.getElementById('bulanChips'); 
             
-            // TOMBOL DEFAULT "Belum Keambil"
             const countBelum = allData.filter(p => p.status === 'Belum Diambil').length;
-            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Belum Keambil (${countBelum})</div>`; 
+            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Belum Diambil (${countBelum})</div>`; 
             
-            // Generate tombol sasih khusus kanggo nu tos diambil
             const bulanSet = new Set(); 
             allData.forEach(p => { 
                 if (p.status === 'Sudah Diambil' && p.tanggal_penarikan) { 
@@ -325,7 +318,6 @@
             
             let filtered = allData;
             
-            // LOGIKA FILTERING (Belum vs Sudah)
             if (currentBulan === 'all') { 
                 filtered = filtered.filter(p => p.status === 'Belum Diambil'); 
             } else {
@@ -349,7 +341,6 @@
                     if (!isNaN(d)) tanggalInfo = `<div class="cust-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Diselesaikan: ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}</div>`; 
                 }
                 
-                // TOMBOL BATAL UKUR MUNCUL PAMI STATUSNA 'Sudah Diambil'
                 let revertBtnHTML = '';
                 if (p.status === 'Sudah Diambil') {
                     revertBtnHTML = `<button class="btn-action btn-revert" onclick="revertStatus('${p.id}')"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg> Batal</button>`;
@@ -428,9 +419,8 @@
         async function deleteData(id) { if (!confirm('Tindakan ini tidak bisa dibatalkan. Hapus?')) return; const { error } = await supabaseClient.from('pelanggan').delete().eq('id', id); if (!error) { showToast('Data dihapus permanen.', 'success'); loadTable(); } else { showToast('Error: ' + error.message, 'error'); } }
         async function editData(id) { const { data } = await supabaseClient.from('pelanggan').select('*').eq('id', id).single(); if (data) openBottomSheet(data); }
 
-        // FUNGSI BATAL STATUS (UNDO)
         async function revertStatus(id) {
-            if (!confirm('Batalkeun status Réngsé sarta balikeun palanggan ieu ka daptar antrian?')) return;
+            if (!confirm('Batalkan status Selesai dan kembalikan pelanggan ini ke daftar antrean?')) return;
             
             const { error } = await supabaseClient.from('pelanggan').update({
                 status: 'Belum Diambil',
@@ -440,8 +430,8 @@
             }).eq('id', id);
             
             if (!error) {
-                showToast('Status suksés dibatalkeun!', 'success');
-                // Ngarobih filter aktif ka Belum Diambil deui
+                showToast('Status berhasil dibatalkan!', 'success');
+                // Mengubah filter aktif ke Belum Diambil lagi
                 currentBulan = 'all'; 
                 loadTable();
             } else {
@@ -456,6 +446,35 @@
             const ws = XLSX.utils.json_to_sheet(exportData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data');
             XLSX.writeFile(wb, `Laporan_Sistem_${new Date().toISOString().split('T')[0]}.xlsx`);
             showToast(`Export sukses!`, 'success');
+        }
+
+        function exportDataBulan() {
+            const bulanPilihan = document.getElementById('pilihBulan').value; // Format: YYYY-MM
+            
+            if (!bulanPilihan) { 
+                showToast('Pilih bulannya terlebih dahulu!', 'error'); 
+                return; 
+            }
+
+            const dataBulanIni = allData.filter(p => p.tanggal_penarikan && p.tanggal_penarikan.startsWith(bulanPilihan));
+
+            if (dataBulanIni.length === 0) { 
+                showToast('Tidak ada data penarikan di bulan tersebut.', 'error'); 
+                return; 
+            }
+
+            const exportData = dataBulanIni.map(p => ({ 
+                'Nama Pelanggan': p.nama_pelanggan, 
+                'Alamat': p.alamat || '-', 
+                'Perangkat': p.perangkat || 'Router' 
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData); 
+            const wb = XLSX.utils.book_new(); 
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Penarikan');
+            XLSX.writeFile(wb, `Tarikan_${bulanPilihan}.xlsx`);
+            
+            showToast('Export 3 kolom berhasil!', 'success');
         }
 
         document.querySelectorAll('.transit-link').forEach(link => {
