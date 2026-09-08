@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="config.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -448,7 +448,7 @@
             showToast(`Export sukses!`, 'success');
         }
 
-        function exportDataBulan() {
+        async function exportDataBulan() {
     const bulanPilihan = document.getElementById('pilihBulan').value; 
     
     if (!bulanPilihan) { 
@@ -466,48 +466,79 @@
     const dateObj = new Date(bulanPilihan + '-01');
     const namaBulanStr = namaBulan[dateObj.getMonth()];
     const tahunStr = dateObj.getFullYear();
-    const judulTabel = `Tarikan Perangkat ${namaBulanStr} ${tahunStr}`;
 
-    const aoaData = [];
-    
-    // Baris 1: Judul
-    aoaData.push([judulTabel, "", "", ""]);
-    
-    // Baris 2: Header Tabel
-    aoaData.push(["No", "Nama Pelanggan", "Alamat", "Perangkat"]);
+    if (typeof ExcelJS === 'undefined') {
+        showToast('Error: Library ExcelJS belum dimuat.', 'error');
+        return;
+    }
 
-    // Baris 3 dst: Isi Data Pelanggan
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Data Penarikan');
+
+    // 1. Judul Utama (Merge A1:D1, Bold, Center)
+    ws.mergeCells('A1:D1');
+    const titleCell = ws.getCell('A1');
+    titleCell.value = `Tarikan Perangkat ${namaBulanStr} ${tahunStr}`;
+    titleCell.font = { bold: true, size: 14 };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // 2. Header Tabel (Background Hitam, Teks Putih, Bold)
+    const headerRow = ws.getRow(2);
+    headerRow.values = ['No', 'Nama Pelanggan', 'Alamat', 'Perangkat'];
+    
+    headerRow.eachCell((cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
+        cell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = {
+            top: { style: 'thin' }, left: { style: 'thin' },
+            bottom: { style: 'thin' }, right: { style: 'thin' }
+        };
+    });
+
+    // 3. Isi Data dengan Border
     dataBulanIni.forEach((p, index) => {
-        aoaData.push([
+        const row = ws.addRow([
             index + 1,
             p.nama_pelanggan || "-", 
             p.alamat || "-", 
             p.perangkat || "Router"
         ]);
+        
+        row.eachCell((cell, colNumber) => {
+            cell.border = {
+                top: { style: 'thin' }, left: { style: 'thin' },
+                bottom: { style: 'thin' }, right: { style: 'thin' }
+            };
+            // Format kolom No dan Perangkat agar berada di tengah (Center)
+            if(colNumber === 1 || colNumber === 4) {
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            } else {
+                cell.alignment = { vertical: 'middle' };
+            }
+        });
     });
 
-    const ws = XLSX.utils.aoa_to_sheet(aoaData);
+    // 4. Sesuaikan Lebar Kolom
+    ws.getColumn(1).width = 5;  // No
+    ws.getColumn(2).width = 25; // Nama Pelanggan
+    ws.getColumn(3).width = 55; // Alamat
+    ws.getColumn(4).width = 18; // Perangkat
 
-    // Merge Cell untuk Judul Tabel (A1 sampai D1)
-    ws['!merges'] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } 
-    ];
+    // 5. Tambahkan Auto Filter pada Header
+    ws.autoFilter = 'A2:D2';
 
-    // Penyesuaian Lebar Kolom
-    ws['!cols'] = [
-        { wch: 5 },   // A: No
-        { wch: 25 },  // B: Nama Pelanggan
-        { wch: 55 },  // C: Alamat
-        { wch: 15 }   // D: Perangkat
-    ];
-
-    const wb = XLSX.utils.book_new(); 
-    XLSX.utils.book_append_sheet(wb, ws, 'Data Penarikan');
+    // 6. Proses Unduh File
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Tarikan_${namaBulanStr}_${tahunStr}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
-    // Nama file baru akan otomatis mengikuti nama bulan, bukan angka
-    XLSX.writeFile(wb, `Tarikan_${namaBulanStr}_${tahunStr}.xlsx`);
-    
-    showToast('Export format baru berhasil!', 'success');
+    showToast('Export Excel berhasil!', 'success');
 }
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) { 
