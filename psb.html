@@ -8,6 +8,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <!-- Tambahan Library ExcelJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -129,10 +131,15 @@
     </div>
 
     <div class="container">
-        <!-- TOMBOL INPUT PSB -->
-        <button id="btnInputPSB" class="btn-add" onclick="openModal()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Input PSB Anyar
-        </button>
+        <!-- TOMBOL INPUT & EXPORT PSB -->
+        <div id="adminActionButtons" style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="btn-add" style="margin-bottom: 0; flex: 1;" onclick="openModal()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Input PSB
+            </button>
+            <button class="btn-add" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #10B981, #059669); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);" onclick="exportDataPSB()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Export Excel
+            </button>
+        </div>
 
         <!-- KOTAK PENCARIAN -->
         <div class="search-box">
@@ -251,7 +258,7 @@
         const isAdmin = userLoggedIn.role === 'admin';
         
         if (!isAdmin) { 
-            document.getElementById('btnInputPSB').style.display = 'none'; 
+            document.getElementById('adminActionButtons').style.display = 'none'; 
         }
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -441,6 +448,113 @@
                 document.getElementById('formTitle').textContent = 'Édit Data PSB';
                 document.getElementById('modalForm').classList.add('active');
             }
+        }
+
+        // FUNGSI EXPORT DATA PSB MENGGUNAKAN EXCELJS
+        async function exportDataPSB() {
+            if (allPsb.length === 0) {
+                showToast('Teu aya data pikeun di-export!');
+                return;
+            }
+
+            if (typeof ExcelJS === 'undefined') {
+                showToast('Error: Library ExcelJS can dimuat.');
+                return;
+            }
+
+            const wb = new ExcelJS.Workbook();
+            const ws = wb.addWorksheet('Data PSB');
+
+            // 1. Judul Utama (Merge A1:F1)
+            ws.mergeCells('A1:F1');
+            const titleCell = ws.getCell('A1');
+            let textBulan = currentBulan === 'all' ? 'SADAYA SASIH' : namaBulan[currentBulan].toUpperCase();
+            titleCell.value = `Laporan Data PSB (${textBulan})`;
+            titleCell.font = { bold: true, size: 14 };
+            titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+            // 2. Header Tabel
+            const headerRow = ws.getRow(2);
+            headerRow.values = ['No', 'Nami Pelanggan', 'Wewengkon', 'Kaping Pasang', 'Pakét', 'Pangaos (Rp)'];
+            
+            headerRow.eachCell((cell) => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
+                cell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border = {
+                    top: { style: 'thin' }, left: { style: 'thin' },
+                    bottom: { style: 'thin' }, right: { style: 'thin' }
+                };
+            });
+
+            // 3. Filter & Isi Data
+            let filteredData = allPsb;
+            if (currentBulan !== 'all') {
+                filteredData = allPsb.filter(p => {
+                    if (p.tanggal_pasang) return String(new Date(p.tanggal_pasang).getMonth()) === currentBulan;
+                    return false;
+                });
+            }
+
+            if(filteredData.length === 0) {
+                showToast('Teu aya data di sasih ieu pikeun di-export!');
+                return;
+            }
+
+            filteredData.forEach((p, index) => {
+                let tglFormat = "-";
+                if(p.tanggal_pasang) {
+                    const d = new Date(p.tanggal_pasang);
+                    tglFormat = `${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}`;
+                }
+
+                const row = ws.addRow([
+                    index + 1,
+                    p.nama || "-",
+                    p.wilayah || "-",
+                    tglFormat,
+                    p.paket || "-",
+                    p.harga ? parseInt(p.harga).toLocaleString('id-ID') : "0"
+                ]);
+                
+                row.eachCell((cell, colNumber) => {
+                    cell.border = {
+                        top: { style: 'thin' }, left: { style: 'thin' },
+                        bottom: { style: 'thin' }, right: { style: 'thin' }
+                    };
+                    if(colNumber === 1 || colNumber === 4 || colNumber === 6) {
+                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    } else {
+                        cell.alignment = { vertical: 'middle' };
+                    }
+                });
+            });
+
+            // 4. Lebar Kolom
+            ws.getColumn(1).width = 5;  // No
+            ws.getColumn(2).width = 25; // Nami
+            ws.getColumn(3).width = 20; // Wewengkon
+            ws.getColumn(4).width = 20; // Kaping Pasang
+            ws.getColumn(5).width = 30; // Paket
+            ws.getColumn(6).width = 15; // Harga
+
+            // 5. Auto Filter Header
+            ws.autoFilter = 'A2:F2';
+
+            // 6. Download Proses
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            
+            let namaFile = currentBulan === 'all' ? 'Semua_Bulan' : namaBulan[currentBulan];
+            link.download = `Data_PSB_RNB_${namaFile}.xlsx`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Export Excel Réngsé!');
         }
 
         loadData();
