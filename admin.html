@@ -439,33 +439,13 @@
             }
         }
 
-        function doExport(type) {
-            let dataToExport = type === 'all' ? allData : allData.filter(p => p.status === 'Sudah Diambil');
-            if (dataToExport.length === 0) { showToast('Kosong. Tidak ada yang bisa di-export.', 'error'); return; }
-            const exportData = dataToExport.map(p => ({ 'Nama': p.nama_pelanggan, 'HP': p.nomor_hp, 'Perangkat': p.perangkat || 'Router', 'Wilayah': p.wilayah, 'Alamat': p.alamat || '', 'Tanggal Isolir': p.tanggal_isolir || '', 'Status': p.status, 'Tgl Penarikan': p.tanggal_penarikan || '' }));
-            const ws = XLSX.utils.json_to_sheet(exportData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data');
-            XLSX.writeFile(wb, `Laporan_Sistem_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast(`Export sukses!`, 'success');
-        }
-
-        async function exportDataBulan() {
-    const bulanPilihan = document.getElementById('pilihBulan').value; 
+        async function doExport(type) {
+    let dataToExport = type === 'all' ? allData : allData.filter(p => p.status === 'Sudah Diambil');
     
-    if (!bulanPilihan) { 
-        showToast('Pilih bulannya terlebih dahulu!', 'error'); 
+    if (dataToExport.length === 0) { 
+        showToast('Kosong. Tidak ada yang bisa di-export.', 'error'); 
         return; 
     }
-
-    const dataBulanIni = allData.filter(p => p.tanggal_penarikan && p.tanggal_penarikan.startsWith(bulanPilihan));
-
-    if (dataBulanIni.length === 0) { 
-        showToast('Tidak ada data penarikan di bulan tersebut.', 'error'); 
-        return; 
-    }
-
-    const dateObj = new Date(bulanPilihan + '-01');
-    const namaBulanStr = namaBulan[dateObj.getMonth()];
-    const tahunStr = dateObj.getFullYear();
 
     if (typeof ExcelJS === 'undefined') {
         showToast('Error: Library ExcelJS belum dimuat.', 'error');
@@ -473,18 +453,18 @@
     }
 
     const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet('Data Penarikan');
+    const ws = wb.addWorksheet('Data PSB');
 
-    // 1. Judul Utama (Merge A1:D1, Bold, Center)
-    ws.mergeCells('A1:D1');
+    // 1. Judul Utama (Merge A1:H1, Bold, Center)
+    ws.mergeCells('A1:H1');
     const titleCell = ws.getCell('A1');
-    titleCell.value = `Tarikan Perangkat ${namaBulanStr} ${tahunStr}`;
+    titleCell.value = 'Laporan Data Pelanggan (PSB)';
     titleCell.font = { bold: true, size: 14 };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
     // 2. Header Tabel (Background Hitam, Teks Putih, Bold)
     const headerRow = ws.getRow(2);
-    headerRow.values = ['No', 'Nama Pelanggan', 'Alamat', 'Perangkat'];
+    headerRow.values = ['No', 'Nama Pelanggan', 'No. HP', 'Wilayah', 'Alamat', 'Perangkat', 'Status', 'Tanggal Isolir'];
     
     headerRow.eachCell((cell) => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
@@ -496,13 +476,17 @@
         };
     });
 
-    // 3. Isi Data dengan Border
-    dataBulanIni.forEach((p, index) => {
+    // 3. Isi Data beserta Border
+    dataToExport.forEach((p, index) => {
         const row = ws.addRow([
             index + 1,
-            p.nama_pelanggan || "-", 
-            p.alamat || "-", 
-            p.perangkat || "Router"
+            p.nama_pelanggan || "-",
+            p.nomor_hp || "-",
+            p.wilayah || "-",
+            p.alamat || "-",
+            p.perangkat || "Router",
+            p.status || "-",
+            p.tanggal_isolir || "-"
         ]);
         
         row.eachCell((cell, colNumber) => {
@@ -510,8 +494,8 @@
                 top: { style: 'thin' }, left: { style: 'thin' },
                 bottom: { style: 'thin' }, right: { style: 'thin' }
             };
-            // Format kolom No dan Perangkat agar berada di tengah (Center)
-            if(colNumber === 1 || colNumber === 4) {
+            // Format alignment agar rapi (Kolom No, Perangkat, Status di tengah)
+            if(colNumber === 1 || colNumber === 6 || colNumber === 7) {
                 cell.alignment = { horizontal: 'center', vertical: 'middle' };
             } else {
                 cell.alignment = { vertical: 'middle' };
@@ -521,24 +505,31 @@
 
     // 4. Sesuaikan Lebar Kolom
     ws.getColumn(1).width = 5;  // No
-    ws.getColumn(2).width = 25; // Nama Pelanggan
-    ws.getColumn(3).width = 55; // Alamat
-    ws.getColumn(4).width = 18; // Perangkat
+    ws.getColumn(2).width = 25; // Nama
+    ws.getColumn(3).width = 18; // HP
+    ws.getColumn(4).width = 20; // Wilayah
+    ws.getColumn(5).width = 45; // Alamat
+    ws.getColumn(6).width = 15; // Perangkat
+    ws.getColumn(7).width = 18; // Status
+    ws.getColumn(8).width = 15; // Tgl Isolir
 
     // 5. Tambahkan Auto Filter pada Header
-    ws.autoFilter = 'A2:D2';
+    ws.autoFilter = 'A2:H2';
 
     // 6. Proses Unduh File
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Tarikan_${namaBulanStr}_${tahunStr}.xlsx`;
+    
+    const dateStr = new Date().toISOString().split('T')[0];
+    link.download = `Data_PSB_RNB_${dateStr}.xlsx`;
+    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     
-    showToast('Export Excel berhasil!', 'success');
+    showToast('Export Data PSB berhasil!', 'success');
 }
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) { 
