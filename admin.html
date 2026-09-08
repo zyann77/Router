@@ -449,34 +449,68 @@
         }
 
         function exportDataBulan() {
-            const bulanPilihan = document.getElementById('pilihBulan').value; // Format: YYYY-MM
-            
-            if (!bulanPilihan) { 
-                showToast('Pilih bulannya terlebih dahulu!', 'error'); 
-                return; 
-            }
+    const bulanPilihan = document.getElementById('pilihBulan').value; // Format: YYYY-MM
+    
+    if (!bulanPilihan) { 
+        showToast('Pilih bulannya terlebih dahulu!', 'error'); 
+        return; 
+    }
 
-            const dataBulanIni = allData.filter(p => p.tanggal_penarikan && p.tanggal_penarikan.startsWith(bulanPilihan));
+    const dataBulanIni = allData.filter(p => p.tanggal_penarikan && p.tanggal_penarikan.startsWith(bulanPilihan));
 
-            if (dataBulanIni.length === 0) { 
-                showToast('Tidak ada data penarikan di bulan tersebut.', 'error'); 
-                return; 
-            }
+    if (dataBulanIni.length === 0) { 
+        showToast('Tidak ada data penarikan di bulan tersebut.', 'error'); 
+        return; 
+    }
 
-            const exportData = dataBulanIni.map(p => ({ 
-                'Nama Pelanggan': p.nama_pelanggan, 
-                'Alamat': p.alamat || '-', 
-                'Perangkat': p.perangkat || 'Router' 
-            }));
+    // Ambil nama bulan dan tahun untuk judul tabel
+    const dateObj = new Date(bulanPilihan + '-01');
+    const namaBulanStr = namaBulan[dateObj.getMonth()];
+    const tahunStr = dateObj.getFullYear();
+    const judulTabel = `Tarikan Perangkat ${namaBulanStr} ${tahunStr}`;
 
-            const ws = XLSX.utils.json_to_sheet(exportData); 
-            const wb = XLSX.utils.book_new(); 
-            XLSX.utils.book_append_sheet(wb, ws, 'Data Penarikan');
-            XLSX.writeFile(wb, `Tarikan_${bulanPilihan}.xlsx`);
-            
-            showToast('Export 3 kolom berhasil!', 'success');
-        }
+    // 1. Susun data secara berbaris (Array of Arrays)
+    const aoaData = [];
+    
+    // Baris 1: Judul
+    aoaData.push([judulTabel, "", "", ""]);
+    
+    // Baris 2: Header Kolom
+    aoaData.push(["No", "Nama Pelanggan", "Alamat", "Perangkat"]);
 
+    // Baris 3 dst: Isi Data
+    dataBulanIni.forEach((p, index) => {
+        aoaData.push([
+            index + 1, // Nomor urut
+            p.nama_pelanggan || "-", 
+            p.alamat || "-", 
+            p.perangkat || "Router"
+        ]);
+    });
+
+    // 2. Buat worksheet dari susunan data
+    const ws = XLSX.utils.aoa_to_sheet(aoaData);
+
+    // 3. Gabungkan (Merge) sel untuk Judul: Baris 1 (A1 sampai D1)
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } 
+    ];
+
+    // 4. Atur lebar masing-masing kolom agar rapi
+    ws['!cols'] = [
+        { wch: 5 },   // A: No
+        { wch: 25 },  // B: Nama Pelanggan
+        { wch: 55 },  // C: Alamat
+        { wch: 15 }   // D: Perangkat
+    ];
+
+    // 5. Export ke Excel
+    const wb = XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb, ws, 'Data Penarikan');
+    XLSX.writeFile(wb, `Tarikan_${namaBulanStr}_${tahunStr}.xlsx`);
+    
+    showToast('Export format baru berhasil!', 'success');
+}
         document.querySelectorAll('.transit-link').forEach(link => {
             link.addEventListener('click', function(e) { 
                 const href = this.getAttribute('href');
