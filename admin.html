@@ -449,7 +449,7 @@
         }
 
         function exportDataBulan() {
-    const bulanPilihan = document.getElementById('pilihBulan').value; // Format: YYYY-MM
+    const bulanPilihan = document.getElementById('pilihBulan').value; 
     
     if (!bulanPilihan) { 
         showToast('Pilih bulannya terlebih dahulu!', 'error'); 
@@ -463,40 +463,37 @@
         return; 
     }
 
-    // Ambil nama bulan dan tahun untuk judul tabel
     const dateObj = new Date(bulanPilihan + '-01');
     const namaBulanStr = namaBulan[dateObj.getMonth()];
     const tahunStr = dateObj.getFullYear();
     const judulTabel = `Tarikan Perangkat ${namaBulanStr} ${tahunStr}`;
 
-    // 1. Susun data secara berbaris (Array of Arrays)
     const aoaData = [];
     
     // Baris 1: Judul
     aoaData.push([judulTabel, "", "", ""]);
     
-    // Baris 2: Header Kolom
+    // Baris 2: Header Tabel
     aoaData.push(["No", "Nama Pelanggan", "Alamat", "Perangkat"]);
 
-    // Baris 3 dst: Isi Data
+    // Baris 3 dst: Isi Data Pelanggan
     dataBulanIni.forEach((p, index) => {
         aoaData.push([
-            index + 1, // Nomor urut
+            index + 1,
             p.nama_pelanggan || "-", 
             p.alamat || "-", 
             p.perangkat || "Router"
         ]);
     });
 
-    // 2. Buat worksheet dari susunan data
     const ws = XLSX.utils.aoa_to_sheet(aoaData);
 
-    // 3. Gabungkan (Merge) sel untuk Judul: Baris 1 (A1 sampai D1)
+    // Merge Cell untuk Judul Tabel (A1 sampai D1)
     ws['!merges'] = [
         { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } 
     ];
 
-    // 4. Atur lebar masing-masing kolom agar rapi
+    // Penyesuaian Lebar Kolom
     ws['!cols'] = [
         { wch: 5 },   // A: No
         { wch: 25 },  // B: Nama Pelanggan
@@ -504,9 +501,10 @@
         { wch: 15 }   // D: Perangkat
     ];
 
-    // 5. Export ke Excel
     const wb = XLSX.utils.book_new(); 
     XLSX.utils.book_append_sheet(wb, ws, 'Data Penarikan');
+    
+    // Nama file baru akan otomatis mengikuti nama bulan, bukan angka
     XLSX.writeFile(wb, `Tarikan_${namaBulanStr}_${tahunStr}.xlsx`);
     
     showToast('Export format baru berhasil!', 'success');
