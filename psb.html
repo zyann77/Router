@@ -450,7 +450,7 @@
             }
         }
 
-        // FUNGSI EXPORT DATA PSB MENGGUNAKAN EXCELJS (DENGAN BARIS TOTAL)
+        // FUNGSI EXPORT DATA PSB MENGGUNAKAN EXCELJS (URUT TANGGAL TERKECIL DI ATAS + BARIS TOTAL)
 async function exportDataPSB() {
     if (allPsb.length === 0) {
         showToast('Tidak ada data untuk diekspor!');
@@ -487,25 +487,33 @@ async function exportDataPSB() {
         };
     });
 
-    // 3. Filter & Isi Data
-    let filteredData = allPsb;
+    // 3. Filter Data Berdasarkan Bulan
+    let filteredData = [...allPsb];
     if (currentBulan !== 'all') {
-        filteredData = allPsb.filter(p => {
+        filteredData = filteredData.filter(p => {
             if (p.tanggal_pasang) return String(new Date(p.tanggal_pasang).getMonth()) === currentBulan;
             return false;
         });
     }
 
-    if(filteredData.length === 0) {
+    if (filteredData.length === 0) {
         showToast('Tidak ada data di bulan ini untuk diekspor!');
         return;
     }
 
+    // --- PROSES SORTING ASCENDING (TANGGAL 1 / TERKECIL PALING ATAS) ---
+    filteredData.sort((a, b) => {
+        const dateA = new Date(a.tanggal_pasang || a.created_at);
+        const dateB = new Date(b.tanggal_pasang || b.created_at);
+        return dateA - dateB;
+    });
+
     let totalHarga = 0;
 
+    // 4. Isi Data ke Tabel Excel
     filteredData.forEach((p, index) => {
         let tglFormat = "-";
-        if(p.tanggal_pasang) {
+        if (p.tanggal_pasang) {
             const d = new Date(p.tanggal_pasang);
             tglFormat = `${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}`;
         }
@@ -527,7 +535,7 @@ async function exportDataPSB() {
                 top: { style: 'thin' }, left: { style: 'thin' },
                 bottom: { style: 'thin' }, right: { style: 'thin' }
             };
-            if(colNumber === 1 || colNumber === 4 || colNumber === 6) {
+            if (colNumber === 1 || colNumber === 4 || colNumber === 6) {
                 cell.alignment = { horizontal: 'center', vertical: 'middle' };
             } else {
                 cell.alignment = { vertical: 'middle' };
@@ -535,23 +543,20 @@ async function exportDataPSB() {
         });
     });
 
-    // 4. Tambah Baris TOTAL
+    // 5. Baris TOTAL
     const totalRowIndex = 2 + filteredData.length + 1;
     
-    // Merge cell A sampai E untuk tulisan TOTAL
     ws.mergeCells(`A${totalRowIndex}:E${totalRowIndex}`);
     const totalLabelCell = ws.getCell(`A${totalRowIndex}`);
     totalLabelCell.value = 'TOTAL';
     totalLabelCell.font = { bold: true };
     totalLabelCell.alignment = { horizontal: 'right', vertical: 'middle' };
 
-    // Nilai akumulasi harga di kolom F
     const totalValueCell = ws.getCell(`F${totalRowIndex}`);
     totalValueCell.value = totalHarga.toLocaleString('id-ID');
     totalValueCell.font = { bold: true };
     totalValueCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    // Styling khusus baris TOTAL (Background abu tipis & garis bawah ganda)
     ['A', 'B', 'C', 'D', 'E', 'F'].forEach(col => {
         const cell = ws.getCell(`${col}${totalRowIndex}`);
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2F2F2' } };
@@ -563,7 +568,7 @@ async function exportDataPSB() {
         };
     });
 
-    // 5. Lebar Kolom
+    // 6. Lebar Kolom
     ws.getColumn(1).width = 5;  // No
     ws.getColumn(2).width = 25; // Nama
     ws.getColumn(3).width = 20; // Wilayah
@@ -571,10 +576,10 @@ async function exportDataPSB() {
     ws.getColumn(5).width = 30; // Paket
     ws.getColumn(6).width = 15; // Harga
 
-    // 6. Auto Filter Header
+    // 7. Auto Filter Header
     ws.autoFilter = 'A2:F2';
 
-    // 7. Download Proses
+    // 8. Download Proses
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
