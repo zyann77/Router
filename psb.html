@@ -135,7 +135,7 @@
             </button>
         </div>
 
-        <!-- KOTAK PENCARIAN (POIN 2) -->
+        <!-- KOTAK PENCARIAN -->
         <div class="search-box">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchInput" placeholder="Cari nama atau alamat..." oninput="renderList()">
@@ -146,8 +146,8 @@
             <div class="filter-label" id="labelBulan">Filter Bulan</div>
             
             <select id="sortSelect" class="input-field" style="width: auto; padding: 4px 8px; font-size: 10px; border-radius: 6px; cursor: pointer;" onchange="renderList()">
-                <option value="date-desc">Terbaru (Baru-Lama)</option>
-                <option value="date-asc">Terlama (Lama-Baru)</option>
+                <option value="date-asc" selected>Terlama (Tanggal 1 -> 31)</option>
+                <option value="date-desc">Terbaru (Tanggal 31 -> 1)</option>
                 <option value="name-asc">Nama (A - Z)</option>
                 <option value="name-desc">Nama (Z - A)</option>
             </select>
@@ -170,7 +170,7 @@
                     <input type="text" id="nama" class="input-field" required>
                 </div>
                 
-                <!-- INPUT ALAMAT MANUAL (POIN 1) -->
+                <!-- INPUT ALAMAT MANUAL -->
                 <div class="input-group">
                     <label class="input-label">Alamat Lengkap</label>
                     <input type="text" id="alamat" class="input-field" placeholder="Masukkan alamat lengkap..." required>
@@ -316,7 +316,7 @@
             renderList();
         }
 
-        // RENDER LIST DENGAN FILTER ALAMAT (POIN 3)
+        // RENDER LIST (DEFAULT TANGGAL 1 DI ATAS)
         function renderList() {
             const list = document.getElementById('psbList');
             const sortVal = document.getElementById('sortSelect').value;
@@ -335,17 +335,20 @@
             if (searchKeyword) {
                 filtered = filtered.filter(p => 
                     p.nama.toLowerCase().includes(searchKeyword) || 
-                    (p.alamat && p.alamat.toLowerCase().includes(searchKeyword))
+                    ((p.alamat || p.wilayah) && (p.alamat || p.wilayah).toLowerCase().includes(searchKeyword))
                 );
             }
             
             if (filtered.length === 0) { list.innerHTML = '<p style="text-align:center; color:gray; font-size: 12px; margin-top:20px;">Tidak ada data pada filter ini.</p>'; return; }
             
             filtered.sort((a,b) => {
-                if (sortVal === 'date-desc') {
-                    return new Date(b.tanggal_pasang || b.created_at) - new Date(a.tanggal_pasang || a.created_at);
-                } else if (sortVal === 'date-asc') {
-                    return new Date(a.tanggal_pasang || a.created_at) - new Date(b.tanggal_pasang || b.created_at);
+                const dateA = new Date(a.tanggal_pasang || a.created_at);
+                const dateB = new Date(b.tanggal_pasang || b.created_at);
+
+                if (sortVal === 'date-asc') {
+                    return dateA - dateB;
+                } else if (sortVal === 'date-desc') {
+                    return dateB - dateA;
                 } else if (sortVal === 'name-asc') {
                     return a.nama.localeCompare(b.nama);
                 } else if (sortVal === 'name-desc') {
@@ -374,6 +377,7 @@
                 }
 
                 const hargaFormat = p.harga ? parseInt(p.harga).toLocaleString('id-ID') : '0';
+                const teksAlamat = p.alamat || p.wilayah || '-';
 
                 list.innerHTML += `
                     <div class="cust-card">
@@ -381,7 +385,7 @@
                             <div class="cust-name">${p.nama}</div>
                             ${badge}
                         </div>
-                        <div class="cust-sub">${p.alamat || '-'}</div>
+                        <div class="cust-sub">${teksAlamat}</div>
                         ${tanggalInfo}
                         <div class="cust-info"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/></svg> ${p.paket || '-'} • Rp ${hargaFormat}</div>
                         ${actionButtons}
@@ -389,21 +393,22 @@
             });
         }
 
-        // SIMPAN / UPDATE DATA DENGAN FIELD ALAMAT (POIN 4)
+        // SIMPAN DATA (KIRIM KE KOLOM WILAYAH & ALAMAT KEDUA-DUANYA)
         document.getElementById('psbForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
+            const inputAlamat = document.getElementById('alamat').value;
             
             const payload = {
                 nama: document.getElementById('nama').value,
-                alamat: document.getElementById('alamat').value,
+                wilayah: inputAlamat, // Mencegah error NOT NULL di Supabase
+                alamat: inputAlamat,
                 paket: document.getElementById('paket').value,
                 harga: document.getElementById('harga').value || '0',
                 tanggal_pasang: document.getElementById('tanggal_pasang').value,
-                status: 'Selesai'
+                status: 'Selesai',
+                hp: "-"
             };
-
-            payload.hp = "-"; 
 
             let error;
             if (id) {
@@ -422,13 +427,13 @@
             if (!error) { showToast('Data dihapus!'); loadData(); }
         }
 
-        // EDIT DATA SET FIELD ALAMAT (POIN 4)
+        // EDIT DATA
         function editData(id) {
             const data = allPsb.find(p => p.id === id);
             if(data) {
                 document.getElementById('editId').value = data.id;
                 document.getElementById('nama').value = data.nama;
-                document.getElementById('alamat').value = data.alamat || '';
+                document.getElementById('alamat').value = data.alamat || data.wilayah || '';
                 
                 if (data.tanggal_pasang) {
                     document.getElementById('tanggal_pasang').value = data.tanggal_pasang.split('T')[0];
@@ -443,7 +448,7 @@
             }
         }
 
-        // EXPORT DATA PSB (POIN 5: ALAMAT, TANGGAL 1 DI ATAS, BARIS TOTAL)
+        // EXPORT DATA PSB (URUT TANGGAL 1 DI ATAS + BARIS TOTAL HARGA)
         async function exportDataPSB() {
             if (allPsb.length === 0) {
                 showToast('Tidak ada data untuk diekspor!');
@@ -494,7 +499,7 @@
                 return;
             }
 
-            // 4. Sort Tanggal Ascending (Tanggal terkecil paling atas)
+            // 4. Sort Tanggal Ascending (Tanggal 1 paling atas)
             filteredData.sort((a, b) => {
                 const dateA = new Date(a.tanggal_pasang || a.created_at);
                 const dateB = new Date(b.tanggal_pasang || b.created_at);
@@ -517,7 +522,7 @@
                 const row = ws.addRow([
                     index + 1,
                     p.nama || "-",
-                    p.alamat || "-",
+                    p.alamat || p.wilayah || "-",
                     tglFormat,
                     p.paket || "-",
                     hargaNum.toLocaleString('id-ID')
@@ -562,12 +567,12 @@
             });
 
             // 7. Lebar Kolom
-            ws.getColumn(1).width = 5;  // No
-            ws.getColumn(2).width = 25; // Nama
-            ws.getColumn(3).width = 30; // Alamat
-            ws.getColumn(4).width = 20; // Tanggal Pasang
-            ws.getColumn(5).width = 30; // Paket
-            ws.getColumn(6).width = 15; // Harga
+            ws.getColumn(1).width = 5;  
+            ws.getColumn(2).width = 25; 
+            ws.getColumn(3).width = 30; 
+            ws.getColumn(4).width = 20; 
+            ws.getColumn(5).width = 30; 
+            ws.getColumn(6).width = 15; 
 
             // 8. Auto Filter Header
             ws.autoFilter = 'A2:F2';
