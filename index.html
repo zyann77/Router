@@ -314,25 +314,40 @@
         const dock = document.getElementById('dock');
         let unlocked = false;
 
-        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
-        let touchStartY = 0;
-        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
-        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
-
-        function doUnlock() {
-            if(unlocked) return;
-            unlocked = true;
-            lockScreen.classList.add('unlocked');
-
-            const userStr = localStorage.getItem('userLoggedIn');
-            if (userStr) {
-                setupLauncherLinks(JSON.parse(userStr));
-                showHome();
-            } else {
-                loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.style.opacity = '1', 50);
-            }
+    // Cek jika sesi ini sudah pernah buka kunci
+    if (sessionStorage.getItem('isUnlocked') === 'true') {
+        unlocked = true;
+        lockScreen.style.display = 'none';
+        const userStr = localStorage.getItem('userLoggedIn');
+        if (userStr) {
+            setupLauncherLinks(JSON.parse(userStr));
+            showHome();
+        } else {
+            loginScreen.style.display = 'flex';
+            loginScreen.style.opacity = '1';
         }
+    }
+
+    document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+    let touchStartY = 0;
+    lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+    lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
+
+    function doUnlock() {
+        if(unlocked) return;
+        unlocked = true;
+        sessionStorage.setItem('isUnlocked', 'true'); // Simpan status kunci dibuka
+        lockScreen.classList.add('unlocked');
+
+        const userStr = localStorage.getItem('userLoggedIn');
+        if (userStr) {
+            setupLauncherLinks(JSON.parse(userStr));
+            showHome();
+        } else {
+            loginScreen.style.display = 'flex';
+            setTimeout(() => loginScreen.style.opacity = '1', 50);
+        }
+    }
 
         function setupLauncherLinks(user) {
             const linkPenarikan = document.getElementById('linkPenarikan');
