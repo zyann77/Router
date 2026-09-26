@@ -190,7 +190,7 @@
             <input type="text" id="searchTable" placeholder="Pencarian cerdas...">
         </div>
 
-        <!-- Bagian Tambahan Export Bulanan -->
+        <!-- Bagian Export Bulanan -->
         <div class="export-box">
             <input type="month" id="pilihBulan" />
             <button onclick="exportDataBulan()" class="action-btn btn-export" style="padding: 10px 15px; border-radius: 12px; font-size: 12px; flex-shrink: 0; background: var(--success); color: white; border: none;">Export</button>
@@ -438,6 +438,7 @@
             }
         }
 
+        // FUNGSI EXPORT SEMUA DATA (SISA 4 KOLOM)
         async function doExport(type) {
             let dataToExport = type === 'all' ? allData : allData.filter(p => p.status === 'Sudah Diambil');
             
@@ -454,16 +455,16 @@
             const wb = new ExcelJS.Workbook();
             const ws = wb.addWorksheet('Data PSB');
 
-            // 1. Judul Utama
-            ws.mergeCells('A1:H1');
+            // 1. Judul Utama (Di-merge hanya A1:D1)
+            ws.mergeCells('A1:D1');
             const titleCell = ws.getCell('A1');
             titleCell.value = 'Laporan Data Pelanggan (PSB)';
             titleCell.font = { bold: true, size: 14 };
             titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-            // 2. Header Tabel
+            // 2. Header Tabel (Sisa 4 Kolom)
             const headerRow = ws.getRow(2);
-            headerRow.values = ['No', 'Nama Pelanggan', 'No. HP', 'Wilayah', 'Alamat', 'Perangkat', 'Status', 'Tanggal Isolir'];
+            headerRow.values = ['No', 'Nama Pelanggan', 'Wilayah', 'Perangkat'];
             
             headerRow.eachCell((cell) => {
                 cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
@@ -480,12 +481,8 @@
                 const row = ws.addRow([
                     index + 1,
                     p.nama_pelanggan || "-",
-                    p.nomor_hp || "-",
                     p.wilayah || "-",
-                    p.alamat || "-",
-                    p.perangkat || "Router",
-                    p.status || "-",
-                    p.tanggal_isolir || "-"
+                    p.perangkat || "Router"
                 ]);
                 
                 row.eachCell((cell, colNumber) => {
@@ -493,7 +490,7 @@
                         top: { style: 'thin' }, left: { style: 'thin' },
                         bottom: { style: 'thin' }, right: { style: 'thin' }
                     };
-                    if(colNumber === 1 || colNumber === 6 || colNumber === 7) {
+                    if(colNumber === 1 || colNumber === 4) {
                         cell.alignment = { horizontal: 'center', vertical: 'middle' };
                     } else {
                         cell.alignment = { vertical: 'middle' };
@@ -502,16 +499,12 @@
             });
 
             // 4. Lebar Kolom
-            ws.getColumn(1).width = 5;  
-            ws.getColumn(2).width = 25; 
-            ws.getColumn(3).width = 18; 
-            ws.getColumn(4).width = 20; 
-            ws.getColumn(5).width = 45; 
-            ws.getColumn(6).width = 15; 
-            ws.getColumn(7).width = 18; 
-            ws.getColumn(8).width = 15; 
+            ws.getColumn(1).width = 6;  // No
+            ws.getColumn(2).width = 30; // Nama Pelanggan
+            ws.getColumn(3).width = 22; // Wilayah
+            ws.getColumn(4).width = 18; // Perangkat
 
-            ws.autoFilter = 'A2:H2';
+            ws.autoFilter = 'A2:D2';
 
             // 5. Unduh File
             const buffer = await wb.xlsx.writeBuffer();
@@ -529,7 +522,7 @@
             showToast('Export Data PSB berhasil!', 'success');
         }
 
-        // FUNGSI EXPORT DATA PER BULAN
+        // FUNGSI EXPORT DATA PER BULAN (SISA 4 KOLOM)
         async function exportDataBulan() {
             const bulanInput = document.getElementById('pilihBulan').value; 
             
@@ -556,14 +549,16 @@
             const wb = new ExcelJS.Workbook();
             const ws = wb.addWorksheet('Export Bulanan');
 
-            ws.mergeCells('A1:H1');
+            // Merge Judul A1:D1
+            ws.mergeCells('A1:D1');
             const titleCell = ws.getCell('A1');
             titleCell.value = `Laporan Data Pelanggan (${bulanInput})`;
             titleCell.font = { bold: true, size: 14 };
             titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
+            // Header Tabel Sisa 4 Kolom
             const headerRow = ws.getRow(2);
-            headerRow.values = ['No', 'Nama Pelanggan', 'No. HP', 'Wilayah', 'Alamat', 'Perangkat', 'Status', 'Tanggal Isolir'];
+            headerRow.values = ['No', 'Nama Pelanggan', 'Wilayah', 'Perangkat'];
             
             headerRow.eachCell((cell) => {
                 cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
@@ -579,12 +574,8 @@
                 const row = ws.addRow([
                     index + 1,
                     p.nama_pelanggan || "-",
-                    p.nomor_hp || "-",
                     p.wilayah || "-",
-                    p.alamat || "-",
-                    p.perangkat || "Router",
-                    p.status || "-",
-                    p.tanggal_isolir || "-"
+                    p.perangkat || "Router"
                 ]);
                 
                 row.eachCell((cell, colNumber) => {
@@ -592,7 +583,7 @@
                         top: { style: 'thin' }, left: { style: 'thin' },
                         bottom: { style: 'thin' }, right: { style: 'thin' }
                     };
-                    if(colNumber === 1 || colNumber === 6 || colNumber === 7) {
+                    if(colNumber === 1 || colNumber === 4) {
                         cell.alignment = { horizontal: 'center', vertical: 'middle' };
                     } else {
                         cell.alignment = { vertical: 'middle' };
@@ -600,16 +591,12 @@
                 });
             });
 
-            ws.getColumn(1).width = 5;  
-            ws.getColumn(2).width = 25; 
-            ws.getColumn(3).width = 18; 
-            ws.getColumn(4).width = 20; 
-            ws.getColumn(5).width = 45; 
-            ws.getColumn(6).width = 15; 
-            ws.getColumn(7).width = 18; 
-            ws.getColumn(8).width = 15; 
+            ws.getColumn(1).width = 6;  // No
+            ws.getColumn(2).width = 30; // Nama
+            ws.getColumn(3).width = 22; // Wilayah
+            ws.getColumn(4).width = 18; // Perangkat
 
-            ws.autoFilter = 'A2:H2';
+            ws.autoFilter = 'A2:D2';
 
             const buffer = await wb.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
