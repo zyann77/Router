@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Kelola Data</title>
     
-    <!-- Leaflet & Supabase & SheetJS -->
+    <!-- Leaflet & Supabase & ExcelJS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,7 +37,8 @@
 
         /* Top Header */
         .top-header { position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(30px); border-bottom: 1px solid var(--glass-border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); }
+        .nav-buttons { display: flex; gap: 8px; }
+        .nav-btn { width: 40px; height: 40px; border-radius: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--spring); text-decoration: none; }
         .nav-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
         .nav-btn:active { transform: scale(0.9); }
         .nav-btn svg { width: 20px; height: 20px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
@@ -107,7 +108,7 @@
 
         /* Floating Dock */
         .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; padding: 12px 20px; background: rgba(25, 25, 30, 0.7); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 500; }
-        .dock-item { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.3s var(--spring); }
+        .dock-item { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.3s var(--spring); text-decoration: none; }
         .dock-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-8px) scale(1.1); }
         .dock-item:active { transform: scale(0.9); }
         .dock-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.7); stroke-width: 1.5; fill: none; transition: stroke 0.3s; }
@@ -159,9 +160,9 @@
 
     <div class="top-header">
         <div class="nav-buttons">
-            <button class="nav-btn transit-link" href="index.html">
+            <a href="index.html" class="nav-btn transit-link">
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
+            </a>
             <a href="index.html" class="nav-btn transit-link">
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </a>
@@ -204,12 +205,12 @@
 
     <!-- FLOATING DOCK -->
     <div class="dock-container">
-        <div class="dock-item active transit-link" href="admin.html">
+        <a class="dock-item active transit-link" href="admin.html">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <div class="dock-item transit-link" href="https://zyann77.github.io/Router/teknisi.html">
+        </a>
+        <a class="dock-item transit-link" href="https://zyann77.github.io/Router/teknisi.html">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
+        </a>
     </div>
 
     <!-- Bottom Sheet Form -->
@@ -599,7 +600,7 @@
             ws.autoFilter = 'A2:D2';
 
             const buffer = await wb.xlsx.writeBuffer();
-            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const blob = new Blob technique = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `Data_Penarikan_${bulanInput}.xlsx`;
