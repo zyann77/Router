@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <title>Detail Perangkat Ditarik</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(25px);
+            --accent-red: #EF4444;
+            --accent-red-light: #F87171;
+            --accent-gold: #C9A961;
+            --success: #10B981;
+            --text-main: #FFFFFF;
+            --text-muted: #A1A1AA;
+            --font-main: 'Poppins', -apple-system, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: var(--font-main); 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px 16px;
+            position: relative;
+        }
+
+        /* Ambient Glow Background Red */
+        .bg-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.22; }
+        .blob-1 { width: 300px; height: 300px; background: #EF4444; top: -10%; left: -10%; }
+        .blob-2 { width: 300px; height: 300px; background: #8B5CF6; bottom: -10%; right: -10%; }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Header Area */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 12px;
+            backdrop-filter: var(--glass-blur);
+        }
+        .btn-back svg { width: 14px; height: 14px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .logo-svg {
+            width: 100px;
+            height: auto;
+            background: transparent;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        }
+
+        /* Title Banner Red */
+        .title-banner {
+            text-align: center;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 8px 12px;
+            border-radius: 14px;
+            backdrop-filter: var(--glass-blur);
+        }
+        .title-banner h2 {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: var(--accent-red-light);
+            text-transform: uppercase;
+        }
+        .realtime-tag {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Summary Banner */
+        .summary-banner {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 18px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: var(--glass-blur);
+        }
+        .sum-card { display: flex; flex-direction: column; gap: 2px; }
+        .sum-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .sum-value { font-size: 22px; font-weight: 700; color: var(--accent-red-light); line-height: 1.1; }
+        .sum-sub { font-size: 10px; font-weight: 500; color: #FCA5A5; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2px;
+        }
+        .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* List Pelanggan & Perangkat */
+        .device-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .device-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 10px 12px;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dev-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .dev-nama {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .dev-tgl {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .dev-info-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-top: 2px;
+        }
+
+        .dev-item-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dev-badge-status {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6EE7B7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .dev-sn {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* Footer Stamp */
+        .footer-stamp {
+            text-align: center;
+            font-size: 9px;
+            color: var(--text-muted);
+            padding-top: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Header -->
+        <div class="header">
+            <a href="index.html" class="btn-back">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Wangsul
+            </a>
+            
+            <!-- Logo RnB Transparan -->
+            <div class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 130 70" xmlns="http://www.w3.org/2000/svg">
+                  <text x="6" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">R</text>
+                  <text x="32" y="32" font-family="Arial Black, Impact, sans-serif" font-size="24" font-weight="900" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round" transform="rotate(15 41 20)">n</text>
+                  <text x="44" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">B</text>
+                  <text x="6" y="42" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#FFD700" font-style="italic">by</text>
+                  <ellipse cx="48" cy="48" rx="30" ry="9" fill="none" stroke="#FFD700" stroke-width="1.8" transform="rotate(-12 48 48)"/>
+                  <text x="18" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#1E90FF" letter-spacing="-1">PMY</text>
+                  <text x="52" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#00C853" letter-spacing="-1">NET</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Month Banner Title -->
+        <div class="title-banner">
+            <h2 id="bannerMonthTitle">BERHENTI BERLANGGANAN SEPTEMBER 2026</h2>
+            <div class="realtime-tag" id="realtimeDateSub">Update Terkini: Realtime</div>
+        </div>
+
+        <!-- Summary Banner -->
+        <div class="summary-banner">
+            <div class="sum-card">
+                <span class="sum-label">Total Berhenti</span>
+                <span class="sum-value" id="totalBerhentiCount">0</span>
+                <span class="sum-sub">Pelanggan</span>
+            </div>
+            <div class="sum-card" style="text-align: right;">
+                <span class="sum-label">Status Perangkat</span>
+                <span class="sum-value" style="color: #6EE7B7;" id="totalPerangkatAmbil">0</span>
+                <span class="sum-sub">Sudah Diambil</span>
+            </div>
+        </div>
+
+        <!-- Section Label -->
+        <div class="section-header">
+            <span class="section-title">Daftar Penarikan Perangkat</span>
+        </div>
+
+        <!-- Dynamic Device List -->
+        <div class="device-list" id="deviceListContainer">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">
+                Ngamuat data penarikan perangkat...
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="footer-stamp">
+            RNB NETWORK SUBANG • PENARIKAN PERANGKAT
+        </div>
+    </div>
+
+    <script>
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+
+        function updateRealtimeLabels(now) {
+            const tgl = now.getDate();
+            const bulanIdx = now.getMonth();
+            const tahun = now.getFullYear();
+            const jam = String(now.getHours()).padStart(2, '0');
+            const menit = String(now.getMinutes()).padStart(2, '0');
+
+            const bulanStr = namaBulanArr[bulanIdx].toUpperCase();
+            
+            document.getElementById('bannerMonthTitle').textContent = `BERHENTI BERLANGGANAN ${bulanStr} ${tahun}`;
+            document.getElementById('realtimeDateSub').textContent = `Per ${tgl} ${namaBulanArr[bulanIdx]} ${tahun} • ${jam}:${menit} WIB`;
+        }
+
+        function formatTanggal(tglString) {
+            if (!tglString) return '-';
+            const d = new Date(tglString);
+            if (isNaN(d.getTime())) return tglString;
+            return `${d.getDate()} ${namaBulanArr[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        async function muatDataPenarikan() {
+            const now = new Date();
+            const bulanIni = now.getMonth();
+            const tahunIni = now.getFullYear();
+
+            updateRealtimeLabels(now);
+
+            try {
+                // Mengambil data dari tabel penarikan_perangkat atau tabel pelanggan yang berhenti
+                let { data: listBerhenti, error } = await supabaseClient
+                    .from('penarikan_perangkat')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                // Jika tabel penarikan_perangkat belum ada, coba fallback ke tabel 'berhenti'
+                if (error) {
+                    const fallback = await supabaseClient
+                        .from('berhenti')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    listBerhenti = fallback.data || [];
+                }
+
+                // Filter data bulan ini
+                const dataBulanIni = (listBerhenti || []).filter(item => {
+                    const tgl = item.tanggal_tarik || item.created_at;
+                    if (!tgl) return true;
+                    const d = new Date(tgl);
+                    return d.getMonth() === bulanIni && d.getFullYear() === tahunIni;
+                });
+
+                document.getElementById('totalBerhentiCount').textContent = dataBulanIni.length;
+                document.getElementById('totalPerangkatAmbil').textContent = dataBulanIni.length;
+
+                const container = document.getElementById('deviceListContainer');
+                container.innerHTML = '';
+
+                if (dataBulanIni.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 25px; font-size: 12px;">
+                            Teu aya data penarikan perangkat dina bulan ieu.
+                        </div>`;
+                    return;
+                }
+
+                dataBulanIni.forEach((item, idx) => {
+                    const nama = item.nama || item.nama_pelanggan || 'Pelanggan ' + (idx + 1);
+                    const perangkat = item.perangkat || item.jenis_router || item.ont || 'Router / ONT Modem';
+                    const sn = item.sn || item.mac_address || item.no_sn ? `SN: ${item.sn || item.mac_address || item.no_sn}` : '';
+                    const tglTarik = formatTanggal(item.tanggal_tarik || item.created_at);
+
+                    const card = document.createElement('div');
+                    card.className = 'device-card';
+                    card.innerHTML = `
+                        <div class="dev-header">
+                            <span class="dev-nama">${idx + 1}. ${nama}</span>
+                            <span class="dev-tgl">${tglTarik}</span>
+                        </div>
+                        <div class="dev-info-box">
+                            <div>
+                                <div class="dev-item-name">📦 ${perangkat}</div>
+                                ${sn ? `<div class="dev-sn">${sn}</div>` : ''}
+                            </div>
+                            <span class="dev-badge-status">✓ Sudah Diambil</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error("Gagal muat data penarikan:", err);
+                document.getElementById('deviceListContainer').innerHTML = `
+                    <div style="text-align: center; color: #EF4444; padding: 20px; font-size: 12px;">
+                        Gagal ngamuat data penarikan perangkat!
+                    </div>`;
+            }
+        }
+
+        muatDataPenarikan();
+    </script>
+</body>
+</html>
