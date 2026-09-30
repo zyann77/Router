@@ -105,7 +105,8 @@
         .sg-sub-val { font-size: 13px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
 
         /* Kotak Warna Hijau (PSB) */
-        .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); }
+        .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); transition: transform 0.2s; }
+        .sg-box.success:active { transform: scale(0.98); }
         .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
         .sg-box.success .sg-sub-val { color: #A7F3D0; }
@@ -135,6 +136,21 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
         .page-transit.active { opacity: 1; pointer-events: all; }
+
+        /* CSS MODAL DETAIL PSB */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000; padding: 20px; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: rgba(20, 20, 25, 0.95); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; width: 100%; max-width: 420px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; }
+        .modal-title { font-size: 15px; font-weight: 600; color: var(--text-main); }
+        .btn-close { background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; line-height: 1; transition: 0.2s; }
+        .btn-close:hover { color: var(--danger); }
+        .modal-body { overflow-y: auto; flex: 1; padding-right: 2px; }
+        .psb-item-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+        .psb-item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+        .psb-item-name { font-size: 13px; font-weight: 600; color: white; }
+        .psb-item-price { font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.15); padding: 2px 8px; border-radius: 6px; }
+        .psb-item-sub { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .psb-item-info { font-size: 10px; color: var(--accent-gold-light); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -174,7 +190,7 @@
                 </div>
                 <div class="role-card" onclick="tampilkanFormAdmin()">
                     <div class="role-icon admin">
-                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 0-8 0v4h8z"/></svg>
                     </div>
                     <div class="role-name">Admin</div>
                 </div>
@@ -217,8 +233,8 @@
                 </div>
                 
                 <div class="stat-grid">
-                    <!-- KOTAK PSB BARU (WARNA HIJAU) -->
-                    <div class="sg-box success">
+                    <!-- KOTAK PSB BARU (WARNA HIJAU) - DI-KLIK BISA BUKA MODAL -->
+                    <div class="sg-box success" onclick="openModalPSB()" style="cursor: pointer;">
                         <div class="sg-top-row">
                             <div class="sg-lbl" id="labelPSBBulan">Total PSB (...)</div>
                             <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
@@ -241,7 +257,7 @@
                     <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="app-label">Panarikan<br>Perangkat</div>
                 </a>
-                <a href="https://redaman-production.up.railway.app/" class="app-icon-wrapper">
+                <a href="https://bot-production-5af8.up.railway.app/" class="app-icon-wrapper">
                     <div class="app-squircle blue-glow"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
                     <div class="app-label">Cék<br>Redaman</div>
                 </a>
@@ -258,9 +274,9 @@
                     <div class="app-label">Pelanggan</div>
                 </a>
                 <a href="https://zyann77.github.io/Dashboard/" class="app-icon-wrapper transit-link">
-    <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-    <div class="app-label">RnB Dashboard</div>
-</a>
+                    <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                    <div class="app-label">RnB Dashboard</div>
+                </a>
                 <a href="https://zyann77.github.io/TitikODP/" class="app-icon-wrapper">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                     <div class="app-label">Titik ODP</div>
@@ -281,8 +297,22 @@
     
     <div id="toast" class="toast"></div>
 
+    <!-- MODAL POPUP RINCIAN PSB -->
+    <div class="modal-overlay" id="modalPSB" onclick="if(event.target === this) closeModalPSB()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="psbModalTitle">Detail PSB</div>
+                <button class="btn-close" onclick="closeModalPSB()">&times;</button>
+            </div>
+            <div class="modal-body" id="psbModalList">
+                <!-- Data akan dimasukkan lewat JS -->
+            </div>
+        </div>
+    </div>
+
     <script>
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let dataPSBBulanIni = []; // Menyimpan list data PSB bulan berjalan untuk modal
         
         function showToast(msg) {
             const t = document.getElementById('toast'); t.textContent = msg; 
@@ -314,40 +344,39 @@
         const dock = document.getElementById('dock');
         let unlocked = false;
 
-    // Cek jika sesi ini sudah pernah buka kunci
-    if (sessionStorage.getItem('isUnlocked') === 'true') {
-        unlocked = true;
-        lockScreen.style.display = 'none';
-        const userStr = localStorage.getItem('userLoggedIn');
-        if (userStr) {
-            setupLauncherLinks(JSON.parse(userStr));
-            showHome();
-        } else {
-            loginScreen.style.display = 'flex';
-            loginScreen.style.opacity = '1';
+        if (sessionStorage.getItem('isUnlocked') === 'true') {
+            unlocked = true;
+            lockScreen.style.display = 'none';
+            const userStr = localStorage.getItem('userLoggedIn');
+            if (userStr) {
+                setupLauncherLinks(JSON.parse(userStr));
+                showHome();
+            } else {
+                loginScreen.style.display = 'flex';
+                loginScreen.style.opacity = '1';
+            }
         }
-    }
 
-    document.getElementById('unlockBtn').addEventListener('click', doUnlock);
-    let touchStartY = 0;
-    lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
-    lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
+        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+        let touchStartY = 0;
+        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
 
-    function doUnlock() {
-        if(unlocked) return;
-        unlocked = true;
-        sessionStorage.setItem('isUnlocked', 'true'); // Simpan status kunci dibuka
-        lockScreen.classList.add('unlocked');
+        function doUnlock() {
+            if(unlocked) return;
+            unlocked = true;
+            sessionStorage.setItem('isUnlocked', 'true');
+            lockScreen.classList.add('unlocked');
 
-        const userStr = localStorage.getItem('userLoggedIn');
-        if (userStr) {
-            setupLauncherLinks(JSON.parse(userStr));
-            showHome();
-        } else {
-            loginScreen.style.display = 'flex';
-            setTimeout(() => loginScreen.style.opacity = '1', 50);
+            const userStr = localStorage.getItem('userLoggedIn');
+            if (userStr) {
+                setupLauncherLinks(JSON.parse(userStr));
+                showHome();
+            } else {
+                loginScreen.style.display = 'flex';
+                setTimeout(() => loginScreen.style.opacity = '1', 50);
+            }
         }
-    }
 
         function setupLauncherLinks(user) {
             const linkPenarikan = document.getElementById('linkPenarikan');
@@ -385,8 +414,6 @@
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // KALKULASI TOTAL PELANGGAN ANYAR
-                // Angka dasar di-set 942 sangkan hasil ahirna pas nembongkeun 955
                 const angkaDasar = 942; 
                 const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
@@ -411,7 +438,8 @@
                 // HITUNG PSB BULAN INI & TOTAL RUPIAH
                 let countPSBBulanIeu = 0;
                 let totalRupiahBulanIeu = 0;
-                
+                dataPSBBulanIni = []; // Reset array
+
                 if (psbSemua) {
                     psbSemua.forEach(item => {
                         const tgl = item.tanggal_pasang || item.created_at;
@@ -421,6 +449,7 @@
                                 countPSBBulanIeu++;
                                 const hargaPaket = parseInt(item.harga) || 0;
                                 totalRupiahBulanIeu += hargaPaket;
+                                dataPSBBulanIni.push(item); // Simpan item ke data modal
                             }
                         }
                     });
@@ -496,7 +525,6 @@
         });
 
         function animateCounters() {
-            // Animasi untuk angka biasa
             const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan'), document.getElementById('countPSBBulan') ];
             counters.forEach(counter => {
                 if(!counter) return;
@@ -510,7 +538,6 @@
                 requestAnimationFrame(update);
             });
             
-            // Animasi khusus untuk Rupiah
             const rpCounter = document.getElementById('totalRupiahPSB');
             if(rpCounter) {
                 const rpTarget = +rpCounter.getAttribute('data-rp');
@@ -535,7 +562,6 @@
         });
         window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
         
-        // KODE ANYAR PIKEUN NGA-AKTIFKEUN INSTALL APLIKASI
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/Router/sw.js').then(reg => {
@@ -544,6 +570,43 @@
                     console.log('SW Gagal:', err);
                 });
             });
+        }
+
+        /* FUNGSI UNTUK MODAL DETAIL PSB */
+        function openModalPSB() {
+            const modal = document.getElementById('modalPSB');
+            const list = document.getElementById('psbModalList');
+            const now = new Date();
+            
+            document.getElementById('psbModalTitle').textContent = `Detail PSB (${namaBulanArr[now.getMonth()]})`;
+
+            if (dataPSBBulanIni.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; padding:30px 0;">Tidak ada data PSB pada bulan ini.</p>';
+            } else {
+                list.innerHTML = '';
+                dataPSBBulanIni.forEach(item => {
+                    const hargaFormat = item.harga ? parseInt(item.harga).toLocaleString('id-ID') : '0';
+                    const d = new Date(item.tanggal_pasang || item.created_at);
+                    const tglStr = `${d.getDate()} ${namaBulanArr[d.getMonth()]} ${d.getFullYear()}`;
+                    const alamatText = item.alamat || item.wilayah || '-';
+
+                    list.innerHTML += `
+                        <div class="psb-item-card">
+                            <div class="psb-item-top">
+                                <div class="psb-item-name">${item.nama}</div>
+                                <div class="psb-item-price">Rp ${hargaFormat}</div>
+                            </div>
+                            <div class="psb-item-sub">${alamatText}</div>
+                            <div class="psb-item-info">Dipasang: ${tglStr} • ${item.paket || '-'}</div>
+                        </div>
+                    `;
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeModalPSB() {
+            document.getElementById('modalPSB').style.display = 'none';
         }
     </script>
 </body>
