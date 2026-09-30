@@ -105,7 +105,7 @@
         /* Teks Rupiah untuk PSB */
         .sg-sub-val { font-size: 13px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
 
-        /* Kotak Warna Hijau (PSB) */
+        /* Kotak Warna Hijau (Total PSB - Klik Mengarah ke detail_psb.html) */
         .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); cursor: pointer; }
         .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
@@ -218,7 +218,7 @@
                 </div>
                 
                 <div class="stat-grid">
-                    <!-- KOTAK PSB BARU (WARNA HIJAU) - Diarahkeun ka detail_psb.html -->
+                    <!-- KOTAK TOTAL PSB (DIKLIK UNTUK MEIHAT REKAP/DETAIL PSB) -->
                     <a href="detail_psb.html" class="transit-link" style="text-decoration: none; display: block;">
                         <div class="sg-box success">
                             <div class="sg-top-row">
@@ -268,8 +268,8 @@
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                     <div class="app-label">Titik ODP</div>
                 </a>
-                <!-- IKON DATA PSB DIBUAT BERHUBUNGAN KE detail_psb.html -->
-                <a href="detail_psb.html" class="app-icon-wrapper transit-link">
+                <!-- IKON DATA PSB (UNTUK INPUT PSB BARU -> psb.html) -->
+                <a href="psb.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
                     <div class="app-label">Data PSB</div>
                 </a>
@@ -318,7 +318,6 @@
         const dock = document.getElementById('dock');
         let unlocked = false;
 
-    // Cek jika sesi ini sudah pernah buka kunci
     if (sessionStorage.getItem('isUnlocked') === 'true') {
         unlocked = true;
         lockScreen.style.display = 'none';
