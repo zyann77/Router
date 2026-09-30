@@ -102,17 +102,16 @@
         .sg-val { font-size: 22px; font-weight: 700; }
         .sg-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        /* Teks Rupiah untuk PSB */
         .sg-sub-val { font-size: 13px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
 
-        /* Kotak Warna Hijau (Total PSB - Klik Mengarah ke detail_psb.html) */
+        /* Kotak Warna Hijau (Total PSB) */
         .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); cursor: pointer; }
         .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
         .sg-box.success .sg-sub-val { color: #A7F3D0; }
 
-        /* Kotak Warna Merah (Berhenti) */
-        .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); }
+        /* Kotak Warna Merah (Berhenti Berlangganan) */
+        .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); cursor: pointer; }
         .sg-box.danger .sg-val { color: var(--danger); }
         .sg-box.danger .sg-lbl { color: #FCA5A5; }
 
@@ -229,13 +228,17 @@
                         </div>
                     </a>
                     
-                    <!-- Kartu Berhenti Berlangganan -->
-<div class="card-berhenti" onclick="window.location.href='detail_berhenti.html'" style="cursor: pointer;">
-    <div class="card-header">
-        <span>BERHENTI BERLANGGANAN (SÉPTÉMBER)</span>
-        <span class="badge-red">19</span>
-    </div>
-</div>
+                    <!-- KOTAK BERHENTI BERLANGGANAN (DIKLIK UNTUK DETAIL BERHENTI) -->
+                    <a href="detail_berhenti.html" class="transit-link" style="text-decoration: none; display: block;">
+                        <div class="sg-box danger">
+                            <div class="sg-top-row">
+                                <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
+                                <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
             <div class="app-grid">
                 <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
@@ -305,8 +308,11 @@
             document.getElementById('lsDate').textContent = dateStr;
             document.getElementById('hsDate').textContent = dateStr;
             
-            document.getElementById('labelEureunLangganan').textContent = `Berhenti Berlangganan (${namaBulanArr[now.getMonth()]})`;
-            document.getElementById('labelPSBBulan').textContent = `Total PSB (${namaBulanArr[now.getMonth()]})`;
+            const elBerhenti = document.getElementById('labelEureunLangganan');
+            if (elBerhenti) elBerhenti.textContent = `BERHENTI BERLANGGANAN (${namaBulanArr[now.getMonth()].toUpperCase()})`;
+            
+            const elPsb = document.getElementById('labelPSBBulan');
+            if (elPsb) elPsb.textContent = `TOTAL PSB (${namaBulanArr[now.getMonth()].toUpperCase()})`;
         }
         setInterval(updateClocks, 1000); updateClocks();
 
@@ -316,39 +322,39 @@
         const dock = document.getElementById('dock');
         let unlocked = false;
 
-    if (sessionStorage.getItem('isUnlocked') === 'true') {
-        unlocked = true;
-        lockScreen.style.display = 'none';
-        const userStr = localStorage.getItem('userLoggedIn');
-        if (userStr) {
-            setupLauncherLinks(JSON.parse(userStr));
-            showHome();
-        } else {
-            loginScreen.style.display = 'flex';
-            loginScreen.style.opacity = '1';
+        if (sessionStorage.getItem('isUnlocked') === 'true') {
+            unlocked = true;
+            lockScreen.style.display = 'none';
+            const userStr = localStorage.getItem('userLoggedIn');
+            if (userStr) {
+                setupLauncherLinks(JSON.parse(userStr));
+                showHome();
+            } else {
+                loginScreen.style.display = 'flex';
+                loginScreen.style.opacity = '1';
+            }
         }
-    }
 
-    document.getElementById('unlockBtn').addEventListener('click', doUnlock);
-    let touchStartY = 0;
-    lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
-    lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
+        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+        let touchStartY = 0;
+        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
 
-    function doUnlock() {
-        if(unlocked) return;
-        unlocked = true;
-        sessionStorage.setItem('isUnlocked', 'true');
-        lockScreen.classList.add('unlocked');
+        function doUnlock() {
+            if(unlocked) return;
+            unlocked = true;
+            sessionStorage.setItem('isUnlocked', 'true');
+            lockScreen.classList.add('unlocked');
 
-        const userStr = localStorage.getItem('userLoggedIn');
-        if (userStr) {
-            setupLauncherLinks(JSON.parse(userStr));
-            showHome();
-        } else {
-            loginScreen.style.display = 'flex';
-            setTimeout(() => loginScreen.style.opacity = '1', 50);
+            const userStr = localStorage.getItem('userLoggedIn');
+            if (userStr) {
+                setupLauncherLinks(JSON.parse(userStr));
+                showHome();
+            } else {
+                loginScreen.style.display = 'flex';
+                setTimeout(() => loginScreen.style.opacity = '1', 50);
+            }
         }
-    }
 
         function setupLauncherLinks(user) {
             const linkPenarikan = document.getElementById('linkPenarikan');
@@ -378,11 +384,14 @@
                 const countPSB = psbSemua ? psbSemua.length : 0;
                 
                 // DATA TARIKAN
-                const { data: tarikanData } = await supabaseClient
-                    .from('pelanggan')
-                    .select('created_at, perangkat, tanggal_penarikan')
-                    .eq('status', 'Sudah Diambil')
-                    .ilike('perangkat', '%Router%');
+                let { data: tarikanData } = await supabaseClient
+                    .from('penarikan_perangkat')
+                    .select('*');
+
+                if (!tarikanData) {
+                    const fallback = await supabaseClient.from('pelanggan').select('*').eq('status', 'Sudah Diambil');
+                    tarikanData = fallback.data || [];
+                }
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
@@ -397,7 +406,7 @@
                 let countTarikanBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
-                        const tgl = item.tanggal_penarikan || item.created_at;
+                        const tgl = item.tanggal_tarik || item.tanggal_penarikan || item.created_at;
                         if (tgl) {
                             const d = new Date(tgl);
                             if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
@@ -406,7 +415,8 @@
                         }
                     });
                 }
-                document.getElementById('countTarikanBulan').setAttribute('data-target', countTarikanBulanIeu);
+                const elTarikan = document.getElementById('countTarikanBulan');
+                if (elTarikan) elTarikan.setAttribute('data-target', countTarikanBulanIeu);
 
                 // HITUNG PSB BULAN INI & TOTAL RUPIAH
                 let countPSBBulanIeu = 0;
@@ -426,8 +436,11 @@
                     });
                 }
                 
-                document.getElementById('countPSBBulan').setAttribute('data-target', countPSBBulanIeu);
-                document.getElementById('totalRupiahPSB').setAttribute('data-rp', totalRupiahBulanIeu);
+                const elPsbCount = document.getElementById('countPSBBulan');
+                if (elPsbCount) elPsbCount.setAttribute('data-target', countPSBBulanIeu);
+                
+                const elRp = document.getElementById('totalRupiahPSB');
+                if (elRp) elRp.setAttribute('data-rp', totalRupiahBulanIeu);
 
                 animateCounters(); 
 
@@ -499,7 +512,7 @@
             const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan'), document.getElementById('countPSBBulan') ];
             counters.forEach(counter => {
                 if(!counter) return;
-                const target = +counter.getAttribute('data-target');
+                const target = +counter.getAttribute('data-target') || 0;
                 const start = performance.now();
                 function update(currentTime) {
                     const progress = Math.min((currentTime - start) / 1500, 1);
@@ -511,7 +524,7 @@
             
             const rpCounter = document.getElementById('totalRupiahPSB');
             if(rpCounter) {
-                const rpTarget = +rpCounter.getAttribute('data-rp');
+                const rpTarget = +rpCounter.getAttribute('data-rp') || 0;
                 const startRp = performance.now();
                 function updateRp(currentTime) {
                     const progress = Math.min((currentTime - startRp) / 1500, 1);
