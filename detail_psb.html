@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" translate="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap PSB Bulan Ini - RnB Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <title>Detail Rekap PSB</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,201 +16,182 @@
     <style>
         :root {
             --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.04);
-            --border-color: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(25px);
             --accent-gold: #C9A961;
             --accent-gold-light: #E5C97A;
             --success: #10B981;
             --text-main: #FFFFFF;
             --text-muted: #A1A1AA;
-            --font-main: 'Poppins', sans-serif;
+            --font-main: 'Poppins', -apple-system, sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            min-height: 100vh;
-            padding: 20px 15px 40px;
-        }
-
-        /* Container Utama */
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        /* Tombol Kembali & Header */
-        .header-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            background: var(--card-bg);
-            padding: 8px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            transition: 0.2s;
-        }
-
-        .btn-back:hover {
-            color: white;
-            border-color: rgba(255,255,255,0.2);
-        }
-
-        .page-title {
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text-main), var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Kartu Ringkasan Total */
-        .summary-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .summary-item {
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: var(--font-main); 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; /* Mengunci layar agar tidak bisa di-scroll */
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+            position: relative;
         }
 
-        .summary-label {
-            font-size: 11px;
-            color: #A7F3D0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
+        /* Ambient Glow Background */
+        .bg-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.25; }
+        .blob-1 { width: 300px; height: 300px; background: #8B5CF6; top: -10%; left: -10%; }
+        .blob-2 { width: 300px; height: 300px; background: #10B981; bottom: -10%; right: -10%; }
 
-        .summary-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--success);
-        }
-
-        /* Daftar Kartu PSB */
-        .list-container {
+        .app-container {
+            position: relative;
+            z-index: 1;
+            height: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .psb-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 18px;
-            backdrop-filter: blur(20px);
-        }
-
-        .psb-card-top {
+        /* Top Bar */
+        .header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
+            padding: 4px 0;
         }
-
-        .psb-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .psb-price {
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 600;
-            background: rgba(16,185,129,0.15);
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(16,185,129,0.3);
-        }
-
-        .psb-address {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .psb-meta {
-            font-size: 11px;
-            color: var(--accent-gold-light);
-            font-weight: 500;
+        .btn-back {
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
             color: var(--text-muted);
-            font-size: 14px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 8px 14px;
+            border-radius: 12px;
+            backdrop-filter: var(--glass-blur);
+        }
+        .btn-back svg { width: 16px; height: 16px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
+        .page-title { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold-light); }
+
+        /* Main Summary Banner */
+        .summary-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(201, 169, 97, 0.08));
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 20px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            backdrop-filter: var(--glass-blur);
+        }
+        .sum-card { display: flex; flex-direction: column; gap: 2px; }
+        .sum-card.border-right { border-right: 1px solid rgba(255, 255, 255, 0.1); padding-right: 10px; }
+        .sum-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sum-value { font-size: 22px; font-weight: 700; color: var(--success); }
+        .sum-sub { font-size: 11px; font-weight: 500; color: var(--accent-gold-light); }
+
+        /* Package Details Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 4px;
+        }
+        .section-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .month-badge { font-size: 11px; font-weight: 600; color: var(--accent-gold); background: rgba(201, 169, 97, 0.15); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(201, 169, 97, 0.3); }
+
+        .package-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
         }
 
-        .loading-text {
+        .package-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px 14px;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pkg-info { display: flex; flex-direction: column; gap: 2px; }
+        .pkg-name { font-size: 15px; font-weight: 700; color: #FFFFFF; }
+        .pkg-count { font-size: 12px; color: #6EE7B7; font-weight: 500; }
+        .pkg-total { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+        .pkg-price-val { font-size: 16px; font-weight: 700; color: var(--accent-gold-light); }
+        .pkg-unit-price { font-size: 10px; color: var(--text-muted); }
+
+        /* Footer Stamp */
+        .footer-stamp {
             text-align: center;
-            padding: 40px 0;
-            color: var(--accent-gold);
-            font-size: 14px;
+            font-size: 10px;
+            color: var(--text-muted);
+            padding: 6px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Navigasi -->
-        <div class="header-bar">
+    <div class="bg-layer">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
             <a href="index.html" class="btn-back">
-                &larr; Beranda
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Wangsul
             </a>
-            <div class="page-title" id="titleBulan">Rekap PSB</div>
+            <div class="page-title">Rekap Detail PSB</div>
         </div>
 
-        <!-- Ringkasan Total -->
-        <div class="summary-card">
-            <div class="summary-item">
-                <div class="summary-label">Total PSB Pasang</div>
-                <div class="summary-value" id="totalCount">0</div>
+        <!-- Banner Summary -->
+        <div class="summary-banner">
+            <div class="sum-card border-right">
+                <span class="sum-label">Total PSB</span>
+                <span class="sum-value" id="totalCountPSB">0</span>
+                <span class="sum-sub">Unit Terpasang</span>
             </div>
-            <div class="summary-item">
-                <div class="summary-label">Total Nilai Paket</div>
-                <div class="summary-value" id="totalRupiah">Rp 0</div>
+            <div class="sum-card">
+                <span class="sum-label">Total Uang</span>
+                <span class="sum-value" style="color: var(--accent-gold-light);" id="totalUangPSB">Rp 0</span>
+                <span class="sum-sub">Pemasukan PSB</span>
             </div>
         </div>
 
-        <!-- Tempat List Data PSB -->
-        <div class="list-container" id="psbList">
-            <div class="loading-text">Memuat data PSB bulan ini...</div>
+        <!-- Section Label -->
+        <div class="section-header">
+            <span class="section-title">Rincian Per Paket</span>
+            <span class="month-badge" id="bulanLabel">Bulan Ini</span>
+        </div>
+
+        <!-- Dynamic Package List -->
+        <div class="package-list" id="packageListContainer">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">
+                Ngamuat data PSB...
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="footer-stamp">
+            RNB NETWORK SUBANG • REALTIME REKAP
         </div>
     </div>
 
@@ -217,80 +199,100 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
 
-        async function muatDataPSB() {
+        async function muatDetailPSB() {
             const now = new Date();
-            const bulanSekarang = namaBulanArr[now.getMonth()];
-            const tahunSekarang = now.getFullYear();
+            const bulanIni = now.getMonth();
+            const tahunIni = now.getFullYear();
 
-            // Set Title
-            document.getElementById('titleBulan').textContent = `PSB (${bulanSekarang} ${tahunSekarang})`;
+            document.getElementById('bulanLabel').textContent = `${namaBulanArr[bulanIni]} ${tahunIni}`;
 
             try {
-                // Ambil data PSB dari Supabase
                 const { data: psbSemua, error } = await supabaseClient
                     .from('psb')
                     .select('*')
-                    .order('tanggal_pasang', { ascending: false });
+                    .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                // Filter hanya bulan dan tahun berjalan
-                const dataBulanIni = psbSemua.filter(item => {
+                // Filter PSB Bulan Ini
+                const psbBulanIni = (psbSemua || []).filter(item => {
                     const tgl = item.tanggal_pasang || item.created_at;
                     if (!tgl) return false;
                     const d = new Date(tgl);
-                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                    return d.getMonth() === bulanIni && d.getFullYear() === tahunIni;
                 });
 
-                // Hitung total pasang & total nilai rupiah
-                let totalNominal = 0;
-                dataBulanIni.forEach(item => {
-                    totalNominal += parseInt(item.harga) || 0;
+                let grandTotalCount = psbBulanIni.length;
+                let grandTotalUang = 0;
+
+                // Grouping berdasarkan Paket
+                const rekapPaket = {};
+
+                psbBulanIni.forEach(item => {
+                    const paketName = item.paket || 'Paket Lain';
+                    const hargaVal = parseInt(item.harga) || 0;
+
+                    grandTotalUang += hargaVal;
+
+                    if (!rekapPaket[paketName]) {
+                        rekapPaket[paketName] = {
+                            count: 0,
+                            totalRupiah: 0,
+                            hargaSatuan: hargaVal
+                        };
+                    }
+                    rekapPaket[paketName].count += 1;
+                    rekapPaket[paketName].totalRupiah += hargaVal;
                 });
 
-                document.getElementById('totalCount').textContent = `${dataBulanIni.length} Pasang`;
-                document.getElementById('totalRupiah').textContent = `Rp ${totalNominal.toLocaleString('id-ID')}`;
+                // Render Total Header
+                document.getElementById('totalCountPSB').textContent = grandTotalCount;
+                document.getElementById('totalUangPSB').textContent = 'Rp ' + grandTotalUang.toLocaleString('id-ID');
 
-                const listEl = document.getElementById('psbList');
+                // Render Package Cards
+                const container = document.getElementById('packageListContainer');
+                container.innerHTML = '';
 
-                if (dataBulanIni.length === 0) {
-                    listEl.innerHTML = `<div class="empty-state">Tidak ada data pendaftaran PSB pada bulan ${bulanSekarang} ${tahunSekarang}.</div>`;
+                const keyPaketArr = Object.keys(rekapPaket);
+
+                if (keyPaketArr.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 13px;">
+                            Sembilu! Munggah teu aya data PSB dina bulan ieu.
+                        </div>`;
                     return;
                 }
 
-                // Render semua item ke halaman tanpa scrollbar internal
-                listEl.innerHTML = '';
-                dataBulanIni.forEach(item => {
-                    const hargaFormat = item.harga ? parseInt(item.harga).toLocaleString('id-ID') : '0';
-                    const d = new Date(item.tanggal_pasang || item.created_at);
-                    const tglStr = `${d.getDate()} ${namaBulanArr[d.getMonth()]} ${d.getFullYear()}`;
-                    const alamatText = item.alamat || item.wilayah || '-';
-                    const paketText = item.paket || 'Broadband';
+                // Urutkan dari paket yang terbanyak terpasang
+                keyPaketArr.sort((a, b) => rekapPaket[b].count - rekapPaket[a].count);
 
-                    listEl.innerHTML += `
-                        <div class="psb-card">
-                            <div class="psb-card-top">
-                                <div class="psb-name">${item.nama}</div>
-                                <div class="psb-price">Rp ${hargaFormat}</div>
-                            </div>
-                            <div class="psb-address">${alamatText}</div>
-                            <div class="psb-meta">
-                                <span>Dipasang: ${tglStr}</span>
-                                <span>•</span>
-                                <span>${paketText}</span>
-                            </div>
+                keyPaketArr.forEach(pkgKey => {
+                    const data = rekapPaket[pkgKey];
+                    const card = document.createElement('div');
+                    card.className = 'package-card';
+                    card.innerHTML = `
+                        <div class="pkg-info">
+                            <div class="pkg-name">${pkgKey}</div>
+                            <div class="pkg-count">✓ ${data.count} Terpasang</div>
+                        </div>
+                        <div class="pkg-total">
+                            <div class="pkg-price-val">Rp ${data.totalRupiah.toLocaleString('id-ID')}</div>
+                            <div class="pkg-unit-price">@ Rp ${data.hargaSatuan.toLocaleString('id-ID')}</div>
                         </div>
                     `;
+                    container.appendChild(card);
                 });
 
             } catch (err) {
-                console.error("Gagal memuat data PSB:", err);
-                document.getElementById('psbList').innerHTML = `<div class="empty-state" style="color: #EF4444;">Gagal mengambil data dari server.</div>`;
+                console.error("Gagal muat data detail PSB:", err);
+                document.getElementById('packageListContainer').innerHTML = `
+                    <div style="text-align: center; color: #EF4444; padding: 20px; font-size: 12px;">
+                        Gagal ngamuat data Supabase!
+                    </div>`;
             }
         }
 
-        // Jalankan fungsi saat halaman terbuka
-        muatDataPSB();
+        muatDetailPSB();
     </script>
 </body>
 </html>
