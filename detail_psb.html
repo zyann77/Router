@@ -1,368 +1,231 @@
 <!DOCTYPE html>
-<html lang="id" translate="no">
+<html lang="su" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Detail Rekap PSB</title>
+    <meta name="google" content="notranslate">
+    <title>Iyann RnB Network Tools - Detail Rekap PSB</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 
     <style>
         :root {
-            --bg-dark: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.04);
+            --bg-dark: #050505; 
+            --glass-bg: rgba(255, 255, 255, 0.04); 
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(25px);
+            --glass-blur: blur(30px); 
+            --aurora-1: #8B5CF6; 
+            --aurora-2: #3B82F6; 
             --accent-gold: #C9A961;
-            --accent-gold-light: #E5C97A;
-            --success: #10B981;
-            --text-main: #FFFFFF;
+            --accent-gold-light: #E5C97A; 
+            --success: #10B981; 
+            --danger: #EF4444;
+            --text-main: #FFFFFF; 
             --text-muted: #A1A1AA;
-            --font-main: 'Poppins', -apple-system, sans-serif;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            --smooth: cubic-bezier(0.25, 1, 0.25, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+        /* PROTEKSI ANTI SELECT / ANTI COPY */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
         body { 
             background-color: var(--bg-dark); 
             color: var(--text-main); 
             font-family: var(--font-main); 
-            width: 100vw; 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 12px 16px;
-            position: relative;
+            min-height: 100vh; 
+            padding: 20px 20px 60px; 
+            position: relative; 
+            overflow-x: hidden; 
         }
 
-        /* Ambient Glow Background */
-        .bg-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.22; }
-        .blob-1 { width: 300px; height: 300px; background: #8B5CF6; top: -10%; left: -10%; }
-        .blob-2 { width: 300px; height: 300px; background: #10B981; bottom: -10%; right: -10%; }
+        /* Aurora background */
+        .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; mix-blend-mode: screen; }
+        .blob-1 { width: 400px; height: 400px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 350px; height: 350px; background: var(--aurora-2); bottom: -10%; right: -10%; }
 
-        .app-container {
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        /* Navigation & Top Bar */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .btn-wangsul {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
+            border-radius: 12px; color: #fff; text-decoration: none; font-size: 13px; font-weight: 500;
+            backdrop-filter: blur(10px); transition: all 0.2s; cursor: pointer;
         }
+        .btn-wangsul:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.12); }
+        .logo-rnb-box { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 16px; color: var(--danger); letter-spacing: 1px; }
+        .logo-rnb-box span { color: var(--accent-gold); font-size: 10px; background: rgba(201, 169, 97, 0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(201, 169, 97, 0.3); }
 
-        /* Top Header Area */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 6px 12px;
-            border-radius: 12px;
-            backdrop-filter: var(--glass-blur);
-        }
-        .btn-back svg { width: 14px; height: 14px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
+        /* Main Container */
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
 
-        /* Logo Transparan */
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+        /* Title Header Box */
+        .banner-box {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);
+            border-radius: 16px; padding: 18px; text-align: center;
         }
-        .logo-svg {
-            width: 100px;
-            height: auto;
-            background: transparent;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-        }
+        .banner-title { font-size: 15px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent-gold-light); text-transform: uppercase; }
+        .banner-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
 
-        /* Main Month Title Banner */
-        .title-banner {
-            text-align: center;
-            background: rgba(201, 169, 97, 0.1);
-            border: 1px solid rgba(201, 169, 97, 0.25);
-            padding: 8px 12px;
-            border-radius: 14px;
-            backdrop-filter: var(--glass-blur);
+        /* Summary Cards Grid */
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .summary-card {
+            background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px; padding: 18px 20px; backdrop-filter: var(--glass-blur);
         }
-        .title-banner h2 {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: var(--accent-gold-light);
-            text-transform: uppercase;
+        .summary-card.gold-card {
+            background: rgba(201, 169, 97, 0.03); border-color: rgba(201, 169, 97, 0.2);
         }
-        .realtime-tag {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 2px;
-            font-weight: 400;
-        }
+        .sc-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .sc-val { font-size: 30px; font-weight: 700; color: var(--success); margin: 4px 0 2px; line-height: 1.1; }
+        .gold-card .sc-val { color: var(--accent-gold-light); }
+        .sc-sub { font-size: 11px; color: var(--success); font-weight: 500; }
 
-        /* Main Summary Banner */
-        .summary-banner {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(201, 169, 97, 0.08));
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            border-radius: 18px;
-            padding: 12px 14px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            backdrop-filter: var(--glass-blur);
-        }
-        .sum-card { display: flex; flex-direction: column; gap: 2px; }
-        .sum-card.border-right { border-right: 1px solid rgba(255, 255, 255, 0.1); padding-right: 8px; }
-        .sum-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sum-value { font-size: 20px; font-weight: 700; color: var(--success); line-height: 1.1; }
-        .sum-sub { font-size: 10px; font-weight: 500; color: var(--accent-gold-light); }
+        /* Section Title */
+        .section-header { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 5px; }
 
-        /* Package Details Section */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2px;
-        }
-        .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .package-list {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            justify-content: flex-start;
-            overflow-y: auto; /* Memungkinkan scroll saat daftar dibuka */
-            padding-right: 2px;
-        }
-
+        /* Package Accordion List */
+        .package-list { display: flex; flex-direction: column; gap: 12px; }
         .package-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 10px 12px;
-            backdrop-filter: var(--glass-blur);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            cursor: pointer;
-            transition: background 0.2s ease, border-color 0.2s ease;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);
+            border-radius: 16px; overflow: hidden; transition: all 0.3s var(--smooth);
         }
-
-        .package-card:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.18);
+        .package-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: rgba(255, 255, 255, 0.01); transition: background 0.2s;
         }
-
-        .pkg-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .pkg-info { display: flex; flex-direction: column; gap: 2px; }
-        .pkg-name { 
-            font-size: 13px; 
-            font-weight: 700; 
-            color: #FFFFFF; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-        }
+        .package-header:active { background: rgba(255, 255, 255, 0.05); }
+        .pkg-title-area { display: flex; flex-direction: column; gap: 4px; }
+        .pkg-name { font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .pkg-arrow { font-size: 9px; transition: transform 0.3s; color: var(--text-muted); }
+        .package-card.active .pkg-arrow { transform: rotate(180deg); }
+        .pkg-count { font-size: 12px; font-weight: 600; color: var(--success); display: flex; align-items: center; gap: 4px; }
         
-        .chevron-icon {
-            font-size: 10px;
-            color: var(--text-muted);
-            transition: transform 0.25s ease;
-        }
-        .chevron-icon.rotate {
-            transform: rotate(180deg);
-            color: var(--accent-gold-light);
-        }
+        .pkg-price-area { text-align: right; }
+        .pkg-total-price { font-size: 16px; font-weight: 700; color: #3B82F6; }
+        .pkg-unit-price { font-size: 10px; color: #93C5FD; font-weight: 600; background: rgba(59, 130, 246, 0.2); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 3px; }
 
-        .pkg-count { font-size: 11px; color: #6EE7B7; font-weight: 500; }
-        .pkg-total { text-align: right; display: flex; flex-direction: column; gap: 1px; }
-        .pkg-price-val { font-size: 14px; font-weight: 700; color: var(--accent-gold-light); }
-        .pkg-unit-price { font-size: 10px; color: var(--text-muted); }
+        /* Accordion Body Details */
+        .package-body { display: none; padding: 0 20px 16px; border-top: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.25); }
+        .package-card.active .package-body { display: block; }
 
-        /* Collapsible List Pelanggan */
-        .pkg-pelanggan-container {
-            display: none;
-            border-top: 1px dashed rgba(255, 255, 255, 0.1);
-            padding-top: 8px;
-            margin-top: 4px;
-            flex-direction: column;
-            gap: 6px;
+        .customer-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .customer-item:last-child { border-bottom: none; }
+        .cust-info { display: flex; flex-direction: column; gap: 2px; }
+        .cust-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .cust-alamat { font-size: 11px; color: var(--text-muted); }
+        .cust-date { font-size: 11px; color: var(--accent-gold-light); text-align: right; font-weight: 500; }
 
-        .pelanggan-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 11px;
-        }
+        .footer-text { text-align: center; font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; margin-top: 25px; text-transform: uppercase; }
 
-        .pelanggan-nama {
-            font-weight: 600;
-            color: #F3F4F6;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .pelanggan-num {
-            color: var(--accent-gold);
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .pelanggan-tgl {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        /* Footer Stamp */
-        .footer-stamp {
-            text-align: center;
-            font-size: 9px;
-            color: var(--text-muted);
-            padding-top: 4px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            letter-spacing: 0.5px;
-        }
+        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .page-transit.active { opacity: 1; pointer-events: all; }
     </style>
 </head>
 <body>
 
     <div class="bg-layer">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+    </div>
+    <div class="page-transit" id="pageTransit"></div>
+
+    <div class="top-bar">
+        <a href="index.html" class="btn-wangsul transit-link">
+            ‹ Wangsul
+        </a>
+        <div class="logo-rnb-box">
+            RnB <span>by PMYNET</span>
+        </div>
     </div>
 
-    <div class="app-container">
-        <!-- Top Header -->
-        <div class="header">
-            <a href="index.html" class="btn-back">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                Wangsul
-            </a>
-            
-            <!-- Logo RnB Transparan -->
-            <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 130 70" xmlns="http://www.w3.org/2000/svg">
-                  <text x="6" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">R</text>
-                  <text x="32" y="32" font-family="Arial Black, Impact, sans-serif" font-size="24" font-weight="900" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round" transform="rotate(15 41 20)">n</text>
-                  <text x="44" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">B</text>
-                  <text x="6" y="42" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#FFD700" font-style="italic">by</text>
-                  <ellipse cx="48" cy="48" rx="30" ry="9" fill="none" stroke="#FFD700" stroke-width="1.8" transform="rotate(-12 48 48)"/>
-                  <text x="18" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#1E90FF" letter-spacing="-1">PMY</text>
-                  <text x="52" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#00C853" letter-spacing="-1">NET</text>
-                </svg>
+    <div class="container">
+        <!-- HEADER BANNER BULAN -->
+        <div class="banner-box">
+            <div class="banner-title" id="bannerTitle">TOTAL PSB BULAN ...</div>
+            <div class="banner-sub" id="bannerSub">Per ...</div>
+        </div>
+
+        <!-- REKAP CARD -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="sc-label">TOTAL PSB</div>
+                <div class="sc-val" id="totalPsbCount">0</div>
+                <div class="sc-sub">Terpasang</div>
+            </div>
+            <div class="summary-card gold-card">
+                <div class="sc-label">TOTAL UANG</div>
+                <div class="sc-val" id="totalPsbUang">Rp 0</div>
             </div>
         </div>
 
-        <!-- Realtime Month Banner Title -->
-        <div class="title-banner">
-            <h2 id="bannerMonthTitle">TOTAL PSB BULAN SEPTEMBER 2026</h2>
-            <div class="realtime-tag" id="realtimeDateSub">Update Terkini: Realtime</div>
-        </div>
+        <div class="section-header">RINCIAN PER PAKET (KLIK UNTUK DETAIL)</div>
 
-        <!-- Summary Banner -->
-        <div class="summary-banner">
-            <div class="sum-card border-right">
-                <span class="sum-label">Total PSB</span>
-                <span class="sum-value" id="totalCountPSB">0</span>
-                <span class="sum-sub">Terpasang</span>
-            </div>
-            <div class="sum-card">
-                <span class="sum-label">Total Uang</span>
-                <span class="sum-value" style="color: var(--accent-gold-light);" id="totalUangPSB">Rp 0</span>
-            </div>
-        </div>
-
-        <!-- Section Label -->
-        <div class="section-header">
-            <span class="section-title">Rincian Per Paket (Klik untuk detail)</span>
-        </div>
-
-        <!-- Dynamic Package List -->
+        <!-- LIST ACCORDION PAKET -->
         <div class="package-list" id="packageListContainer">
-            <div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">
-                Ngamuat data PSB...
-            </div>
+            <!-- Dynamic Data Render Here -->
         </div>
 
-        <!-- Footer Info -->
-        <div class="footer-stamp">
-            RNB NETWORK SUBANG • REALTIME REKAP
-        </div>
+        <div class="footer-text">RNB NETWORK SUBANG • REALTIME REKAP</div>
     </div>
 
     <script>
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+        const namaBulanArr = ['SÉPTÉMBER', 'OKTOBER', 'NOPÉMBER', 'DESÉMBER', 'JANUARI', 'PÉBRUARI', 'MARET', 'APRIL', 'MÉI', 'JUNI', 'JULI', 'AGUSTUS'];
+        const namaBulanReal = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
 
-        function updateRealtimeLabels(now) {
-            const tgl = now.getDate();
-            const bulanIdx = now.getMonth();
-            const tahun = now.getFullYear();
-            const jam = String(now.getHours()).padStart(2, '0');
-            const menit = String(now.getMinutes()).padStart(2, '0');
-
-            const bulanStr = namaBulanArr[bulanIdx].toUpperCase();
-            
-            document.getElementById('bannerMonthTitle').textContent = `TOTAL PSB BULAN ${bulanStr} ${tahun}`;
-            document.getElementById('realtimeDateSub').textContent = `Per ${tgl} ${namaBulanArr[bulanIdx]} ${tahun} • ${jam}:${menit} WIB`;
-        }
-
-        function togglePaket(card) {
-            const container = card.querySelector('.pkg-pelanggan-container');
-            const chevron = card.querySelector('.chevron-icon');
-            
-            if (container.style.display === 'flex') {
-                container.style.display = 'none';
-                if (chevron) chevron.classList.remove('rotate');
-            } else {
-                container.style.display = 'flex';
-                if (chevron) chevron.classList.add('rotate');
+        function isBulanIni(tglInput, now) {
+            if (!tglInput) return false;
+            if (typeof tglInput === 'string') {
+                const cleanStr = tglInput.split('T')[0];
+                const parts = cleanStr.split(/[-/]/);
+                if (parts.length === 3) {
+                    let year, month;
+                    if (parts[0].length === 4) {
+                        year = parseInt(parts[0], 10);
+                        month = parseInt(parts[1], 10) - 1;
+                    } else {
+                        year = parseInt(parts[2], 10);
+                        month = parseInt(parts[1], 10) - 1;
+                    }
+                    return year === now.getFullYear() && month === now.getMonth();
+                }
             }
+            const d = new Date(tglInput);
+            return !isNaN(d.getTime()) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }
 
-        function formatTanggalPemasangan(tglString) {
-            if (!tglString) return '';
-            const d = new Date(tglString);
-            if (isNaN(d.getTime())) return tglString;
-            return `${d.getDate()} ${namaBulanArr[d.getMonth()].slice(0, 3)}`;
-        }
-
-        async function muatDetailPSB() {
+        async function muatDataRekapPSB() {
             const now = new Date();
-            const bulanIni = now.getMonth();
-            const tahunIni = now.getFullYear();
-
-            updateRealtimeLabels(now);
+            const bulanStr = namaBulanReal[now.getMonth()].toUpperCase();
+            
+            // Set Header Banner
+            document.getElementById('bannerTitle').textContent = `TOTAL PSB BULAN ${bulanStr} ${now.getFullYear()}`;
+            
+            const day = now.getDate();
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('bannerSub').textContent = `Per ${day} ${namaBulanReal[now.getMonth()]} ${now.getFullYear()} • ${hrs}:${mins} WIB`;
 
             try {
                 const { data: psbSemua, error } = await supabaseClient
@@ -372,93 +235,86 @@
 
                 if (error) throw error;
 
-                const psbBulanIni = (psbSemua || []).filter(item => {
-                    const tgl = item.tanggal_pasang || item.created_at;
-                    if (!tgl) return false;
-                    const d = new Date(tgl);
-                    return d.getMonth() === bulanIni && d.getFullYear() === tahunIni;
-                });
+                // Filter Data Bulan Ini
+                const psbBulanIni = psbSemua ? psbSemua.filter(item => {
+                    const tgl = item.tanggal_pasang || item.created_at || item.tanggal;
+                    return isBulanIni(tgl, now);
+                }) : [];
 
+                // Hitung Total keseluruhan
                 let grandTotalCount = psbBulanIni.length;
                 let grandTotalUang = 0;
 
-                const rekapPaket = {};
+                // Grouping berdasarkan Nama Paket
+                const paketGroup = {};
 
                 psbBulanIni.forEach(item => {
-                    const paketName = item.paket || 'Paket Lain';
-                    const hargaVal = parseInt(item.harga) || 0;
+                    const namaPaket = item.paket || item.layanan || 'Paket Lainnya';
+                    const harga = parseInt(item.harga) || 0;
+                    grandTotalUang += harga;
 
-                    grandTotalUang += hargaVal;
-
-                    if (!rekapPaket[paketName]) {
-                        rekapPaket[paketName] = {
+                    if (!paketGroup[namaPaket]) {
+                        paketGroup[namaPaket] = {
+                            nama: namaPaket,
+                            hargaSatuan: harga,
+                            totalHarga: 0,
                             count: 0,
-                            totalRupiah: 0,
-                            hargaSatuan: hargaVal,
-                            pelangganList: []
+                            pelanggan: []
                         };
                     }
-                    rekapPaket[paketName].count += 1;
-                    rekapPaket[paketName].totalRupiah += hargaVal;
-                    rekapPaket[paketName].pelangganList.push(item);
+                    paketGroup[namaPaket].count++;
+                    paketGroup[namaPaket].totalHarga += harga;
+                    paketGroup[namaPaket].pelanggan.push(item);
                 });
 
-                document.getElementById('totalCountPSB').textContent = grandTotalCount;
-                document.getElementById('totalUangPSB').textContent = 'Rp ' + grandTotalUang.toLocaleString('id-ID');
+                // Update UI Summary Box
+                document.getElementById('totalPsbCount').textContent = grandTotalCount;
+                document.getElementById('totalPsbUang').textContent = "Rp " + grandTotalUang.toLocaleString('id-ID');
 
+                // Render List Paket
                 const container = document.getElementById('packageListContainer');
                 container.innerHTML = '';
 
-                const keyPaketArr = Object.keys(rekapPaket);
+                const paketSorted = Object.values(paketGroup).sort((a, b) => b.count - a.count);
 
-                if (keyPaketArr.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; color: var(--text-muted); padding: 25px; font-size: 12px;">
-                            Teu aya data PSB dina bulan ieu.
-                        </div>`;
+                if (paketSorted.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">Sanggup kénéh teu aya data PSB bulan ieu.</div>`;
                     return;
                 }
 
-                keyPaketArr.sort((a, b) => rekapPaket[b].count - rekapPaket[a].count);
-
-                keyPaketArr.forEach(pkgKey => {
-                    const data = rekapPaket[pkgKey];
+                paketSorted.forEach(pkg => {
                     const card = document.createElement('div');
                     card.className = 'package-card';
-                    card.setAttribute('onclick', 'togglePaket(this)');
-
-                    // Buat susunan daftar pelanggan
+                    
                     let pelangganHtml = '';
-                    data.pelangganList.forEach((p, idx) => {
-                        const namaPelanggan = p.nama || p.nama_pelanggan || p.nama_user || p.pelanggan || 'Pelanggan ' + (idx + 1);
-                        const tglPasang = formatTanggalPemasangan(p.tanggal_pasang || p.created_at);
-                        
+                    pkg.pelanggan.forEach(p => {
+                        const tglPasang = p.tanggal_pasang || p.created_at || p.tanggal || '';
+                        const cleanTgl = tglPasang.split('T')[0];
                         pelangganHtml += `
-                            <div class="pelanggan-row">
-                                <span class="pelanggan-nama">
-                                    <span class="pelanggan-num">${idx + 1}.</span>
-                                    ${namaPelanggan}
-                                </span>
-                                <span class="pelanggan-tgl">${tglPasang}</span>
+                            <div class="customer-item">
+                                <div class="cust-info">
+                                    <div class="cust-name">${p.nama || p.nama_pelanggan || 'Tanpa Nama'}</div>
+                                    <div class="cust-alamat">${p.alamat || p.lokasi || '-'}</div>
+                                </div>
+                                <div class="cust-date">${cleanTgl}</div>
                             </div>
                         `;
                     });
 
                     card.innerHTML = `
-                        <div class="pkg-header">
-                            <div class="pkg-info">
+                        <div class="package-header" onclick="toggleAccordion(this)">
+                            <div class="pkg-title-area">
                                 <div class="pkg-name">
-                                    ${pkgKey}
-                                    <span class="chevron-icon">▼</span>
+                                    ${pkg.nama} <span class="pkg-arrow">▼</span>
                                 </div>
-                                <div class="pkg-count">✓ ${data.count} Terpasang</div>
+                                <div class="pkg-count">✓ ${pkg.count} Terpasang</div>
                             </div>
-                            <div class="pkg-total">
-                                <div class="pkg-price-val">Rp ${data.totalRupiah.toLocaleString('id-ID')}</div>
-                                <div class="pkg-unit-price">@ Rp ${data.hargaSatuan.toLocaleString('id-ID')}</div>
+                            <div class="pkg-price-area">
+                                <div class="pkg-total-price">Rp ${pkg.totalHarga.toLocaleString('id-ID')}</div>
+                                <div class="pkg-unit-price">@ Rp ${pkg.hargaSatuan.toLocaleString('id-ID')}</div>
                             </div>
                         </div>
-                        <div class="pkg-pelanggan-container">
+                        <div class="package-body">
                             ${pelangganHtml}
                         </div>
                     `;
@@ -466,15 +322,27 @@
                 });
 
             } catch (err) {
-                console.error("Gagal muat data detail PSB:", err);
-                document.getElementById('packageListContainer').innerHTML = `
-                    <div style="text-align: center; color: #EF4444; padding: 20px; font-size: 12px;">
-                        Gagal ngamuat data Supabase!
-                    </div>`;
+                console.error("Gagal ngamuat rekap PSB:", err);
             }
         }
 
-        muatDetailPSB();
+        function toggleAccordion(headerEl) {
+            const card = headerEl.parentElement;
+            card.classList.toggle('active');
+        }
+
+        // Transisi halaman
+        const pageTransit = document.getElementById('pageTransit');
+        document.querySelectorAll('.transit-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                const href = this.getAttribute('href');
+                pageTransit.classList.add('active'); 
+                setTimeout(() => window.location.href = href, 400);
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', muatDataRekapPSB);
     </script>
 </body>
 </html>
