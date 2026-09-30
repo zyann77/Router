@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap PSB Bulan Ini - RnB Network</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-gold: #C9A961;
+            --accent-gold-light: #E5C97A;
+            --success: #10B981;
+            --text-main: #FFFFFF;
+            --text-muted: #A1A1AA;
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            padding: 20px 15px 40px;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Tombol Kembali & Header */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: 0.2s;
+        }
+
+        .btn-back:hover {
+            color: white;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-main), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Kartu Ringkasan Total */
+        .summary-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #A7F3D0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Daftar Kartu PSB */
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .psb-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 18px;
+            backdrop-filter: blur(20px);
+        }
+
+        .psb-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .psb-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .psb-price {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 600;
+            background: rgba(16,185,129,0.15);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+
+        .psb-address {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .psb-meta {
+            font-size: 11px;
+            color: var(--accent-gold-light);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        .loading-text {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--accent-gold);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header Navigasi -->
+        <div class="header-bar">
+            <a href="index.html" class="btn-back">
+                &larr; Beranda
+            </a>
+            <div class="page-title" id="titleBulan">Rekap PSB</div>
+        </div>
+
+        <!-- Ringkasan Total -->
+        <div class="summary-card">
+            <div class="summary-item">
+                <div class="summary-label">Total PSB Pasang</div>
+                <div class="summary-value" id="totalCount">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Nilai Paket</div>
+                <div class="summary-value" id="totalRupiah">Rp 0</div>
+            </div>
+        </div>
+
+        <!-- Tempat List Data PSB -->
+        <div class="list-container" id="psbList">
+            <div class="loading-text">Memuat data PSB bulan ini...</div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+
+        async function muatDataPSB() {
+            const now = new Date();
+            const bulanSekarang = namaBulanArr[now.getMonth()];
+            const tahunSekarang = now.getFullYear();
+
+            // Set Title
+            document.getElementById('titleBulan').textContent = `PSB (${bulanSekarang} ${tahunSekarang})`;
+
+            try {
+                // Ambil data PSB dari Supabase
+                const { data: psbSemua, error } = await supabaseClient
+                    .from('psb')
+                    .select('*')
+                    .order('tanggal_pasang', { ascending: false });
+
+                if (error) throw error;
+
+                // Filter hanya bulan dan tahun berjalan
+                const dataBulanIni = psbSemua.filter(item => {
+                    const tgl = item.tanggal_pasang || item.created_at;
+                    if (!tgl) return false;
+                    const d = new Date(tgl);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                });
+
+                // Hitung total pasang & total nilai rupiah
+                let totalNominal = 0;
+                dataBulanIni.forEach(item => {
+                    totalNominal += parseInt(item.harga) || 0;
+                });
+
+                document.getElementById('totalCount').textContent = `${dataBulanIni.length} Pasang`;
+                document.getElementById('totalRupiah').textContent = `Rp ${totalNominal.toLocaleString('id-ID')}`;
+
+                const listEl = document.getElementById('psbList');
+
+                if (dataBulanIni.length === 0) {
+                    listEl.innerHTML = `<div class="empty-state">Tidak ada data pendaftaran PSB pada bulan ${bulanSekarang} ${tahunSekarang}.</div>`;
+                    return;
+                }
+
+                // Render semua item ke halaman tanpa scrollbar internal
+                listEl.innerHTML = '';
+                dataBulanIni.forEach(item => {
+                    const hargaFormat = item.harga ? parseInt(item.harga).toLocaleString('id-ID') : '0';
+                    const d = new Date(item.tanggal_pasang || item.created_at);
+                    const tglStr = `${d.getDate()} ${namaBulanArr[d.getMonth()]} ${d.getFullYear()}`;
+                    const alamatText = item.alamat || item.wilayah || '-';
+                    const paketText = item.paket || 'Broadband';
+
+                    listEl.innerHTML += `
+                        <div class="psb-card">
+                            <div class="psb-card-top">
+                                <div class="psb-name">${item.nama}</div>
+                                <div class="psb-price">Rp ${hargaFormat}</div>
+                            </div>
+                            <div class="psb-address">${alamatText}</div>
+                            <div class="psb-meta">
+                                <span>Dipasang: ${tglStr}</span>
+                                <span>•</span>
+                                <span>${paketText}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                console.error("Gagal memuat data PSB:", err);
+                document.getElementById('psbList').innerHTML = `<div class="empty-state" style="color: #EF4444;">Gagal mengambil data dari server.</div>`;
+            }
+        }
+
+        // Jalankan fungsi saat halaman terbuka
+        muatDataPSB();
+    </script>
+</body>
+</html>
