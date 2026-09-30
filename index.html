@@ -95,25 +95,23 @@
         .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
         .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
         
-        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
-        .sg-box { display: flex; flex-direction: column; justify-content: center; padding: 15px 20px; border-radius: 16px; transition: transform 0.2s; }
-        .sg-box:active { transform: scale(0.98); }
+        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .sg-box { display: flex; flex-direction: column; justify-content: center; padding: 15px; border-radius: 16px; }
         .sg-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .sg-val { font-size: 22px; font-weight: 700; }
-        .sg-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
-        
-        .sg-sub-val { font-size: 13px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
+        .sg-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+        .sg-sub-val { font-size: 12px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
 
-        /* Kotak Warna Hijau (Total PSB) */
-        .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); cursor: pointer; }
+        .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); transition: transform 0.2s; cursor: pointer; }
+        .sg-box.success:active { transform: scale(0.98); }
         .sg-box.success .sg-val { color: var(--success); }
         .sg-box.success .sg-lbl { color: #6EE7B7; }
         .sg-box.success .sg-sub-val { color: #A7F3D0; }
 
-        /* Kotak Warna Merah (Berhenti Berlangganan) */
-        .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); cursor: pointer; }
+        .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); cursor: default; }
         .sg-box.danger .sg-val { color: var(--danger); }
         .sg-box.danger .sg-lbl { color: #FCA5A5; }
+        .sg-box.danger .sg-sub-val { color: #FECACA; }
 
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
         .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
@@ -174,7 +172,7 @@
                 </div>
                 <div class="role-card" onclick="tampilkanFormAdmin()">
                     <div class="role-icon admin">
-                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 0 8 0v4h8z"/></svg>
                     </div>
                     <div class="role-name">Admin</div>
                 </div>
@@ -217,26 +215,25 @@
                 </div>
                 
                 <div class="stat-grid">
-                    <!-- KOTAK TOTAL PSB (DIKLIK UNTUK MEIHAT REKAP/DETAIL PSB) -->
+                    <!-- KOTAK TOTAL PSB (BISA DIKLIK) -->
                     <a href="detail_psb.html" class="transit-link" style="text-decoration: none; display: block;">
                         <div class="sg-box success">
                             <div class="sg-top-row">
-                                <div class="sg-lbl" id="labelPSBBulan">Total PSB (...)</div>
+                                <div class="sg-lbl" id="labelPSBBulan">PSB (...)</div>
                                 <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
                             </div>
                             <div class="sg-sub-val" id="totalRupiahPSB" data-rp="0">Rp 0</div>
                         </div>
                     </a>
-                    
-                    <!-- KOTAK BERHENTI BERLANGGANAN (DIKLIK UNTUK DETAIL BERHENTI) -->
-                    <a href="detail_berhenti.html" class="transit-link" style="text-decoration: none; display: block;">
-                        <div class="sg-box danger">
-                            <div class="sg-top-row">
-                                <div class="sg-lbl" id="labelEureunLangganan">Berhenti Berlangganan (...)</div>
-                                <div class="sg-val" data-target="0" id="countTarikanBulan">0</div>
-                            </div>
+
+                    <!-- KOTAK BERHENTI BERLANGGANAN (STATIS / TIDAK BISA DIKLIK) -->
+                    <div class="sg-box danger">
+                        <div class="sg-top-row">
+                            <div class="sg-lbl" id="labelBerhentiBulan">Berhenti (...)</div>
+                            <div class="sg-val" data-target="0" id="countBerhentiBulan">0</div>
                         </div>
-                    </a>
+                        <div class="sg-sub-val">Bulan Ieu</div>
+                    </div>
                 </div>
             </div>
 
@@ -269,7 +266,6 @@
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                     <div class="app-label">Titik ODP</div>
                 </a>
-                <!-- IKON DATA PSB (UNTUK INPUT PSB BARU -> psb.html) -->
                 <a href="psb.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
                     <div class="app-label">Data PSB</div>
@@ -308,11 +304,11 @@
             document.getElementById('lsDate').textContent = dateStr;
             document.getElementById('hsDate').textContent = dateStr;
             
-            const elBerhenti = document.getElementById('labelEureunLangganan');
-            if (elBerhenti) elBerhenti.textContent = `BERHENTI BERLANGGANAN (${namaBulanArr[now.getMonth()].toUpperCase()})`;
-            
             const elPsb = document.getElementById('labelPSBBulan');
-            if (elPsb) elPsb.textContent = `TOTAL PSB (${namaBulanArr[now.getMonth()].toUpperCase()})`;
+            if (elPsb) elPsb.textContent = `PSB (${namaBulanArr[now.getMonth()].toUpperCase()})`;
+
+            const elBerhenti = document.getElementById('labelBerhentiBulan');
+            if (elBerhenti) elBerhenti.textContent = `BERHENTI (${namaBulanArr[now.getMonth()].toUpperCase()})`;
         }
         setInterval(updateClocks, 1000); updateClocks();
 
@@ -377,46 +373,70 @@
             }, 500);
         }
 
+        // Helper fungsi aman untuk mengecek apakah tanggal berada di bulan & tahun ini
+        function isBulanIni(tglInput, now) {
+            if (!tglInput) return false;
+
+            // Jika input berupa string tanggal (YYYY-MM-DD atau DD/MM/YYYY atau ISO)
+            if (typeof tglInput === 'string') {
+                const cleanStr = tglInput.split('T')[0]; // Ambil bagian tanggal saja
+                const parts = cleanStr.split(/[-/]/);
+
+                if (parts.length === 3) {
+                    let year, month;
+                    if (parts[0].length === 4) {
+                        // Format YYYY-MM-DD
+                        year = parseInt(parts[0], 10);
+                        month = parseInt(parts[1], 10) - 1; // Bulan di JS dimulai dari 0
+                    } else {
+                        // Format DD-MM-YYYY
+                        year = parseInt(parts[2], 10);
+                        month = parseInt(parts[1], 10) - 1;
+                    }
+                    return year === now.getFullYear() && month === now.getMonth();
+                }
+            }
+
+            // Fallback parsing standar jika format timestamp
+            const d = new Date(tglInput);
+            if (!isNaN(d.getTime())) {
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }
+
+            return false;
+        }
+
         async function kalkulasiTotalPelanggan() {
             try {
                 // DATA PSB
-                const { data: psbSemua } = await supabaseClient.from('psb').select('*').order('tanggal_pasang', { ascending: false });
+                const { data: psbSemua } = await supabaseClient
+                    .from('psb')
+                    .select('*')
+                    .order('tanggal_pasang', { ascending: false });
+                
                 const countPSB = psbSemua ? psbSemua.length : 0;
                 
-                // DATA TARIKAN
+                // DATA TARIKAN / BERHENTI
                 let { data: tarikanData } = await supabaseClient
                     .from('penarikan_perangkat')
                     .select('*');
 
-                if (!tarikanData) {
-                    const fallback = await supabaseClient.from('pelanggan').select('*').eq('status', 'Sudah Diambil');
+                if (!tarikanData || tarikanData.length === 0) {
+                    const fallback = await supabaseClient
+                        .from('pelanggan')
+                        .select('*')
+                        .eq('status', 'Sudah Diambil');
                     tarikanData = fallback.data || [];
                 }
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // KALKULASI TOTAL PELANGGAN ANYAR
+                // KALKULASI TOTAL PELANGGAN
                 const angkaDasar = 942; 
                 const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
                 const now = new Date();
-
-                // HITUNG TARIKAN BULAN INI
-                let countTarikanBulanIeu = 0;
-                if (tarikanData) {
-                    tarikanData.forEach(item => {
-                        const tgl = item.tanggal_tarik || item.tanggal_penarikan || item.created_at;
-                        if (tgl) {
-                            const d = new Date(tgl);
-                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                                countTarikanBulanIeu++;
-                            }
-                        }
-                    });
-                }
-                const elTarikan = document.getElementById('countTarikanBulan');
-                if (elTarikan) elTarikan.setAttribute('data-target', countTarikanBulanIeu);
 
                 // HITUNG PSB BULAN INI & TOTAL RUPIAH
                 let countPSBBulanIeu = 0;
@@ -424,14 +444,28 @@
                 
                 if (psbSemua) {
                     psbSemua.forEach(item => {
-                        const tgl = item.tanggal_pasang || item.created_at;
-                        if (tgl) {
-                            const d = new Date(tgl);
-                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                                countPSBBulanIeu++;
-                                const hargaPaket = parseInt(item.harga) || 0;
-                                totalRupiahBulanIeu += hargaPaket;
-                            }
+                        const tgl = item.tanggal_pasang || item.created_at || item.tanggal;
+                        if (isBulanIni(tgl, now)) {
+                            countPSBBulanIeu++;
+                            const hargaPaket = parseInt(item.harga) || 0;
+                            totalRupiahBulanIeu += hargaPaket;
+                        }
+                    });
+                }
+
+                // HITUNG BERHENTI BULAN INI (Mengecek seluruh kemungkinan nama kolom)
+                let countBerhentiBulanIeu = 0;
+                if (tarikanData) {
+                    tarikanData.forEach(item => {
+                        const tgl = item.tanggal_tarik 
+                                 || item.tanggal_penarikan 
+                                 || item.tanggal_ambil 
+                                 || item.tgl_tarik 
+                                 || item.created_at 
+                                 || item.tanggal;
+
+                        if (isBulanIni(tgl, now)) {
+                            countBerhentiBulanIeu++;
                         }
                     });
                 }
@@ -442,10 +476,13 @@
                 const elRp = document.getElementById('totalRupiahPSB');
                 if (elRp) elRp.setAttribute('data-rp', totalRupiahBulanIeu);
 
+                const elBerhentiCount = document.getElementById('countBerhentiBulan');
+                if (elBerhentiCount) elBerhentiCount.setAttribute('data-target', countBerhentiBulanIeu);
+
                 animateCounters(); 
 
             } catch (error) {
-                console.error("Gagal ngitung total palanggan", error);
+                console.error("Gagal ngitung total pelanggan", error);
                 animateCounters(); 
             }
         }
@@ -509,7 +546,12 @@
         });
 
         function animateCounters() {
-            const counters = [ document.getElementById('countPelanggan'), document.getElementById('countTarikanBulan'), document.getElementById('countPSBBulan') ];
+            const counters = [
+                document.getElementById('countPelanggan'),
+                document.getElementById('countPSBBulan'),
+                document.getElementById('countBerhentiBulan')
+            ];
+            
             counters.forEach(counter => {
                 if(!counter) return;
                 const target = +counter.getAttribute('data-target') || 0;
