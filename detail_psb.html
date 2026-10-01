@@ -70,8 +70,10 @@
             backdrop-filter: blur(10px); transition: all 0.2s; cursor: pointer;
         }
         .btn-wangsul:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.12); }
-        .logo-rnb-box { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 16px; color: var(--danger); letter-spacing: 1px; }
-        .logo-rnb-box span { color: var(--accent-gold); font-size: 10px; background: rgba(201, 169, 97, 0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(201, 169, 97, 0.3); }
+        
+        /* LOGO STYLING SVG */
+        .logo-rnb-box { display: flex; align-items: center; }
+        .logo-rnb-box svg { height: 45px; width: auto; overflow: visible; }
 
         /* Main Container */
         .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
@@ -155,7 +157,15 @@
             ‹ Wangsul
         </a>
         <div class="logo-rnb-box">
-            RnB <span>by PMYNET</span>
+            <svg viewBox="0 0 130 70" xmlns="http://www.w3.org/2000/svg">
+              <text x="6" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">R</text>
+              <text x="32" y="32" font-family="Arial Black, Impact, sans-serif" font-size="24" font-weight="900" fill="#ffffff" transform="rotate(15 41 20)">n</text>
+              <text x="44" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">B</text>
+              <text x="6" y="42" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#FFD700" font-style="italic">by</text>
+              <ellipse cx="48" cy="48" rx="30" ry="9" fill="none" stroke="#FFD700" stroke-width="1.8" transform="rotate(-12 48 48)"/>
+              <text x="18" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#1E90FF" letter-spacing="-1">PMY</text>
+              <text x="52" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#00C853" letter-spacing="-1">NET</text>
+            </svg>
         </div>
     </div>
 
@@ -191,7 +201,6 @@
 
     <script>
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const namaBulanArr = ['SÉPTÉMBER', 'OKTOBER', 'NOPÉMBER', 'DESÉMBER', 'JANUARI', 'PÉBRUARI', 'MARET', 'APRIL', 'MÉI', 'JUNI', 'JULI', 'AGUSTUS'];
         const namaBulanReal = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
 
         function isBulanIni(tglInput, now) {
@@ -278,7 +287,7 @@
                 const paketSorted = Object.values(paketGroup).sort((a, b) => b.count - a.count);
 
                 if (paketSorted.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">Sanggup kénéh teu aya data PSB bulan ieu.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">Allahumma innii as-aluka 'ilman naafi'a, wa rizqon thoyyibaa, wa 'amalan mutaqobbalaa</div>`;
                     return;
                 }
 
