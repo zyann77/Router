@@ -215,7 +215,6 @@
                 </div>
                 
                 <div class="stat-grid">
-                    <!-- KOTAK TOTAL PSB (BISA DIKLIK) -->
                     <a href="detail_psb.html" class="transit-link" style="text-decoration: none; display: block;">
                         <div class="sg-box success">
                             <div class="sg-top-row">
@@ -226,7 +225,6 @@
                         </div>
                     </a>
 
-                    <!-- KOTAK BERHENTI BERLANGGANAN (STATIS / TIDAK BISA DIKLIK) -->
                     <div class="sg-box danger">
                         <div class="sg-top-row">
                             <div class="sg-lbl" id="labelBerhentiBulan">Berhenti (...)</div>
@@ -237,32 +235,33 @@
                 </div>
             </div>
 
+            <!-- LINK MENU MENGGUNAKAN IFRAME WRAPPER LOKAL -->
             <div class="app-grid">
                 <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
                     <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="app-label">Panarikan<br>Perangkat</div>
                 </a>
-                <a href="https://redaman-production.up.railway.app/" class="app-icon-wrapper">
+                <a href="redaman.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle blue-glow"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
                     <div class="app-label">Cék<br>Redaman</div>
                 </a>
-                <a href="https://zyann77.github.io/kalkulator_Redaman/" class="app-icon-wrapper">
+                <a href="kalkulator.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
                     <div class="app-label">Kalkulator<br>Redaman</div>
                 </a>
-                <a href="https://generatorwan.netlify.app/" class="app-icon-wrapper">
+                <a href="setting_router.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg></div>
                     <div class="app-label">Setting<br>Router</div>
                 </a>
-                <a href="https://home.pmynet.id/pppoe/users" class="app-icon-wrapper">
+                <a href="pelanggan.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                     <div class="app-label">Pelanggan</div>
                 </a>
-                <a href="https://zyann77.github.io/Dashboard/" class="app-icon-wrapper transit-link">
+                <a href="dashboard.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
                     <div class="app-label">RnB Dashboard</div>
                 </a>
-                <a href="https://zyann77.github.io/TitikODP/" class="app-icon-wrapper">
+                <a href="titik_odp.html" class="app-icon-wrapper transit-link">
                     <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                     <div class="app-label">Titik ODP</div>
                 </a>
@@ -373,23 +372,18 @@
             }, 500);
         }
 
-        // Helper fungsi aman untuk mengecek apakah tanggal berada di bulan & tahun ini
         function isBulanIni(tglInput, now) {
             if (!tglInput) return false;
-
-            // Jika input berupa string tanggal (YYYY-MM-DD atau DD/MM/YYYY atau ISO)
             if (typeof tglInput === 'string') {
-                const cleanStr = tglInput.split('T')[0]; // Ambil bagian tanggal saja
+                const cleanStr = tglInput.split('T')[0];
                 const parts = cleanStr.split(/[-/]/);
 
                 if (parts.length === 3) {
                     let year, month;
                     if (parts[0].length === 4) {
-                        // Format YYYY-MM-DD
                         year = parseInt(parts[0], 10);
-                        month = parseInt(parts[1], 10) - 1; // Bulan di JS dimulai dari 0
+                        month = parseInt(parts[1], 10) - 1;
                     } else {
-                        // Format DD-MM-YYYY
                         year = parseInt(parts[2], 10);
                         month = parseInt(parts[1], 10) - 1;
                     }
@@ -397,18 +391,15 @@
                 }
             }
 
-            // Fallback parsing standar jika format timestamp
             const d = new Date(tglInput);
             if (!isNaN(d.getTime())) {
                 return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
             }
-
             return false;
         }
 
         async function kalkulasiTotalPelanggan() {
             try {
-                // DATA PSB
                 const { data: psbSemua } = await supabaseClient
                     .from('psb')
                     .select('*')
@@ -416,7 +407,6 @@
                 
                 const countPSB = psbSemua ? psbSemua.length : 0;
                 
-                // DATA TARIKAN / BERHENTI
                 let { data: tarikanData } = await supabaseClient
                     .from('penarikan_perangkat')
                     .select('*');
@@ -431,14 +421,12 @@
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                // KALKULASI TOTAL PELANGGAN
                 const angkaDasar = 942; 
                 const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
                 const now = new Date();
 
-                // HITUNG PSB BULAN INI & TOTAL RUPIAH
                 let countPSBBulanIeu = 0;
                 let totalRupiahBulanIeu = 0;
                 
@@ -453,7 +441,6 @@
                     });
                 }
 
-                // HITUNG BERHENTI BULAN INI (Mengecek seluruh kemungkinan nama kolom)
                 let countBerhentiBulanIeu = 0;
                 if (tarikanData) {
                     tarikanData.forEach(item => {
