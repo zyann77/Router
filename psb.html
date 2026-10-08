@@ -48,9 +48,6 @@
         .search-box input::placeholder { color: var(--text-muted); }
 
         .filter-label { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; font-weight: 600; }
-        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
-        .chip { padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 500; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.3s; }
-        .chip.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: 600; }
 
         /* BORDER ANIMASI */
         .cust-card { 
@@ -141,20 +138,27 @@
             <input type="text" id="searchInput" placeholder="Cari nama atau alamat..." oninput="renderList()">
         </div>
 
-        <!-- HEADER FILTER & SORTING -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div class="filter-label" id="labelBulan">Filter Bulan</div>
+        <!-- HEADER FILTER BULAN & SORTING -->
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+            <!-- DROPDOWN PILIH BULAN -->
+            <div style="flex: 1;">
+                <div class="filter-label" style="margin-bottom: 4px;">Pilih Bulan</div>
+                <select id="bulanSelect" class="input-field" style="cursor: pointer;" onchange="onBulanChange(this.value)">
+                    <!-- Diri secara dinamis via JS -->
+                </select>
+            </div>
             
-            <select id="sortSelect" class="input-field" style="width: auto; padding: 4px 8px; font-size: 10px; border-radius: 6px; cursor: pointer;" onchange="renderList()">
-                <option value="date-asc" selected>Terlama (Tanggal 1 -> 31)</option>
-                <option value="date-desc">Terbaru (Tanggal 31 -> 1)</option>
-                <option value="name-asc">Nama (A - Z)</option>
-                <option value="name-desc">Nama (Z - A)</option>
-            </select>
+            <!-- DROPDOWN SORTING -->
+            <div style="flex: 1;">
+                <div class="filter-label" style="margin-bottom: 4px;">Urutkan</div>
+                <select id="sortSelect" class="input-field" style="cursor: pointer;" onchange="renderList()">
+                    <option value="date-asc" selected>Terlama (Tanggal 1 -> 31)</option>
+                    <option value="date-desc">Terbaru (Tanggal 31 -> 1)</option>
+                    <option value="name-asc">Nama (A - Z)</option>
+                    <option value="name-desc">Nama (Z - A)</option>
+                </select>
+            </div>
         </div>
-        
-        <!-- CHIPS BULAN -->
-        <div class="chips-container" id="bulanChips"></div>
 
         <div id="psbList"></div>
     </div>
@@ -254,9 +258,9 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Mengeset default filter ke bulan berjalan saat ini secara otomatis
-        const nowMonthIdx = new Date().getMonth();
-        let currentBulan = String(nowMonthIdx);
+        // Mengeset default ke bulan berjalan saat ini (0-11)
+        const currentMonthIdx = new Date().getMonth();
+        let currentBulan = String(currentMonthIdx);
         let allPsb = [];
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
@@ -284,31 +288,39 @@
             }
         }
 
-        function renderBulanChips() { 
-            const container = document.getElementById('bulanChips'); 
-            const nowMonth = new Date().getMonth();
+        // RENDER DROPDOWN PILIH BULAN
+        function renderBulanSelect() { 
+            const select = document.getElementById('bulanSelect');
+            const bulanCounts = {};
 
-            // Hitung total data di bulan saat ini
-            const countCurrentMonth = allPsb.filter(p => {
+            // Hitung jumlah data per bulan
+            allPsb.forEach(p => {
                 if (p.tanggal_pasang) {
                     const d = new Date(p.tanggal_pasang);
-                    return !isNaN(d) && d.getMonth() === nowMonth;
+                    if (!isNaN(d)) {
+                        const m = d.getMonth();
+                        bulanCounts[m] = (bulanCounts[m] || 0) + 1;
+                    }
                 }
-                return false;
-            }).length;
+            });
 
-            // Merender opsi "Pilih Bulan" (Semua Data) & 1 Chip Bulan Saat Ini
-            container.innerHTML = `
-                <div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Pilih Bulan</div>
-                <div class="chip ${currentBulan === String(nowMonth) ? 'active' : ''}" onclick="filterByBulan('${nowMonth}', this)">${namaBulan[nowMonth]} (${countCurrentMonth})</div>
-            `; 
+            let optionsHTML = `<option value="all" ${currentBulan === 'all' ? 'selected' : ''}>Semua Bulan</option>`;
+
+            // Tampilkan bulan yang tersedia di data
+            namaBulan.forEach((nama, idx) => {
+                const count = bulanCounts[idx] || 0;
+                if (count > 0 || idx === currentMonthIdx) {
+                    const isSelected = currentBulan === String(idx) ? 'selected' : '';
+                    optionsHTML += `<option value="${idx}" ${isSelected}>${nama} (${count})</option>`;
+                }
+            });
+
+            select.innerHTML = optionsHTML;
         }
 
-        function filterByBulan(b, el) { 
-            currentBulan = b; 
-            el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); 
-            el.classList.add('active'); 
-            renderList(); 
+        function onBulanChange(val) {
+            currentBulan = val;
+            renderList();
         }
 
         async function loadData() {
@@ -317,11 +329,11 @@
             if (error) { showToast('Gagal memuat data'); return; }
             allPsb = data || [];
             
-            renderBulanChips();
+            renderBulanSelect();
             renderList();
         }
 
-        // RENDER LIST (DEFAULT TANGGAL 1 DI ATAS)
+        // RENDER LIST
         function renderList() {
             const list = document.getElementById('psbList');
             const sortVal = document.getElementById('sortSelect').value;
@@ -398,7 +410,7 @@
             });
         }
 
-        // SIMPAN DATA (KIRIM KE KOLOM WILAYAH & ALAMAT KEDUA-DUANYA)
+        // SIMPAN DATA
         document.getElementById('psbForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
@@ -406,7 +418,7 @@
             
             const payload = {
                 nama: document.getElementById('nama').value,
-                wilayah: inputAlamat, // Mencegah error NOT NULL di Supabase
+                wilayah: inputAlamat,
                 alamat: inputAlamat,
                 paket: document.getElementById('paket').value,
                 harga: document.getElementById('harga').value || '0',
@@ -453,7 +465,7 @@
             }
         }
 
-        // EXPORT DATA PSB (URUT TANGGAL 1 DI ATAS + BARIS TOTAL HARGA)
+        // EXPORT DATA PSB
         async function exportDataPSB() {
             if (allPsb.length === 0) {
                 showToast('Tidak ada data untuk diekspor!');
@@ -504,7 +516,7 @@
                 return;
             }
 
-            // 4. Sort Tanggal Ascending (Tanggal 1 paling atas)
+            // 4. Sort Tanggal Ascending
             filteredData.sort((a, b) => {
                 const dateA = new Date(a.tanggal_pasang || a.created_at);
                 const dateB = new Date(b.tanggal_pasang || b.created_at);
