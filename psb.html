@@ -19,7 +19,6 @@
             --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
             --text-main: #FFFFFF; --text-muted: #A1A1AA;
             --font-main: 'Poppins', sans-serif;
-            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,7 +29,7 @@
         .blob-1 { width: 400px; height: 400px; background: var(--aurora-1); top: -10%; left: -10%; }
         .blob-2 { width: 350px; height: 350px; background: var(--aurora-2); bottom: -10%; right: -10%; }
 
-        .top-header { position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(30px); border-bottom: 1px solid var(--glass-border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .top-header { position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 5, 0.9); border-bottom: 1px solid var(--glass-border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
         .nav-btn { width: 36px; height: 36px; border-radius: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; text-decoration: none; }
         .nav-btn svg { width: 18px; height: 18px; stroke: white; stroke-width: 1.5; fill: none; }
         .header-title-box { text-align: center; flex: 1; }
@@ -49,39 +48,15 @@
 
         .filter-label { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; font-weight: 600; }
 
-        /* BORDER ANIMASI */
+        /* CARD STATIC */
         .cust-card { 
             position: relative; 
             border-radius: 14px; 
             padding: 12px 14px; 
             margin-bottom: 12px; 
-            z-index: 1; 
-            overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-        
-        .cust-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(transparent 0deg, transparent 250deg, var(--aurora-1) 280deg, var(--aurora-2) 320deg, var(--accent-gold) 360deg);
-            animation: spinBg 4s linear infinite;
-            z-index: -2;
-        }
-        
-        .cust-card::after {
-            content: '';
-            position: absolute;
-            inset: 1.5px;
             background: #121215;
-            border-radius: 13px;
-            z-index: -1;
-        }
-
-        @keyframes spinBg {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
         .cust-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; gap: 10px; }
@@ -99,17 +74,17 @@
         .btn-delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; }
 
         /* Form Modal */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: rgba(20, 20, 25, 0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #141419; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
         .modal-title { font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 15px; }
         .input-group { margin-bottom: 12px; }
         .input-label { display: block; font-size: 10px; color: var(--accent-gold); margin-bottom: 4px; text-transform: uppercase; font-weight: 600;}
         .input-field { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-family: inherit; font-size: 12px; outline: none; color-scheme: dark;}
         .input-field:focus { border-color: var(--accent-gold); }
         
-        .toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px 20px; border-radius: 12px; z-index: 9999; font-size: 12px; color: white; transition: 0.4s; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast { display: none; position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #121218; border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px 20px; border-radius: 12px; z-index: 9999; font-size: 12px; color: white; }
+        .toast.show { display: block; }
     </style>
 </head>
 <body>
@@ -144,7 +119,7 @@
             <div style="flex: 1;">
                 <div class="filter-label" style="margin-bottom: 4px;">Pilih Bulan</div>
                 <select id="bulanSelect" class="input-field" style="cursor: pointer;" onchange="onBulanChange(this.value)">
-                    <!-- Diri secara dinamis via JS -->
+                    <!-- Diisi dinamis via JS -->
                 </select>
             </div>
             
@@ -258,13 +233,17 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Mengeset default ke bulan berjalan saat ini (0-11)
         const currentMonthIdx = new Date().getMonth();
         let currentBulan = String(currentMonthIdx);
         let allPsb = [];
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        function showToast(msg) { 
+            const t = document.getElementById('toast'); 
+            t.textContent = msg; 
+            t.classList.add('show'); 
+            setTimeout(() => t.classList.remove('show'), 3000); 
+        }
         
         function openModal() { 
             document.getElementById('psbForm').reset(); 
@@ -293,7 +272,6 @@
             const select = document.getElementById('bulanSelect');
             const bulanCounts = {};
 
-            // Hitung jumlah data per bulan
             allPsb.forEach(p => {
                 if (p.tanggal_pasang) {
                     const d = new Date(p.tanggal_pasang);
@@ -306,7 +284,6 @@
 
             let optionsHTML = `<option value="all" ${currentBulan === 'all' ? 'selected' : ''}>Semua Bulan</option>`;
 
-            // Tampilkan bulan yang tersedia di data
             namaBulan.forEach((nama, idx) => {
                 const count = bulanCounts[idx] || 0;
                 if (count > 0 || idx === currentMonthIdx) {
