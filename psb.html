@@ -22,27 +22,7 @@
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* PROTEKSI ANTI SELECT / ANTI COPY */
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        /* Pangecualian supados kolom input/select tetep tiasa diketik */
-        input, select, textarea {
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); min-height: 100vh; overflow-x: hidden; padding-bottom: 120px; }
 
         .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--bg-dark); }
@@ -273,7 +253,10 @@
         }
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentBulan = 'all';
+        
+        // Mengeset default filter ke bulan berjalan saat ini secara otomatis
+        const nowMonthIdx = new Date().getMonth();
+        let currentBulan = String(nowMonthIdx);
         let allPsb = [];
         const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
@@ -303,20 +286,22 @@
 
         function renderBulanChips() { 
             const container = document.getElementById('bulanChips'); 
-            container.innerHTML = `<div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Semua Bulan</div>`; 
-            
-            const bulanSet = new Set(); 
-            allPsb.forEach(p => { 
-                if (p.tanggal_pasang) { 
-                    const d = new Date(p.tanggal_pasang); 
-                    if (!isNaN(d)) bulanSet.add(d.getMonth()); 
+            const nowMonth = new Date().getMonth();
+
+            // Hitung total data di bulan saat ini
+            const countCurrentMonth = allPsb.filter(p => {
+                if (p.tanggal_pasang) {
+                    const d = new Date(p.tanggal_pasang);
+                    return !isNaN(d) && d.getMonth() === nowMonth;
                 }
-            }); 
-            
-            Array.from(bulanSet).sort((a,b)=>a-b).forEach(m => { 
-                const count = allPsb.filter(p => p.tanggal_pasang && !isNaN(new Date(p.tanggal_pasang)) && new Date(p.tanggal_pasang).getMonth() === m).length; 
-                container.innerHTML += `<div class="chip ${currentBulan === String(m) ? 'active' : ''}" onclick="filterByBulan('${m}', this)">${namaBulan[m]} (${count})</div>`; 
-            }); 
+                return false;
+            }).length;
+
+            // Merender opsi "Pilih Bulan" (Semua Data) & 1 Chip Bulan Saat Ini
+            container.innerHTML = `
+                <div class="chip ${currentBulan === 'all' ? 'active' : ''}" onclick="filterByBulan('all', this)">Pilih Bulan</div>
+                <div class="chip ${currentBulan === String(nowMonth) ? 'active' : ''}" onclick="filterByBulan('${nowMonth}', this)">${namaBulan[nowMonth]} (${countCurrentMonth})</div>
+            `; 
         }
 
         function filterByBulan(b, el) { 
