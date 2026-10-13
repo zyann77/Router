@@ -127,33 +127,35 @@
             overflow-y: auto;
         }
 
-        /* ACCORDION KARTU PAKET (BISA DIKLIK) */
+        /* STYLING KARTU PAKET PERSIS DETAIL PSB */
         .compare-pkg-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
             overflow: hidden;
             transition: all 0.2s;
         }
         .compare-pkg-header {
-            padding: 10px 12px;
+            padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.01);
         }
-        .compare-pkg-header:active { background: rgba(255,255,255,0.05); }
-        .cp-name { font-weight: 600; color: #fff; display: flex; align-items: center; gap: 4px; }
+        .compare-pkg-header:active { background: rgba(255, 255, 255, 0.05); }
+        
+        .cp-title-area { display: flex; flex-direction: column; gap: 2px; }
+        .cp-name { font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
         .cp-arrow { font-size: 8px; transition: transform 0.3s; color: var(--text-muted); }
         .compare-pkg-card.active .cp-arrow { transform: rotate(180deg); }
-        .cp-count { color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 6px; font-size: 10px; }
+        .cp-count { font-size: 10px; font-weight: 600; color: var(--success); display: flex; align-items: center; gap: 4px; }
 
         .compare-pkg-body {
             display: none;
-            padding: 8px 12px 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0,0,0,0.5);
+            padding: 0 14px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.25);
         }
         .compare-pkg-card.active .compare-pkg-body { display: block; }
 
@@ -161,14 +163,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            font-size: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .customer-item-mini:last-child { border-bottom: none; }
-        .cim-name { font-weight: 600; color: #fff; }
-        .cim-alamat { color: var(--text-muted); font-size: 9px; }
-        .cim-date { color: var(--accent-gold-light); font-weight: 500; }
+        .cim-info { display: flex; flex-direction: column; gap: 2px; }
+        .cim-name { font-size: 11px; font-weight: 600; color: #fff; }
+        .cim-alamat { font-size: 9px; color: var(--text-muted); }
+        .cim-date { font-size: 10px; color: var(--accent-gold-light); text-align: right; font-weight: 500; }
 
         .footer-text { text-align: center; font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; margin-top: 25px; text-transform: uppercase; }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
@@ -203,7 +205,7 @@
     <div class="container">
         <!-- BANNER -->
         <div class="banner-box">
-            <div class="banner-title" id="bannerTitle">KOMPARASI KINERJA PSB</div>
+            <div class="banner-title" id="bannerTitle">KOMPARASI PSB</div>
             <div class="banner-sub" id="bannerSub">Perbandingan Tanggal 1 s.d Hari Ini</div>
         </div>
 
@@ -314,7 +316,7 @@
                 document.getElementById('valPsbLalulah').textContent = totalPsbLalulah;
                 document.getElementById('valUangLalulah').textContent = "Rp " + totalUangLalulah.toLocaleString('id-ID');
 
-                // Render Daftar Paket dengan Detail Pelanggan (Bisa Diklik)
+                // Render Daftar Paket dengan Detail Pelanggan (Format Persis Detail PSB)
                 const renderSideList = (dataPkg, elementId) => {
                     const el = document.getElementById(elementId);
                     el.innerHTML = '';
@@ -331,7 +333,7 @@
                             const tglPasang = (p.tanggal_pasang || p.created_at || p.tanggal || '').split('T')[0];
                             pelangganHtml += `
                                 <div class="customer-item-mini">
-                                    <div>
+                                    <div class="cim-info">
                                         <div class="cim-name">${p.nama || p.nama_pelanggan || 'Tanpa Nama'}</div>
                                         <div class="cim-alamat">${p.alamat || p.lokasi || '-'}</div>
                                     </div>
@@ -343,8 +345,10 @@
                         el.innerHTML += `
                             <div class="compare-pkg-card">
                                 <div class="compare-pkg-header" onclick="toggleCompareCard(this)">
-                                    <div class="cp-name">${name} <span class="cp-arrow">▼</span></div>
-                                    <span class="cp-count">${pelangganList.length}x</span>
+                                    <div class="cp-title-area">
+                                        <div class="cp-name">${name} <span class="cp-arrow">▼</span></div>
+                                        <div class="cp-count">✓ ${pelangganList.length} Terpasang</div>
+                                    </div>
                                 </div>
                                 <div class="compare-pkg-body">
                                     ${pelangganHtml}
