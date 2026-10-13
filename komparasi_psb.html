@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="su" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="google" content="notranslate">
+    <title>Iyann RnB Network Tools - Komparasi PSB</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505; 
+            --glass-bg: rgba(255, 255, 255, 0.04); 
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(30px); 
+            --aurora-1: #8B5CF6; 
+            --aurora-2: #3B82F6; 
+            --accent-gold: #C9A961;
+            --accent-gold-light: #E5C97A; 
+            --success: #10B981; 
+            --danger: #EF4444;
+            --text-main: #FFFFFF; 
+            --text-muted: #A1A1AA;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            --smooth: cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none;
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: var(--font-main); 
+            min-height: 100vh; 
+            padding: 20px; 
+            position: relative; 
+        }
+
+        .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; mix-blend-mode: screen; }
+        .blob-1 { width: 400px; height: 400px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 350px; height: 350px; background: var(--aurora-2); bottom: -10%; right: -10%; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .btn-wangsul {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
+            border-radius: 12px; color: #fff; text-decoration: none; font-size: 13px; font-weight: 500;
+            backdrop-filter: blur(10px); transition: all 0.2s; cursor: pointer;
+        }
+        .btn-wangsul:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.12); }
+        
+        .logo-rnb-box { display: flex; align-items: center; }
+        .logo-rnb-box svg { height: 45px; width: auto; overflow: visible; }
+
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+
+        /* BANNER JUDUL KOMPARASI */
+        .banner-box {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);
+            border-radius: 16px; padding: 16px; text-align: center;
+        }
+        .banner-title { font-size: 15px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent-gold-light); text-transform: uppercase; }
+        .banner-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
+
+        /* 2 KOLOM FULL LAYAR */
+        .compare-container-side {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .compare-column {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--glass-blur);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .compare-col-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-gold-light);
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 10px;
+        }
+
+        /* KOTAK RINGKASAN BESAR DI DALAM KOLOM */
+        .compare-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .cs-card {
+            background: rgba(16, 185, 129, 0.04);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+        .cs-card.gold {
+            background: rgba(201, 169, 97, 0.04);
+            border-color: rgba(201, 169, 97, 0.2);
+        }
+        .cs-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .cs-val { font-size: 20px; font-weight: 700; color: var(--success); margin: 4px 0 2px; }
+        .cs-card.gold .cs-val { color: var(--accent-gold-light); font-size: 13px; }
+
+        /* RINCIAN PAKET DALAM KOLOM */
+        .section-header-mini { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        
+        .compare-pkg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .compare-pkg-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .cp-name { font-weight: 600; color: #fff; }
+        .cp-count { color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 6px; }
+
+        .footer-text { text-align: center; font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; margin-top: 25px; text-transform: uppercase; }
+        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .page-transit.active { opacity: 1; pointer-events: all; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+    </div>
+    <div class="page-transit" id="pageTransit"></div>
+
+    <div class="top-bar">
+        <a href="detail_psb.html" class="btn-wangsul transit-link">
+            ‹ Kembali ke Detail
+        </a>
+        <div class="logo-rnb-box">
+            <svg viewBox="0 0 130 70" xmlns="http://www.w3.org/2000/svg">
+              <text x="6" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">R</text>
+              <text x="32" y="32" font-family="Arial Black, Impact, sans-serif" font-size="24" font-weight="900" fill="#ffffff" transform="rotate(15 41 20)">n</text>
+              <text x="44" y="34" font-family="Arial Black, Impact, sans-serif" font-size="34" font-weight="900" fill="#E31E24">B</text>
+              <text x="6" y="42" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#FFD700" font-style="italic">by</text>
+              <ellipse cx="48" cy="48" rx="30" ry="9" fill="none" stroke="#FFD700" stroke-width="1.8" transform="rotate(-12 48 48)"/>
+              <text x="18" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#1E90FF" letter-spacing="-1">PMY</text>
+              <text x="52" y="52" font-family="Arial Black, Impact, sans-serif" font-size="16" font-weight="900" fill="#00C853" letter-spacing="-1">NET</text>
+            </svg>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- BANNER -->
+        <div class="banner-box">
+            <div class="banner-title" id="bannerTitle">KOMPARASI KINERJA PSB</div>
+            <div class="banner-sub" id="bannerSub">Perbandingan Tanggal 1 s.d Hari Ini</div>
+        </div>
+
+        <!-- 2 KOLOM BESAR BERJAJAR -->
+        <div class="compare-container-side">
+            <!-- Kolom Bulan Ini -->
+            <div class="compare-column">
+                <div class="compare-col-title" id="titleColInilah">Oktober (1 - Sekarang)</div>
+                <div class="compare-summary-grid">
+                    <div class="cs-card">
+                        <div class="cs-label">Total PSB</div>
+                        <div class="cs-val" id="valPsbInilah">0</div>
+                    </div>
+                    <div class="cs-card gold">
+                        <div class="cs-label">Total Uang</div>
+                        <div class="cs-val" id="valUangInilah">Rp 0</div>
+                    </div>
+                </div>
+                <div class="section-header-mini">Rincian Per Paket</div>
+                <div class="compare-pkg-list" id="listPkgInilah"></div>
+            </div>
+
+            <!-- Kolom Bulan Lalu -->
+            <div class="compare-column" style="border-color: rgba(139, 92, 246, 0.2);">
+                <div class="compare-col-title" id="titleColLalulah" style="color: #C4B5FD;">September (1 - Sma)</div>
+                <div class="compare-summary-grid" style="border-color: rgba(139, 92, 246, 0.2);">
+                    <div class="cs-card" style="background: rgba(139, 92, 246, 0.04); border-color: rgba(139, 92, 246, 0.2);">
+                        <div class="cs-label">Total PSB</div>
+                        <div class="cs-val" id="valPsbLalulah" style="color: #C4B5FD;">0</div>
+                    </div>
+                    <div class="cs-card gold" style="background: rgba(201, 169, 97, 0.04);">
+                        <div class="cs-label">Total Uang</div>
+                        <div class="cs-val" id="valUangLalulah">Rp 0</div>
+                    </div>
+                </div>
+                <div class="section-header-mini">Rincian Per Paket</div>
+                <div class="compare-pkg-list" id="listPkgLalulah"></div>
+            </div>
+        </div>
+
+        <div class="footer-text">RNB NETWORK SUBANG • KOMPARASI REALTIME</div>
+    </div>
+
+    <script>
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const namaBulanReal = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+
+        async function muatDataKomparasi() {
+            const now = new Date();
+            const tglHariIni = now.getDate();
+            let lastMonth = now.getMonth() - 1;
+            let lastMonthYear = now.getFullYear();
+            if (lastMonth < 0) { lastMonth = 11; lastMonthYear--; }
+
+            document.getElementById('bannerSub').textContent = `Perbandingan Tanggal 1 s.d ${tglHariIni} ${namaBulanReal[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('titleColInilah').textContent = `${namaBulanReal[now.getMonth()]} (1 - ${tglHariIni})`;
+            document.getElementById('titleColLalulah').textContent = `${namaBulanReal[lastMonth]} (1 - ${tglHariIni})`;
+
+            try {
+                const { data: psbSemua, error } = await supabaseClient
+                    .from('psb')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                let totalPsbInilah = 0, totalUangInilah = 0;
+                let totalPsbLalulah = 0, totalUangLalulah = 0;
+                const pkgInilah = {};
+                const pkgLalulah = {};
+
+                psbSemua.forEach(item => {
+                    const tglInput = item.tanggal_pasang || item.created_at || item.tanggal;
+                    if(!tglInput) return;
+                    const d = new Date(tglInput.split('T')[0]);
+                    if(isNaN(d.getTime())) return;
+
+                    const itemDate = d.getDate();
+                    const itemMonth = d.getMonth();
+                    const itemYear = d.getFullYear();
+                    const harga = parseInt(item.harga) || 0;
+                    const namaPaket = item.paket || item.layanan || 'Paket Lainnya';
+
+                    if (itemDate <= tglHariIni) {
+                        if (itemMonth === now.getMonth() && itemYear === now.getFullYear()) {
+                            totalPsbInilah++;
+                            totalUangInilah += harga;
+                            pkgInilah[namaPaket] = (pkgInilah[namaPaket] || 0) + 1;
+                        } else if (itemMonth === lastMonth && itemYear === lastMonthYear) {
+                            totalPsbLalulah++;
+                            totalUangLalulah += harga;
+                            pkgLalulah[namaPaket] = (pkgLalulah[namaPaket] || 0) + 1;
+                        }
+                    }
+                });
+
+                // Render Nilai Utama
+                document.getElementById('valPsbInilah').textContent = totalPsbInilah;
+                document.getElementById('valUangInilah').textContent = "Rp " + totalUangInilah.toLocaleString('id-ID');
+                document.getElementById('valPsbLalulah').textContent = totalPsbLalulah;
+                document.getElementById('valUangLalulah').textContent = "Rp " + totalUangLalulah.toLocaleString('id-ID');
+
+                // Render Daftar Paket
+                const renderSideList = (dataPkg, elementId) => {
+                    const el = document.getElementById(elementId);
+                    el.innerHTML = '';
+                    const sorted = Object.entries(dataPkg).sort((a,b) => b[1] - a[1]);
+                    if (sorted.length === 0) {
+                        el.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:11px; padding:15px;">Tidak ada data</div>`;
+                        return;
+                    }
+                    sorted.forEach(([name, count]) => {
+                        el.innerHTML += `
+                            <div class="compare-pkg-item">
+                                <span class="cp-name">${name}</span>
+                                <span class="cp-count">${count} Terpasang</span>
+                            </div>
+                        `;
+                    });
+                };
+
+                renderSideList(pkgInilah, 'listPkgInilah');
+                renderSideList(pkgLalulah, 'listPkgLalulah');
+
+            } catch (err) {
+                console.error("Gagal memuat data komparasi:", err);
+            }
+        }
+
+        const pageTransit = document.getElementById('pageTransit');
+        document.querySelectorAll('.transit-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                const href = this.getAttribute('href');
+                pageTransit.classList.add('active'); 
+                setTimeout(() => window.location.href = href, 400);
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', muatDataKomparasi);
+    </script>
+</body>
+</html>
