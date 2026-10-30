@@ -87,9 +87,16 @@
         .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        
+        .widget-header-right { display: flex; align-items: center; gap: 8px; }
         .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
         .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* Tombol Note Kecil di Samping Status Online */
+        .note-btn { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent-gold); font-weight: 600; background: rgba(201,169,97,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(201,169,97,0.3); cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .note-btn:active { transform: scale(0.95); }
+        .note-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
 
         .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
         .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
@@ -133,6 +140,14 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
         .page-transit.active { opacity: 1; pointer-events: all; }
+
+        /* Modal Sandi Note */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: rgba(20, 20, 25, 0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
+        .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; color: white; }
+        .btn-action { padding: 8px 16px; border-radius: 8px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; flex: 1; }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; }
     </style>
 </head>
 <body>
@@ -203,7 +218,13 @@
             <div class="widget-panel">
                 <div class="widget-header">
                     <div class="w-title">RnB Network Subang</div>
-                    <div class="w-status"><div class="dot"></div> Online</div>
+                    <div class="widget-header-right">
+                        <!-- Tombol Note dengan Proteksi Sandi -->
+                        <div class="note-btn" onclick="cekPasswordNote()">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg> Note
+                        </div>
+                        <div class="w-status"><div class="dot"></div> Online</div>
+                    </div>
                 </div>
                 <div class="widget-stat">
                     <div class="stat-val" data-target="0" id="countPelanggan">0</div>
@@ -230,6 +251,7 @@
                             <div class="sg-lbl" id="labelBerhentiBulan">Berhenti (...)</div>
                             <div class="sg-val" data-target="0" id="countBerhentiBulan">0</div>
                         </div>
+                        <div class="sg-sub-val">Bulan Ieu</div>
                     </div>
                 </div>
             </div>
@@ -272,6 +294,19 @@
         </div>
     </div>
 
+    <!-- Modal Input Sandi Note -->
+    <div class="modal-overlay" id="modalNotePassword">
+        <div class="modal-content">
+            <div class="modal-title">Aksés Note</div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Lebetkeun sandi rahasia kanggo muka catatan.</p>
+            <input type="password" id="notePasswordInput" class="input-field" placeholder="Sandi Note..." style="margin-bottom: 15px;">
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-action btn-delete" onclick="closeNoteModal()">Batal</button>
+                <button type="button" class="btn-action" style="background: var(--accent-gold); color: black;" onclick="prosesBukaNote()">Buka</button>
+            </div>
+        </div>
+    </div>
+
     <div class="dock-container" id="dock">
         <div class="dock-item" onclick="prosesLogout()">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -286,6 +321,27 @@
         function showToast(msg) {
             const t = document.getElementById('toast'); t.textContent = msg; 
             t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
+        }
+
+        // Fungsi Proteksi Sandi Note
+        function cekPasswordNote() {
+            document.getElementById('notePasswordInput').value = '';
+            document.getElementById('modalNotePassword').classList.add('active');
+        }
+        function closeNoteModal() {
+            document.getElementById('modalNotePassword').classList.remove('active');
+        }
+        function prosesBukaNote() {
+            const pass = document.getElementById('notePasswordInput').value;
+            // Sandi Note (dapat disesuaikan, saat ini menggunakan "admin")
+            if (pass === 'admin') {
+                closeNoteModal();
+                const pageTransit = document.getElementById('pageTransit');
+                pageTransit.classList.add('active');
+                setTimeout(() => window.location.href = 'note.html', 400);
+            } else {
+                showToast('Sandi Lepat!');
+            }
         }
 
         const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
@@ -420,7 +476,7 @@
                     
                 const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-                const angkaDasar = 944; 
+                const angkaDasar = 1061; 
                 const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
                 document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
 
