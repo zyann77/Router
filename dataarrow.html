@@ -1,461 +1,403 @@
 <!DOCTYPE html>
 <html lang="su" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050505">
-    <meta name="google" content="notranslate">
-    <title>Data Arrow - RnB Network</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Library SheetJS untuk Export ke Excel -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10283B">
+<meta name="google" content="notranslate">
+<title>Data Arrow - RnB Network</title>
 
-    <style>
-        :root {
-            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6; --accent-gold: #C9A961;
-            --accent-gold-light: #E5C97A; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
-            --text-main: #FFFFFF; --text-muted: #A1A1AA;
-            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="config.js"></script>
 
-        .bg-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; }
-        .blob-1 { width: 350px; height: 350px; background: var(--aurora-1); top: -10%; left: -10%; }
-        .blob-2 { width: 300px; height: 300px; background: var(--aurora-2); bottom: -10%; right: -10%; }
+<style>
+:root{--bg:#EDF2F4;--card:#fff;--ink:#10283B;--mut:#5F7585;--line:#DAE3E8;--teal:#0E8C86;--amber:#FFB81F;--danger:#C93434;--fd:'Bricolage Grotesque',system-ui,sans-serif;--fb:'Figtree',system-ui,-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--fb);min-height:100vh}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
-        .header { height: 52px; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: sticky; top: 0; z-index: 50; }
-        .header-title { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
-        .btn-back { width: 32px; height: 32px; border-radius: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
-        .btn-back svg { width: 16px; height: 16px; stroke: white; stroke-width: 2; fill: none; }
-        
-        .role-badge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .role-badge.admin { background: rgba(201,169,97,0.15); color: var(--accent-gold-light); border: 1px solid rgba(201,169,97,0.3); }
-        .role-badge.teknisi { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+/* Header */
+.top{background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top,0px);position:sticky;top:0;z-index:50}
+.bar{max-width:1080px;margin:auto;height:64px;padding:0 16px;display:flex;align-items:center;gap:12px}
+.back{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.1);display:grid;place-items:center;color:#fff;text-decoration:none}
+.back:hover{background:rgba(255,255,255,.18)}
+.ttl{flex:1;line-height:1.15}
+.ttl b{display:block;font:700 20px var(--fd);letter-spacing:-.01em}
+.ttl small{font-size:12.5px;color:#9FB6C6}
+.role-badge{font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;border:1px solid}
+.role-badge.admin{color:#FFD36B;background:rgba(255,184,31,.16);border-color:rgba(255,184,31,.4)}
+.role-badge.teknisi{color:#6EE7B7;background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4)}
 
-        .content { flex: 1; z-index: 10; padding: 14px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.wrap{max-width:1080px;margin:auto;padding:16px 16px 110px}
 
-        /* WIDGET STATISTIK DI ATAS */
-        .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); text-align: center; }
-        .stat-val { font-size: 20px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
-        .stat-val.stb { color: #6EE7B7; }
-        .stat-val.tv { color: #93C5FD; }
-        .stat-lbl { font-size: 9.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+/* Toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.search{flex:1 1 100%;position:relative}
+.search .i{position:absolute;left:14px;top:50%;margin-top:-9px;color:var(--mut)}
+.search input{width:100%;height:48px;padding:0 14px 0 42px;background:var(--card);border:1px solid var(--line);border-radius:14px;font-size:16px;outline:0}
+.search input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,140,134,.15)}
+.tabs{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;padding:7px 8px 7px 13px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-weight:600;font-size:13.5px;color:var(--mut);display:flex;gap:8px;align-items:center}
+.tab b{font:700 12.5px var(--fd);background:var(--bg);color:var(--ink);padding:2px 8px;border-radius:99px}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab.on b{background:rgba(255,255,255,.18);color:#fff}
+.btn{height:40px;padding:0 16px;border-radius:12px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.ghost{background:var(--card);border:1px solid var(--line)}
+.ghost:hover{border-color:var(--teal);color:var(--teal)}
+.solid{background:var(--ink);color:#fff}
+.solid:hover{background:#1B3D56}
+.fab{display:none;position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));height:52px;padding:0 22px;border-radius:26px;box-shadow:0 8px 24px rgba(16,40,59,.35);z-index:40}
 
-        /* Search & Action Bar */
-        .action-bar { display: flex; gap: 8px; align-items: center; }
-        .search-box { flex: 1; position: relative; }
-        .search-input { width: 100%; padding: 10px 12px 10px 34px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 12px; outline: none; }
-        .search-input:focus { border-color: var(--accent-gold); }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
+/* Data: list on phone */
+.table{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.thead{display:none}
+.row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"tag dev" "name act" "addr addr";gap:7px 12px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
+#dataList .row:first-child{border-top:0}
+.num{display:none}
+.tag{grid-area:tag;justify-self:start;font:700 13px/1 var(--fd);letter-spacing:.02em;background:var(--amber);color:#3B2700;padding:7px 20px 7px 11px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}
+.name{grid-area:name;font-weight:700;font-size:16.5px}
+.addr{grid-area:addr;display:flex;gap:6px;align-items:flex-start;color:var(--mut);font-size:14px}
+.addr .i{width:15px;height:15px;margin-top:3px}
+.dev{grid-area:dev;justify-self:end;display:inline-flex;gap:6px;align-items:center;font-size:12.5px;font-weight:600;padding:5px 11px 5px 9px;border-radius:99px;background:#EEF1F3;color:var(--mut)}
+.dev .i{width:15px;height:15px}
+.dev.stb{background:#EEE9FF;color:#5B3FD0}
+.dev.tv{background:#E2F1FB;color:#0B6FA8}
+.act{grid-area:act;display:flex;gap:6px}
+.ib{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);display:grid;place-items:center;color:var(--mut)}
+.ib.e:hover{color:var(--teal);border-color:var(--teal)}
+.ib.d:hover{color:var(--danger);border-color:var(--danger)}
+.empty{padding:44px 20px;text-align:center;color:var(--mut);font-size:14px}
 
-        .btn-action-header { display: flex; align-items: center; gap: 5px; padding: 10px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; border: none; }
-        .btn-excel { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .btn-excel:active { transform: scale(0.95); }
-        .btn-excel svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+/* Modal: bottom sheet on phone, dialog on PC */
+.overlay{display:none;position:fixed;inset:0;background:rgba(16,40,59,.5);z-index:100;align-items:flex-end;justify-content:center}
+.overlay.active{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.sheet h2{font:700 21px var(--fd);margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.field input,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:16px;outline:0;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(14,140,134,.15)}
+.foot{display:flex;gap:10px;margin-top:20px}
+.foot .btn{flex:1;height:48px;justify-content:center;font-size:15px}
 
-        .btn-add { display: none; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; }
-        .btn-add svg { width: 14px; height: 14px; stroke: #000; stroke-width: 2.5; fill: none; }
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-140px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;z-index:999;font-size:14px;font-weight:500;max-width:90vw;box-shadow:0 8px 24px rgba(16,40,59,.3);transition:transform .35s}
+.toast.show{transform:translate(-50%,0)}
 
-        /* KARTU DATA KECIL / KOMPAK DI HALAMAN UTAMA */
-        .data-list { display: flex; flex-direction: column; gap: 8px; }
-        .arrow-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 5px; position: relative; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .card-name-wrapper { display: flex; align-items: center; gap: 8px; }
-        .card-number { font-size: 11px; font-weight: 600; color: var(--accent-gold); background: rgba(201,169,97,0.1); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(201,169,97,0.25); flex-shrink: 0; }
-        .card-name { font-size: 13px; font-weight: 600; color: #fff; }
-        .card-regist { font-size: 10px; font-weight: 600; color: var(--accent-gold-light); background: rgba(201,169,97,0.12); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(201,169,97,0.25); }
-
-        .card-detail { display: flex; flex-direction: column; gap: 3px; padding-left: 30px; }
-        .detail-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); }
-        .detail-row svg { width: 13px; height: 13px; stroke: var(--text-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
-        .detail-row span { color: rgba(255,255,255,0.9); }
-
-        .card-actions { display: none; gap: 6px; margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); justify-content: flex-end; }
-        .btn-card-action { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 500; cursor: pointer; border: none; display: flex; align-items: center; gap: 4px; }
-        .btn-card-action.edit { background: rgba(59,130,246,0.15); color: #93C5FD; border: 1px solid rgba(59,130,246,0.3); }
-        .btn-card-action.delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .btn-card-action svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
-
-        /* FORM INPUT / MODAL BESAR & LEGA */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; padding: 20px; align-items: center; justify-content: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: rgba(20, 20, 25, 0.95); border: 1px solid var(--glass-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .modal-title { font-size: 16px; font-weight: 600; color: #fff; }
-        
-        .input-group { display: flex; flex-direction: column; gap: 6px; }
-        .input-label { font-size: 11px; font-weight: 600; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-input { width: 100%; padding: 13px 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; color: white; font-size: 14px; outline: none; }
-        .form-input:focus { border-color: var(--accent-gold); }
-
-        .modal-footer { display: flex; gap: 10px; margin-top: 8px; }
-        .btn-submit { flex: 1; padding: 14px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 14px; color: #000; font-size: 13px; font-weight: 700; cursor: pointer; }
-        .btn-cancel { flex: 1; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
-
-        .empty-state { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 12px; }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px 20px; border-radius: 14px; z-index: 999; font-size: 12px; color: white; transition: 0.4s; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-    </style>
+/* PC / tablet */
+@media(min-width:760px){
+ .wrap{padding:24px 24px 48px}
+ .search{flex:0 1 340px}
+ .tabs{flex:0 1 auto}
+ .ghost.x{margin-left:auto}
+ .fab{position:static;height:40px;padding:0 16px;border-radius:12px;box-shadow:none}
+ .thead,.row{grid-template-columns:48px 150px 1.1fr 1.4fr 150px 88px;gap:0 14px;align-items:center}
+ .thead{display:grid;padding:12px 20px;font-size:13px;font-weight:600;color:var(--mut);background:#F6F9FA;border-bottom:1px solid var(--line)}
+ .row{grid-template-areas:"num tag name addr dev act";padding:12px 20px}
+ .row:hover{background:#F8FBFB}
+ .num{display:block;grid-area:num;color:var(--mut);font-weight:600}
+ .name{font-size:15.5px}
+ .dev{justify-self:start}
+ .act{justify-self:end}
+ .ib{width:34px;height:34px}
+}
+@media(min-width:640px){.overlay{align-items:center}.sheet{border-radius:22px;max-height:90vh}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
 
-    <div class="bg-layer">
-        <div class="aurora-blob blob-1"></div>
-        <div class="aurora-blob blob-2"></div>
+<header class="top">
+  <div class="bar">
+    <a href="index.html" class="back" aria-label="Balik"><svg class="i" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <div class="ttl"><b>Data Arrow</b><small>RnB Network</small></div>
+    <div id="roleBadge" class="role-badge teknisi">Téknisi</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <label class="search">
+      <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="searchInput" placeholder="Cari nami, regist, alamat, perangkat" oninput="filterData()" autocomplete="off">
+    </label>
+
+    <div class="tabs">
+      <button class="tab on" aria-pressed="true" onclick="setFilter('all',this)">Kabéh <b id="totalPelanggan">0</b></button>
+      <button class="tab" aria-pressed="false" onclick="setFilter('stb',this)">STB <b id="totalStb">0</b></button>
+      <button class="tab" aria-pressed="false" onclick="setFilter('tv',this)">Tv Android <b id="totalTv">0</b></button>
     </div>
 
-    <div class="header">
-        <a href="index.html" class="btn-back">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </a>
-        <div class="header-title">Data Arrow</div>
-        <div id="roleBadge" class="role-badge teknisi">Téknisi</div>
-    </div>
+    <button class="btn ghost x" onclick="exportToExcel()">
+      <svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Excel
+    </button>
+    <button id="btnAddData" class="btn solid fab" onclick="openModal('add')">
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Tambah
+    </button>
+  </div>
 
-    <div class="content">
-        <!-- WIDGET STATISTIK TOTAL & FILTER PERANGKAT -->
-        <div class="widget-panel">
-            <div class="widget-stat">
-                <div class="stat-val" id="totalPelanggan">0</div>
-                <div class="stat-lbl">Total</div>
-            </div>
-            <div class="widget-stat">
-                <div class="stat-val stb" id="totalStb">0</div>
-                <div class="stat-lbl">STB</div>
-            </div>
-            <div class="widget-stat">
-                <div class="stat-val tv" id="totalTv">0</div>
-                <div class="stat-lbl">Tv Android</div>
-            </div>
-        </div>
+  <div class="table">
+    <div class="thead"><span>No</span><span>Regist</span><span>Nami pelanggan</span><span>Alamat</span><span>Perangkat</span><span></span></div>
+    <div id="dataList"></div>
+  </div>
+</main>
 
-        <div class="action-bar">
-            <div class="search-box">
-                <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="searchInput" class="search-input" placeholder="Cari Nami, Regist, Perangkat..." onkeyup="filterData()">
-            </div>
-            
-            <!-- Tombol Export Excel -->
-            <button class="btn-action-header btn-excel" onclick="exportToExcel()">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Excel
-            </button>
+<div class="overlay" id="formModal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h2 id="modalTitle">Tambah Data Arrow</h2>
+    <form id="arrowForm" onsubmit="handleFormSubmit(event)">
+      <input type="hidden" id="editId">
+      <div class="field"><label for="inputNama">Nami pelanggan</label><input type="text" id="inputNama" placeholder="Contoh: Alfaro" required></div>
+      <div class="field"><label for="inputRegist">Regist</label><input type="text" id="inputRegist" placeholder="Contoh: WALIRAJA1" required></div>
+      <div class="field"><label for="inputAlamat">Alamat</label><textarea id="inputAlamat" rows="3" placeholder="Contoh: Palabuan" required></textarea></div>
+      <div class="field"><label for="inputPerangkat">Perangkat</label><input type="text" id="inputPerangkat" list="devs" placeholder="STB / Tv Android" required>
+        <datalist id="devs"><option value="STB"><option value="Tv Android"></datalist></div>
+      <div class="foot">
+        <button type="button" class="btn ghost" onclick="closeModal()">Batal</button>
+        <button type="submit" class="btn solid" id="btnSubmit">Simpen</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-            <!-- Tombol Tambah (Admin Only) -->
-            <button id="btnAddData" class="btn-action-header btn-add" onclick="openModal('add')">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah
-            </button>
-        </div>
+<div id="toast" class="toast" role="status"></div>
 
-        <div class="data-list" id="dataList">
-            <!-- Data diisi via JavaScript -->
-        </div>
-    </div>
+<script>
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUserRole = 'teknisi';
+let localData = [];
+let activeFilter = 'all';
 
-    <!-- Modal Form Input/Edit (Besar & Lega) -->
-    <div class="modal-overlay" id="formModal">
-        <div class="modal-card">
-            <div class="modal-title" id="modalTitle">Tambah Data Arrow</div>
-            <form id="arrowForm" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" id="editId">
-                <div class="input-group">
-                    <label class="input-label">Nami Pelanggan</label>
-                    <input type="text" id="inputNama" class="form-input" placeholder="Contoh: Alfaro" required>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Regist</label>
-                    <input type="text" id="inputRegist" class="form-input" placeholder="Contoh: WALIRAJA1" required>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Alamat</label>
-                    <textarea id="inputAlamat" class="form-input" rows="3" placeholder="Contoh: Palabuan" required></textarea>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Perangkat</label>
-                    <input type="text" id="inputPerangkat" class="form-input" placeholder="Contoh: STB / Tv Android" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-submit" id="btnSubmit">Simpen</button>
-                </div>
-            </form>
-        </div>
-    </div>
+const svg = p => '<svg class="i" viewBox="0 0 24 24">' + p + '</svg>';
+const IC = {
+  pin: svg('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'),
+  stb: svg('<rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 12.5h.01M10 12.5h7"/>'),
+  tv:  svg('<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>'),
+  edit: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+  del: svg('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>')
+};
 
-    <div id="toast" class="toast"></div>
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-    <script>
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentUserRole = 'teknisi';
-        let localData = [];
+function checkUserRole() {
+  const userStr = localStorage.getItem('userLoggedIn');
+  const badge = document.getElementById('roleBadge');
+  const btnAdd = document.getElementById('btnAddData');
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    currentUserRole = user.role || 'teknisi';
+  }
+  if (currentUserRole === 'admin') {
+    badge.textContent = 'Admin';
+    badge.className = 'role-badge admin';
+    btnAdd.style.display = 'inline-flex';
+  } else {
+    badge.textContent = 'Téknisi';
+    badge.className = 'role-badge teknisi';
+    btnAdd.style.display = 'none';
+  }
+}
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
+// Urut alfanumerik (WALIRAJA1, WALIRAJA2, WALIRAJA3, dst)
+function sortDataByRegist(data) {
+  return data.sort((a, b) => (a.regist || '').localeCompare(b.regist || '', undefined, { numeric: true, sensitivity: 'base' }));
+}
 
-        function checkUserRole() {
-            const userStr = localStorage.getItem('userLoggedIn');
-            const badge = document.getElementById('roleBadge');
-            const btnAdd = document.getElementById('btnAddData');
+function typeOf(p) {
+  p = (p || '').toLowerCase();
+  if (p.includes('stb')) return 'stb';
+  if (p.includes('tv') || p.includes('android')) return 'tv';
+  return 'other';
+}
 
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                currentUserRole = user.role || 'teknisi';
-            }
+function updateWidgetStats(data) {
+  document.getElementById('totalPelanggan').textContent = data.length;
+  document.getElementById('totalStb').textContent = data.filter(i => typeOf(i.perangkat) === 'stb').length;
+  document.getElementById('totalTv').textContent = data.filter(i => typeOf(i.perangkat) === 'tv').length;
+}
 
-            if (currentUserRole === 'admin') {
-                badge.textContent = 'Admin';
-                badge.className = 'role-badge admin';
-                btnAdd.style.display = 'inline-flex';
-            } else {
-                badge.textContent = 'Téknisi';
-                badge.className = 'role-badge teknisi';
-                btnAdd.style.display = 'none';
-            }
-        }
+async function loadData() {
+  document.getElementById('dataList').innerHTML = '<div class="empty">Nuju ngamuat data...</div>';
+  try {
+    const { data, error } = await supabaseClient.from('data_arrow').select('*');
+    if (error) throw error;
+    localData = sortDataByRegist(data || []);
+  } catch (err) {
+    console.warn('Menggunakan data lokal:', err);
+    if (localData.length === 0) {
+      localData = [
+        { id: '1', nama: 'Alfaro', regist: 'WALIRAJA1', alamat: 'Palabuan', perangkat: 'Tv Android' },
+        { id: '2', nama: 'Vera Yulianti 1', regist: 'WALIRAJA2', alamat: 'Palabuan', perangkat: 'STB' },
+        { id: '3', nama: 'Vera Yulianti 2', regist: 'WALIRAJA3', alamat: 'Palabuan', perangkat: 'STB' }
+      ];
+    }
+    localData = sortDataByRegist(localData);
+  }
+  updateWidgetStats(localData);
+  filterData();
+}
 
-        // Pengurutan Alfanumerik (WALIRAJA1, WALIRAJA2, WALIRAJA3, dst)
-        function sortDataByRegist(data) {
-            return data.sort((a, b) => {
-                return (a.regist || '').localeCompare(b.regist || '', undefined, { numeric: true, sensitivity: 'base' });
-            });
-        }
+function renderData(items) {
+  const container = document.getElementById('dataList');
+  if (!items || items.length === 0) {
+    container.innerHTML = '<div class="empty">Taya data anu kapendak.</div>';
+    return;
+  }
+  const admin = currentUserRole === 'admin';
+  container.innerHTML = items.map((item, index) => {
+    const t = typeOf(item.perangkat);
+    const id = escapeHtml(item.id);
+    return `
+    <div class="row">
+      <span class="num">${index + 1}</span>
+      <span class="tag">${escapeHtml(item.regist)}</span>
+      <span class="name">${escapeHtml(item.nama)}</span>
+      <span class="addr">${IC.pin}<span>${escapeHtml(item.alamat)}</span></span>
+      <span class="dev ${t}">${t === 'tv' ? IC.tv : IC.stb}${escapeHtml(item.perangkat)}</span>
+      ${admin ? `<span class="act">
+        <button class="ib e" aria-label="Edit" onclick="openModal('edit','${id}')">${IC.edit}</button>
+        <button class="ib d" aria-label="Hapus" onclick="hapusData('${id}')">${IC.del}</button>
+      </span>` : ''}
+    </div>`;
+  }).join('');
+}
 
-        // Update Widget Statistik Atas
-        function updateWidgetStats(data) {
-            const total = data.length;
-            let stbCount = 0;
-            let tvCount = 0;
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.tab').forEach(t => {
+    const on = t === btn;
+    t.classList.toggle('on', on);
+    t.setAttribute('aria-pressed', on);
+  });
+  filterData();
+}
 
-            data.forEach(item => {
-                const p = (item.perangkat || '').toLowerCase();
-                if (p.includes('stb')) {
-                    stbCount++;
-                } else if (p.includes('tv') || p.includes('android')) {
-                    tvCount++;
-                }
-            });
+function filterData() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = localData.filter(item =>
+    (activeFilter === 'all' || typeOf(item.perangkat) === activeFilter) &&
+    [item.nama, item.regist, item.perangkat, item.alamat].some(v => (v || '').toLowerCase().includes(q))
+  );
+  renderData(sortDataByRegist(filtered));
+}
 
-            document.getElementById('totalPelanggan').textContent = total;
-            document.getElementById('totalStb').textContent = stbCount;
-            document.getElementById('totalTv').textContent = tvCount;
-        }
+function exportToExcel() {
+  if (!localData || localData.length === 0) {
+    showToast('Taya data anu tiasa di-export!');
+    return;
+  }
+  const exportArr = localData.map((item, idx) => ({
+    'No': idx + 1,
+    'Regist': item.regist || '',
+    'Nama Pelanggan': item.nama || '',
+    'Alamat': item.alamat || '',
+    'Perangkat': item.perangkat || ''
+  }));
+  const worksheet = XLSX.utils.json_to_sheet(exportArr);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Arrow');
+  worksheet['!cols'] = [{ wch: 5 }, { wch: 15 }, { wch: 25 }, { wch: 30 }, { wch: 20 }];
+  XLSX.writeFile(workbook, `Data_Arrow_RnB_Network_${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast('Suksés mengunduh file Excel!');
+}
 
-        async function loadData() {
-            const container = document.getElementById('dataList');
-            container.innerHTML = '<div class="empty-state">Nuju ngamuat data...</div>';
+function openModal(mode, id = null) {
+  const form = document.getElementById('arrowForm');
+  form.reset();
+  document.getElementById('editId').value = '';
+  if (mode === 'edit' && id) {
+    const item = localData.find(d => String(d.id) === String(id));
+    if (item) {
+      document.getElementById('modalTitle').textContent = 'Edit Data Arrow';
+      document.getElementById('editId').value = item.id;
+      document.getElementById('inputNama').value = item.nama;
+      document.getElementById('inputRegist').value = item.regist;
+      document.getElementById('inputAlamat').value = item.alamat;
+      document.getElementById('inputPerangkat').value = item.perangkat;
+    }
+  } else {
+    document.getElementById('modalTitle').textContent = 'Tambah Data Arrow';
+  }
+  document.getElementById('formModal').classList.add('active');
+  setTimeout(() => document.getElementById('inputNama').focus(), 50);
+}
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('data_arrow')
-                    .select('*');
+function closeModal() {
+  document.getElementById('formModal').classList.remove('active');
+}
 
-                if (error) throw error;
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  const id = document.getElementById('editId').value;
+  const payload = {
+    nama: document.getElementById('inputNama').value.trim(),
+    regist: document.getElementById('inputRegist').value.trim(),
+    alamat: document.getElementById('inputAlamat').value.trim(),
+    perangkat: document.getElementById('inputPerangkat').value.trim()
+  };
+  try {
+    if (id) {
+      const { error } = await supabaseClient.from('data_arrow').update(payload).eq('id', id);
+      if (error) throw error;
+      showToast('Data suksés diébit!');
+    } else {
+      const { error } = await supabaseClient.from('data_arrow').insert([payload]);
+      if (error) throw error;
+      showToast('Data suksés ditambihkeun!');
+    }
+    closeModal();
+    loadData();
+  } catch (err) {
+    console.error(err);
+    if (id) {
+      const index = localData.findIndex(d => String(d.id) === String(id));
+      if (index !== -1) localData[index] = { id, ...payload };
+    } else {
+      localData.unshift({ id: Date.now().toString(), ...payload });
+    }
+    localData = sortDataByRegist(localData);
+    updateWidgetStats(localData);
+    closeModal();
+    filterData();
+    showToast('Data disimpen secara lokal.');
+  }
+}
 
-                localData = sortDataByRegist(data || []);
-                updateWidgetStats(localData);
-                renderData(localData);
-            } catch (err) {
-                console.warn('Menggunakan data lokal:', err);
-                if (localData.length === 0) {
-                    localData = [
-                        { id: '1', nama: 'Alfaro', regist: 'WALIRAJA1', alamat: 'Palabuan', perangkat: 'Tv Android' },
-                        { id: '2', nama: 'Vera Yulianti 1', regist: 'WALIRAJA2', alamat: 'Palabuan', perangkat: 'STB' },
-                        { id: '3', nama: 'Vera Yulianti 2', regist: 'WALIRAJA3', alamat: 'Palabuan', perangkat: 'STB' }
-                    ];
-                }
-                localData = sortDataByRegist(localData);
-                updateWidgetStats(localData);
-                renderData(localData);
-            }
-        }
+async function hapusData(id) {
+  if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+  try {
+    const { error } = await supabaseClient.from('data_arrow').delete().eq('id', id);
+    if (error) throw error;
+    showToast('Data suksés dihapus!');
+    loadData();
+  } catch (err) {
+    localData = localData.filter(d => String(d.id) !== String(id));
+    updateWidgetStats(localData);
+    filterData();
+    showToast('Data dihapus dari memori lokal.');
+  }
+}
 
-        function renderData(items) {
-            const container = document.getElementById('dataList');
-            if (!items || items.length === 0) {
-                container.innerHTML = '<div class="empty-state">Taya data anu kapendak.</div>';
-                return;
-            }
+function escapeHtml(text) {
+  return String(text ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+}
 
-            container.innerHTML = items.map((item, index) => `
-                <div class="arrow-card">
-                    <div class="card-header">
-                        <div class="card-name-wrapper">
-                            <div class="card-number">${index + 1}</div>
-                            <div class="card-name">${escapeHtml(item.nama)}</div>
-                        </div>
-                        <div class="card-regist">${escapeHtml(item.regist)}</div>
-                    </div>
-                    <div class="card-detail">
-                        <div class="detail-row">
-                            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span>${escapeHtml(item.alamat)}</span>
-                        </div>
-                        <div class="detail-row">
-                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-                            <span>${escapeHtml(item.perangkat)}</span>
-                        </div>
-                    </div>
-                    ${currentUserRole === 'admin' ? `
-                        <div class="card-actions" style="display: flex;">
-                            <button class="btn-card-action edit" onclick="openModal('edit', '${item.id}')">
-                                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit
-                            </button>
-                            <button class="btn-card-action delete" onclick="hapusData('${item.id}')">
-                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Hapus
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        function filterData() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = localData.filter(item => 
-                item.nama.toLowerCase().includes(query) ||
-                item.regist.toLowerCase().includes(query) ||
-                item.perangkat.toLowerCase().includes(query) ||
-                item.alamat.toLowerCase().includes(query)
-            );
-            renderData(sortDataByRegist(filtered));
-        }
-
-        // Fitur Export Data ke Excel
-        function exportToExcel() {
-            if (!localData || localData.length === 0) {
-                showToast('Taya data anu tiasa di-export!');
-                return;
-            }
-
-            const exportArr = localData.map((item, idx) => ({
-                'No': idx + 1,
-                'Regist': item.regist || '',
-                'Nama Pelanggan': item.nama || '',
-                'Alamat': item.alamat || '',
-                'Perangkat': item.perangkat || ''
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(exportArr);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Data Arrow");
-
-            worksheet['!cols'] = [
-                { wch: 5 },
-                { wch: 15 },
-                { wch: 25 },
-                { wch: 30 },
-                { wch: 20 }
-            ];
-
-            XLSX.writeFile(workbook, `Data_Arrow_RnB_Network_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast('Suksés mengunduh file Excel!');
-        }
-
-        function openModal(mode, id = null) {
-            const modal = document.getElementById('formModal');
-            const title = document.getElementById('modalTitle');
-            const form = document.getElementById('arrowForm');
-            
-            form.reset();
-            document.getElementById('editId').value = '';
-
-            if (mode === 'edit' && id) {
-                const item = localData.find(d => String(d.id) === String(id));
-                if (item) {
-                    title.textContent = 'Edit Data Arrow';
-                    document.getElementById('editId').value = item.id;
-                    document.getElementById('inputNama').value = item.nama;
-                    document.getElementById('inputRegist').value = item.regist;
-                    document.getElementById('inputAlamat').value = item.alamat;
-                    document.getElementById('inputPerangkat').value = item.perangkat;
-                }
-            } else {
-                title.textContent = 'Tambah Data Arrow';
-            }
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('formModal').classList.remove('active');
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('editId').value;
-            const nama = document.getElementById('inputNama').value.trim();
-            const regist = document.getElementById('inputRegist').value.trim();
-            const alamat = document.getElementById('inputAlamat').value.trim();
-            const perangkat = document.getElementById('inputPerangkat').value.trim();
-
-            const payload = { nama, regist, alamat, perangkat };
-
-            try {
-                if (id) {
-                    const { error } = await supabaseClient.from('data_arrow').update(payload).eq('id', id);
-                    if (error) throw error;
-                    showToast('Data suksés diébit!');
-                } else {
-                    const { error } = await supabaseClient.from('data_arrow').insert([payload]);
-                    if (error) throw error;
-                    showToast('Data suksés ditambihkeun!');
-                }
-                closeModal();
-                loadData();
-            } catch (err) {
-                console.error(err);
-                if (id) {
-                    const index = localData.findIndex(d => String(d.id) === String(id));
-                    if (index !== -1) localData[index] = { id, ...payload };
-                } else {
-                    localData.unshift({ id: Date.now().toString(), ...payload });
-                }
-                localData = sortDataByRegist(localData);
-                updateWidgetStats(localData);
-                closeModal();
-                renderData(localData);
-                showToast('Data disimpen secara lokal.');
-            }
-        }
-
-        async function hapusData(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
-
-            try {
-                const { error } = await supabaseClient.from('data_arrow').delete().eq('id', id);
-                if (error) throw error;
-                showToast('Data suksés dihapus!');
-                loadData();
-            } catch (err) {
-                localData = localData.filter(d => String(d.id) !== String(id));
-                updateWidgetStats(localData);
-                renderData(localData);
-                showToast('Data dihapus dari memori lokal.');
-            }
-        }
-
-        function escapeHtml(text) {
-            return String(text || '').replace(/[&<>"']/g, m => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-            })[m]);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkUserRole();
-            loadData();
-        });
-    </script>
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+window.addEventListener('DOMContentLoaded', () => { checkUserRole(); loadData(); });
+</script>
 </body>
 </html>
