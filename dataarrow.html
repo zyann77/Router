@@ -30,54 +30,54 @@
 
         .bg-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
         .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; }
-        .blob-1 { width: 400px; height: 400px; background: var(--aurora-1); top: -10%; left: -10%; }
-        .blob-2 { width: 350px; height: 350px; background: var(--aurora-2); bottom: -10%; right: -10%; }
+        .blob-1 { width: 350px; height: 350px; background: var(--aurora-1); top: -10%; left: -10%; }
+        .blob-2 { width: 300px; height: 300px; background: var(--aurora-2); bottom: -10%; right: -10%; }
 
-        .header { height: 60px; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: sticky; top: 0; z-index: 50; }
-        .header-title { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
-        .btn-back { width: 36px; height: 36px; border-radius: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
-        .btn-back svg { width: 18px; height: 18px; stroke: white; stroke-width: 2; fill: none; }
+        .header { height: 52px; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: sticky; top: 0; z-index: 50; }
+        .header-title { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
+        .btn-back { width: 32px; height: 32px; border-radius: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
+        .btn-back svg { width: 16px; height: 16px; stroke: white; stroke-width: 2; fill: none; }
         
-        .role-badge { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .role-badge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         .role-badge.admin { background: rgba(201,169,97,0.15); color: var(--accent-gold-light); border: 1px solid rgba(201,169,97,0.3); }
         .role-badge.teknisi { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
 
-        .content { flex: 1; z-index: 10; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; }
+        .content { flex: 1; z-index: 10; padding: 14px 16px 80px; max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 12px; }
 
         /* Search & Action Bar */
-        .action-bar { display: flex; gap: 10px; align-items: center; }
+        .action-bar { display: flex; gap: 8px; align-items: center; }
         .search-box { flex: 1; position: relative; }
-        .search-input { width: 100%; padding: 12px 14px 12px 40px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 16px; color: white; font-size: 13px; outline: none; }
+        .search-input { width: 100%; padding: 9px 12px 9px 34px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 12px; outline: none; }
         .search-input:focus { border-color: var(--accent-gold); }
-        .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: var(--text-muted); stroke-width: 2; fill: none; }
 
-        .btn-action-header { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; border: none; }
+        .btn-action-header { display: flex; align-items: center; gap: 5px; padding: 9px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; border: none; }
         .btn-excel { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.4); }
         .btn-excel:active { transform: scale(0.95); }
-        .btn-excel svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+        .btn-excel svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; }
 
         .btn-add { display: none; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); color: #000; }
-        .btn-add svg { width: 16px; height: 16px; stroke: #000; stroke-width: 2.5; fill: none; }
+        .btn-add svg { width: 14px; height: 14px; stroke: #000; stroke-width: 2.5; fill: none; }
 
-        /* Card Item Data Arrow */
-        .data-list { display: flex; flex-direction: column; gap: 12px; }
-        .arrow-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        /* KARTU DATA KECIL / KOMPAK DI HALAMAN UTAMA */
+        .data-list { display: flex; flex-direction: column; gap: 8px; }
+        .arrow-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 5px; position: relative; }
         .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .card-name { font-size: 15px; font-weight: 600; color: #fff; }
-        .card-regist { font-size: 11px; font-weight: 600; color: var(--accent-gold-light); background: rgba(201,169,97,0.12); padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(201,169,97,0.25); }
+        .card-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .card-regist { font-size: 10px; font-weight: 600; color: var(--accent-gold-light); background: rgba(201,169,97,0.12); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(201,169,97,0.25); }
 
-        .card-detail { display: flex; flex-direction: column; gap: 6px; }
-        .detail-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
-        .detail-row svg { width: 15px; height: 15px; stroke: var(--text-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
+        .card-detail { display: flex; flex-direction: column; gap: 3px; }
+        .detail-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); }
+        .detail-row svg { width: 13px; height: 13px; stroke: var(--text-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
         .detail-row span { color: rgba(255,255,255,0.9); }
 
-        .card-actions { display: none; gap: 8px; margin-top: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); justify-content: flex-end; }
-        .btn-card-action { padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 500; cursor: pointer; border: none; display: flex; align-items: center; gap: 5px; }
+        .card-actions { display: none; gap: 6px; margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); justify-content: flex-end; }
+        .btn-card-action { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 500; cursor: pointer; border: none; display: flex; align-items: center; gap: 4px; }
         .btn-card-action.edit { background: rgba(59,130,246,0.15); color: #93C5FD; border: 1px solid rgba(59,130,246,0.3); }
         .btn-card-action.delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .btn-card-action svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .btn-card-action svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-        /* Modal Form Input/Edit (Nyaman & Lega untuk Input) */
+        /* FORM INPUT / MODAL BESAR & LEGA */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; padding: 20px; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-card { background: rgba(20, 20, 25, 0.95); border: 1px solid var(--glass-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
@@ -92,7 +92,7 @@
         .btn-submit { flex: 1; padding: 14px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 14px; color: #000; font-size: 13px; font-weight: 700; cursor: pointer; }
         .btn-cancel { flex: 1; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-        .empty-state { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 13px; }
+        .empty-state { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 12px; }
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px 20px; border-radius: 14px; z-index: 999; font-size: 12px; color: white; transition: 0.4s; }
         .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
@@ -135,7 +135,7 @@
         </div>
     </div>
 
-    <!-- Modal Form Input/Edit (Lega & Nyaman) -->
+    <!-- Modal Form Input/Edit (Besar & Lega) -->
     <div class="modal-overlay" id="formModal">
         <div class="modal-card">
             <div class="modal-title" id="modalTitle">Tambah Data Arrow</div>
