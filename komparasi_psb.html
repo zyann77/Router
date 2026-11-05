@@ -87,6 +87,17 @@ svg.s{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-l
 .sv.money{font-size:clamp(22px,6.4vw,28px);padding-top:calc(clamp(34px,10vw,44px) - clamp(22px,6.4vw,28px))}
 .sl{font-size:12px;color:rgba(255,255,255,.72);margin-top:8px;font-weight:500}
 
+/* Filter bulan */
+.filter{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel{position:relative}
+.sel select,.btn-swap{width:100%;height:44px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);font:600 13px var(--font)}
+.sel select{-webkit-appearance:none;appearance:none;padding:0 32px 0 14px;cursor:pointer;border-left:4px solid var(--c,var(--line));text-overflow:ellipsis}
+.sel svg{position:absolute;right:10px;top:50%;width:16px;height:16px;margin-top:-8px;color:var(--muted);pointer-events:none}
+.sel.a{--c:var(--accent)} .sel.b{--c:var(--violet)}
+.btn-swap{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;transition:transform .2s,background .2s}
+.btn-swap svg{width:16px;height:16px}
+.btn-swap:active{transform:scale(.96)}
+
 /* Tab (HP) */
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
 .seg button{height:40px;border-radius:12px;font-size:13px;font-weight:600;color:var(--muted);transition:background .25s,color .25s}
@@ -144,6 +155,8 @@ svg.s{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-l
   body{padding-top:32px}
   .shell{max-width:1080px;gap:20px}
   .seg{display:none}
+  .filter{grid-template-columns:1fr 1fr 1fr auto}
+  .btn-swap:hover{background:var(--surface-2)}
   .cmp{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
   .col{display:block}
   .hero{padding:28px 32px}
@@ -198,6 +211,16 @@ svg.s{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-l
       </div>
     </div>
   </section>
+
+  <div class="filter">
+    <div class="sel a"><select id="selA" aria-label="Bulan pertama"></select><svg class="s" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="sel b"><select id="selB" aria-label="Bulan kedua"></select><svg class="s" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <div class="sel"><select id="selRange" aria-label="Rentang tanggal"><option value="same"></option><option value="full">Sebulan penuh</option></select><svg class="s" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    <button class="btn-swap" onclick="swapMonths()" aria-label="Tukar urutan bulan">
+      <svg class="s" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      Tukar
+    </button>
+  </div>
 
   <div class="seg" role="tablist">
     <button role="tab" id="tabNow" aria-selected="true" onclick="setTab('now')"></button>
@@ -259,118 +282,129 @@ function setTab(which) {
     document.getElementById('tabPrev').setAttribute('aria-selected', !isNow);
 }
 
+const NOW = new Date();
+let psbData = [];
+
+const $ = id => document.getElementById(id);
+const parseSel = id => { const [y, m] = $(id).value.split('-').map(Number); return { y, m }; };
+const isCur = p => p.y === NOW.getFullYear() && p.m === NOW.getMonth();
+
+function initFilter() {
+    const opts = [];
+    for (let i = 0; i < 24; i++) {
+        const d = new Date(NOW.getFullYear(), NOW.getMonth() - i, 1);
+        opts.push(`<option value="${d.getFullYear()}-${d.getMonth()}">${namaBulanReal[d.getMonth()]} ${d.getFullYear()}</option>`);
+    }
+    $('selA').innerHTML = $('selB').innerHTML = opts.join('');
+    $('selB').selectedIndex = 1;
+    $('selRange').options[0].textContent = `Tanggal 1 - ${NOW.getDate()}`;
+    autoRange();
+    $('selA').onchange = $('selB').onchange = () => { autoRange(); render(); };
+    $('selRange').onchange = render;
+}
+
+// Bulan berjalan dibandingkan sampai tanggal yang sama; bulan yang sudah lewat tampil sebulan penuh
+function autoRange() {
+    $('selRange').value = (isCur(parseSel('selA')) || isCur(parseSel('selB'))) ? 'same' : 'full';
+}
+
+function swapMonths() {
+    [$('selA').value, $('selB').value] = [$('selB').value, $('selA').value];
+    render();
+}
+
+function hitung(P, cutoff) {
+    const r = { total: 0, uang: 0, pkg: {} };
+    psbData.forEach(item => {
+        const tglInput = item.tanggal_pasang || item.created_at || item.tanggal;
+        if (!tglInput) return;
+        const d = new Date(String(tglInput).split('T')[0]);
+        if (isNaN(d.getTime()) || d.getFullYear() !== P.y || d.getMonth() !== P.m || d.getDate() > cutoff) return;
+        r.total++;
+        r.uang += parseInt(item.harga) || 0;
+        const nama = item.paket || item.layanan || 'Paket Lainnya';
+        (r.pkg[nama] = r.pkg[nama] || []).push(item);
+    });
+    return r;
+}
+
+function renderList(dataPkg, elementId, total) {
+    const el = $(elementId);
+    const sorted = Object.entries(dataPkg).sort((a, b) => b[1].length - a[1].length);
+    if (sorted.length === 0) { el.innerHTML = '<div class="state">Tidak ada data</div>'; return; }
+
+    el.innerHTML = sorted.map(([name, list]) => {
+        const share = Math.max(3, Math.round(list.length / total * 100));
+        const pelangganHtml = list.map(p => {
+            const nama = p.nama || p.nama_pelanggan || 'Tanpa Nama';
+            return `
+            <div class="customer-item">
+                <div class="avatar">${esc(nama.trim().charAt(0).toUpperCase() || '?')}</div>
+                <div class="cust-info">
+                    <div class="cust-name">${esc(nama)}</div>
+                    <div class="cust-alamat">${esc(p.alamat || p.lokasi || '-')}</div>
+                </div>
+                <div class="cust-date">${esc(fmtTgl(p.tanggal_pasang || p.created_at || p.tanggal))}</div>
+            </div>`;
+        }).join('');
+
+        return `
+        <div class="package-card">
+            <button class="package-header" onclick="toggleCompareCard(this)" aria-expanded="false">
+                <div>
+                    <div class="pkg-name">${esc(name)}</div>
+                    <div class="pkg-count">${list.length} terpasang</div>
+                </div>
+                <svg class="s pkg-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                <div class="pkg-share" title="${share}% dari total PSB"><i style="width:${share}%"></i></div>
+            </button>
+            <div class="package-body"><div class="pb-clip"><div class="pb-list">${pelangganHtml}</div></div></div>
+        </div>`;
+    }).join('');
+}
+
+function render() {
+    const A = parseSel('selA'), B = parseSel('selB');
+    const full = $('selRange').value === 'full';
+    const cutoff = full ? 31 : NOW.getDate();
+    const rangeTxt = full ? 'Sebulan penuh' : `Tanggal 1 - ${NOW.getDate()}`;
+    const tA = `${namaBulanReal[A.m]} ${A.y}`, tB = `${namaBulanReal[B.m]} ${B.y}`;
+    const ra = hitung(A, cutoff), rb = hitung(B, cutoff);
+
+    $('bannerSub').textContent = `${tA} dibanding ${tB}, ${rangeTxt.toLowerCase()}`;
+    $('titleColInilah').textContent = tA;
+    $('titleColLalulah').textContent = tB;
+    $('subColInilah').textContent = $('subColLalulah').textContent = rangeTxt;
+    $('tabNow').textContent = tA;
+    $('tabPrev').textContent = tB;
+
+    $('valPsbInilah').textContent = ra.total;
+    $('valUangInilah').textContent = rp(ra.uang);
+    $('valPsbLalulah').textContent = rb.total;
+    $('valUangLalulah').textContent = rp(rb.uang);
+
+    const dPsb = ra.total - rb.total, dUang = ra.uang - rb.uang;
+    $('deltaPsb').textContent = sgn(dPsb) + Math.abs(dPsb);
+    $('deltaUang').textContent = sgn(dUang) + rp(Math.abs(dUang));
+
+    renderList(ra.pkg, 'listPkgInilah', ra.total);
+    renderList(rb.pkg, 'listPkgLalulah', rb.total);
+}
+
 async function muatDataKomparasi() {
-    const now = new Date();
-    const tglHariIni = now.getDate();
-    let lastMonth = now.getMonth() - 1;
-    let lastMonthYear = now.getFullYear();
-    if (lastMonth < 0) { lastMonth = 11; lastMonthYear--; }
-
-    const bulanIni = namaBulanReal[now.getMonth()];
-    const bulanLalu = namaBulanReal[lastMonth];
-    document.getElementById('bannerSub').textContent = `Perbandingan tanggal 1 s.d ${tglHariIni} ${bulanIni} ${now.getFullYear()}`;
-    document.getElementById('titleColInilah').textContent = bulanIni;
-    document.getElementById('titleColLalulah').textContent = bulanLalu;
-    document.getElementById('subColInilah').textContent = `Tanggal 1 - ${tglHariIni}`;
-    document.getElementById('subColLalulah').textContent = `Tanggal 1 - ${tglHariIni}`;
-    document.getElementById('tabNow').textContent = bulanIni;
-    document.getElementById('tabPrev').textContent = bulanLalu;
-
+    initFilter();
     try {
-        const { data: psbSemua, error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('psb')
             .select('*')
             .order('created_at', { ascending: false });
-
         if (error) throw error;
-
-        let totalPsbInilah = 0, totalUangInilah = 0;
-        let totalPsbLalulah = 0, totalUangLalulah = 0;
-        const pkgInilah = {};
-        const pkgLalulah = {};
-
-        (psbSemua || []).forEach(item => {
-            const tglInput = item.tanggal_pasang || item.created_at || item.tanggal;
-            if (!tglInput) return;
-            const d = new Date(String(tglInput).split('T')[0]);
-            if (isNaN(d.getTime())) return;
-
-            const itemDate = d.getDate();
-            const itemMonth = d.getMonth();
-            const itemYear = d.getFullYear();
-            const harga = parseInt(item.harga) || 0;
-            const namaPaket = item.paket || item.layanan || 'Paket Lainnya';
-
-            if (itemDate <= tglHariIni) {
-                if (itemMonth === now.getMonth() && itemYear === now.getFullYear()) {
-                    totalPsbInilah++;
-                    totalUangInilah += harga;
-                    (pkgInilah[namaPaket] = pkgInilah[namaPaket] || []).push(item);
-                } else if (itemMonth === lastMonth && itemYear === lastMonthYear) {
-                    totalPsbLalulah++;
-                    totalUangLalulah += harga;
-                    (pkgLalulah[namaPaket] = pkgLalulah[namaPaket] || []).push(item);
-                }
-            }
-        });
-
-        document.getElementById('valPsbInilah').textContent = totalPsbInilah;
-        document.getElementById('valUangInilah').textContent = rp(totalUangInilah);
-        document.getElementById('valPsbLalulah').textContent = totalPsbLalulah;
-        document.getElementById('valUangLalulah').textContent = rp(totalUangLalulah);
-
-        const dPsb = totalPsbInilah - totalPsbLalulah;
-        const dUang = totalUangInilah - totalUangLalulah;
-        document.getElementById('deltaPsb').textContent = sgn(dPsb) + Math.abs(dPsb);
-        document.getElementById('deltaUang').textContent = sgn(dUang) + rp(Math.abs(dUang));
-
-        const renderSideList = (dataPkg, elementId, total) => {
-            const el = document.getElementById(elementId);
-            const sorted = Object.entries(dataPkg).sort((a, b) => b[1].length - a[1].length);
-
-            if (sorted.length === 0) {
-                el.innerHTML = '<div class="state">Tidak ada data</div>';
-                return;
-            }
-
-            el.innerHTML = sorted.map(([name, list]) => {
-                const share = Math.max(3, Math.round(list.length / total * 100));
-                const pelangganHtml = list.map(p => {
-                    const nama = p.nama || p.nama_pelanggan || 'Tanpa Nama';
-                    return `
-                    <div class="customer-item">
-                        <div class="avatar">${esc(nama.trim().charAt(0).toUpperCase() || '?')}</div>
-                        <div class="cust-info">
-                            <div class="cust-name">${esc(nama)}</div>
-                            <div class="cust-alamat">${esc(p.alamat || p.lokasi || '-')}</div>
-                        </div>
-                        <div class="cust-date">${esc(fmtTgl(p.tanggal_pasang || p.created_at || p.tanggal))}</div>
-                    </div>`;
-                }).join('');
-
-                return `
-                <div class="package-card">
-                    <button class="package-header" onclick="toggleCompareCard(this)" aria-expanded="false">
-                        <div>
-                            <div class="pkg-name">${esc(name)}</div>
-                            <div class="pkg-count">${list.length} terpasang</div>
-                        </div>
-                        <svg class="s pkg-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-                        <div class="pkg-share" title="${share}% dari total PSB"><i style="width:${share}%"></i></div>
-                    </button>
-                    <div class="package-body"><div class="pb-clip"><div class="pb-list">${pelangganHtml}</div></div></div>
-                </div>`;
-            }).join('');
-        };
-
-        renderSideList(pkgInilah, 'listPkgInilah', totalPsbInilah);
-        renderSideList(pkgLalulah, 'listPkgLalulah', totalPsbLalulah);
-
+        psbData = data || [];
+        render();
     } catch (err) {
         console.error('Gagal memuat data komparasi:', err);
         const msg = '<div class="state">Data gagal dimuat. Periksa koneksi, lalu muat ulang halaman.</div>';
-        document.getElementById('listPkgInilah').innerHTML = msg;
-        document.getElementById('listPkgLalulah').innerHTML = msg;
+        $('listPkgInilah').innerHTML = $('listPkgLalulah').innerHTML = msg;
     }
 }
 
