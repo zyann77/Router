@@ -1,649 +1,582 @@
 <!DOCTYPE html>
-<html lang="su" translate="no">
+<html lang="su" translate="no" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050505">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="google" content="notranslate">
-    <title>CREATED Iyann</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://i.ibb.co.com/P84m1hT/Logo-Rn-B-removebg-preview-v2.png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#07080b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="google" content="notranslate">
+<title>CREATED Iyann</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://i.ibb.co.com/P84m1hT/Logo-Rn-B-removebg-preview-v2.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+/* Tema: ikut pilihan tersimpan, kalau belum ada ikut sistem. Dipasang lebih awal supaya tidak berkedip. */
+function applyTheme(t){document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='light'?'#F2F0EB':'#07080b';}
+try{applyTheme(localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));}catch(e){}
+</script>
+<style>
+:root{
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --spring:cubic-bezier(.2,.9,.3,1.25);--smooth:cubic-bezier(.22,1,.36,1);
+  --bg:#07080b;--panel:#0F1116;--glass:rgba(255,255,255,.05);--line:rgba(255,255,255,.09);
+  --text:#F6F4EF;--muted:#9B9BA7;--gold:#D6B56E;--gold2:#F2DA9F;--ink:#1a1305;
+  --field:rgba(0,0,0,.38);--veil:rgba(7,8,11,.55);--dock:rgba(22,24,30,.7);--icbg:rgba(255,255,255,.06);
+  --blob1:#6D4AFF;--blob2:#2563EB;--blob3:#D6B56E;--blobop:.3;--blend:screen;
+  --ok:#10B981;--ok-t:#6EE7B7;--bad:#F0524F;--bad-t:#FCA5A5;--shadow:0 40px 80px -30px rgba(0,0,0,.8);
+}
+:root[data-theme=light]{
+  --bg:#F2F0EB;--panel:#FFFFFF;--glass:rgba(255,255,255,.62);--line:rgba(30,24,10,.09);
+  --text:#14120D;--muted:#6C6960;--gold:#8F6A1F;--gold2:#C9A04A;
+  --field:rgba(20,16,8,.045);--veil:rgba(242,240,235,.55);--dock:rgba(255,255,255,.75);--icbg:rgba(20,16,8,.045);
+  --blob1:#E8C97A;--blob2:#9DB8F5;--blob3:#C7A8F0;--blobop:.5;--blend:normal;
+  --ok:#0E9F6E;--ok-t:#047857;--bad:#DC3B38;--bad-t:#B42318;--shadow:0 30px 60px -28px rgba(60,45,10,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;position:relative;user-select:none;-webkit-font-smoothing:antialiased;transition:background .5s,color .5s}
+input,button{font-family:inherit;color:inherit}
+input{user-select:text}
+button{cursor:pointer;border:0;background:none}
+svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
-    <style>
-        :root {
-            --bg-dark: #050505; --glass-bg: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(30px); --aurora-1: #8B5CF6; --aurora-2: #3B82F6; --accent-gold: #C9A961;
-            --accent-gold-light: #E5C97A; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
-            --text-main: #FFFFFF; --text-muted: #A1A1AA;
-            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --smooth: cubic-bezier(0.25, 1, 0.25, 1);
-        }
+/* Latar */
+.bg{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:var(--blobop);mix-blend-mode:var(--blend);animation:drift 24s infinite alternate ease-in-out;will-change:transform}
+.b1{width:520px;height:520px;background:var(--blob1);top:-14%;left:-12%}
+.b2{width:460px;height:460px;background:var(--blob2);bottom:-14%;right:-10%;animation-delay:-6s}
+.b3{width:340px;height:340px;background:var(--blob3);top:38%;left:38%;opacity:calc(var(--blobop)*.5);animation-duration:30s}
+@keyframes drift{to{transform:translate(60px,70px) scale(1.15)}}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-main); width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+/* Tombol tema */
+.theme-btn{position:fixed;z-index:300;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .3s var(--spring)}
+.theme-btn:active{transform:scale(.9)}
+.theme-btn svg{width:20px;height:20px;grid-area:1/1;transition:opacity .3s,transform .5s var(--spring)}
+:root[data-theme=dark] .i-sun{opacity:1}:root[data-theme=dark] .i-moon{opacity:0;transform:rotate(-80deg)}
+:root[data-theme=light] .i-sun{opacity:0;transform:rotate(80deg)}:root[data-theme=light] .i-moon{opacity:1}
 
-        .bg-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; mix-blend-mode: screen; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
-        .blob-1 { width: 450px; height: 450px; background: var(--aurora-1); top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: var(--aurora-2); bottom: -10%; right: -10%; animation-delay: -5s; }
-        .blob-3 { width: 300px; height: 300px; background: var(--accent-gold); top: 30%; left: 30%; opacity: 0.15; animation-duration: 25s; }
-        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.2); } 100% { transform: translate(-30px, -50px) scale(0.9); } }
+/* Lock screen */
+.lock{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 13vh) 24px calc(env(safe-area-inset-bottom,0px) + 44px);background:linear-gradient(180deg,transparent,var(--veil));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .9s var(--smooth),opacity .9s}
+.lock.unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}
+.clock{font-size:clamp(76px,17vw,156px);font-weight:200;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,var(--text) 30%,color-mix(in srgb,var(--text) 40%,transparent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ldate{margin-top:10px;font-size:15px;font-weight:500;color:var(--muted);letter-spacing:.02em}
+.brand h1{font-size:clamp(22px,4vw,30px);font-weight:800;letter-spacing:.22em;background:linear-gradient(120deg,var(--gold2),var(--gold) 60%,var(--gold2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.brand p{margin-top:6px;font-size:12px;font-weight:400;color:var(--muted);letter-spacing:.08em}
+.slide{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 28px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);font-size:13px;font-weight:600;color:var(--text);animation:nudge 2.4s infinite ease-in-out}
+.slide svg{width:20px;height:20px;color:var(--gold)}
+@keyframes nudge{50%{transform:translateY(-8px)}}
 
-        .lock-screen { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 80px 20px 40px; background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(10px); transition: all 0.8s var(--smooth); }
-        .lock-screen.unlocked { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .ls-header { text-align: center; }
-        .ls-clock { font-size: 80px; font-weight: 200; line-height: 1; letter-spacing: -3px; margin-bottom: 5px; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .ls-date { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); }
-        .ls-brand { text-align: center; margin-top: 40px; animation: pulseGlow 3s infinite alternate; }
-        .ls-brand h1 { font-size: 22px; font-weight: 700; letter-spacing: 4px; background: linear-gradient(135deg, var(--text-main), var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .ls-brand p { font-size: 10px; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold-light); text-transform: uppercase; margin-top: 4px; }
-        .ls-action { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; padding: 20px; animation: bounceFloat 2s infinite ease-in-out; }
-        .ls-action span { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
-        .ls-action svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.7); stroke-width: 2; fill: none; }
+/* Login */
+.login{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:var(--veil);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);opacity:0;transition:opacity .5s var(--smooth)}
+.lbox{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+.mark{width:76px;height:76px;border-radius:26px;display:grid;place-items:center;margin-bottom:22px;color:var(--gold);background:linear-gradient(145deg,color-mix(in srgb,var(--gold) 28%,transparent),transparent);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);box-shadow:0 18px 40px -12px color-mix(in srgb,var(--gold) 50%,transparent)}
+.mark svg{width:34px;height:34px}
+.ltitle{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.lsub{font-size:14px;color:var(--muted);margin:6px 0 28px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;transition:all .4s var(--smooth)}
+.role{padding:26px 14px;border-radius:26px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(24px);text-align:center;font-size:15px;font-weight:600;transition:transform .3s var(--spring),border-color .3s}
+.role:active{transform:scale(.95)}
+.role .ic{margin:0 auto 14px}
+.aform{display:none;width:100%;padding:26px 22px;border-radius:30px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:all .5s var(--smooth)}
+.aform.active{display:block;opacity:1;transform:none}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:18px}
+.back svg{width:16px;height:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.inp{width:100%;padding:15px 16px;background:var(--field);border:1px solid var(--line);border-radius:16px;font-size:15px;outline:none;transition:border-color .25s,box-shadow .25s}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 18%,transparent)}
+.btn{width:100%;padding:16px;border-radius:16px;font-size:15px;font-weight:700;color:var(--ink);background:linear-gradient(135deg,var(--gold2),#C9A04A);box-shadow:0 14px 30px -12px color-mix(in srgb,var(--gold) 70%,transparent);transition:transform .2s}
+.btn:active{transform:scale(.97)}
+.err{display:none;margin-bottom:14px;padding:12px;border-radius:14px;text-align:center;font-size:13px;font-weight:500;color:var(--bad-t);background:color-mix(in srgb,var(--bad) 14%,transparent)}
 
-        @keyframes pulseGlow { from { filter: drop-shadow(0 0 10px rgba(201,169,97,0.2)); } to { filter: drop-shadow(0 0 25px rgba(201,169,97,0.6)); } }
-        @keyframes bounceFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+/* Ikon */
+.ic{width:52px;height:52px;border-radius:17px;display:grid;place-items:center;background:var(--icbg);border:1px solid var(--line);flex:none}
+.ic svg{width:25px;height:25px}
+.ic.gold{color:var(--gold);background:linear-gradient(145deg,color-mix(in srgb,var(--gold) 26%,transparent),transparent);border-color:color-mix(in srgb,var(--gold) 42%,transparent)}
+.ic.blue{color:#5B8DEF;background:linear-gradient(145deg,rgba(91,141,239,.25),transparent);border-color:rgba(91,141,239,.4)}
+.ic.green{color:var(--ok);background:linear-gradient(145deg,rgba(16,185,129,.22),transparent);border-color:rgba(16,185,129,.4)}
 
-        .login-screen { position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 5, 5, 0.6); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s var(--smooth); }
-        .login-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
-        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border: 1px solid rgba(201,169,97,0.4); border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(201,169,97,0.2), inset 0 2px 5px rgba(255,255,255,0.2); margin-bottom: 20px; }
-        .logo-box svg { width: 40px; height: 40px; stroke: var(--accent-gold-light); stroke-width: 1.5; fill: none; }
-        .login-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 5px; color: white; }
-        .login-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 30px; }
-        
-        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; transition: all 0.5s var(--smooth); }
-        .role-card { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .role-card:active { transform: scale(0.95); }
-        .role-icon { width: 50px; height: 50px; border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
-        .role-icon.teknisi { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
-        .role-icon.admin { background: rgba(201,169,97,0.15); border: 1px solid rgba(201,169,97,0.4); }
-        .role-icon svg { width: 26px; height: 26px; stroke: white; stroke-width: 1.5; fill: none; }
-        .role-name { font-size: 16px; font-weight: 600; color: white; }
+/* Beranda */
+.home{position:fixed;inset:0;z-index:10;overflow-y:auto;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top,0px) + 68px) 18px calc(env(safe-area-inset-bottom,0px) + 120px);opacity:0;transform:scale(1.04);pointer-events:none;transition:opacity .7s var(--smooth),transform .7s var(--smooth)}
+.home.active{opacity:1;transform:none;pointer-events:auto}
+.shell{max-width:520px;margin:0 auto;display:grid;gap:22px}
+.hero{padding:22px;border-radius:32px;border:1px solid transparent;box-shadow:var(--shadow);background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(150deg,color-mix(in srgb,var(--gold) 75%,transparent),transparent 40%,var(--line)) border-box}
+.hh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.wt{font-size:13px;font-weight:600;color:var(--muted)}
+.hr{display:flex;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
+.note-btn{color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);transition:transform .2s}
+.note-btn:active{transform:scale(.94)}
+.note-btn svg{width:13px;height:13px}
+.online{color:var(--ok-t);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.3}}
+.total{font-size:clamp(52px,14vw,68px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tl{font-size:13px;color:var(--muted);margin-top:6px}
+.now{display:flex;justify-content:space-between;align-items:baseline;margin:20px 0;padding:14px 0;border-block:1px solid var(--line)}
+.now b{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.now span{font-size:13px;color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{display:block;padding:15px;border-radius:20px;text-decoration:none;color:inherit}
+.stat.ok{background:color-mix(in srgb,var(--ok) 8%,transparent);border:1px solid color-mix(in srgb,var(--ok) 22%,transparent);transition:transform .2s}
+.stat.ok:active{transform:scale(.97)}
+.stat.bad{background:color-mix(in srgb,var(--bad) 8%,transparent);border:1px solid color-mix(in srgb,var(--bad) 22%,transparent)}
+.sl{font-size:11px;font-weight:600;line-height:1.3}
+.sv{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+.ss{font-size:12px;font-weight:600;margin-top:2px;opacity:.9}
+.ok .sl,.ok .sv,.ok .ss{color:var(--ok-t)}.bad .sl,.bad .sv,.bad .ss{color:var(--bad-t)}
 
-        .admin-form { display: none; width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 28px; padding: 30px 20px; opacity: 0; transform: translateY(20px); transition: all 0.5s; }
-        .admin-form.active { display: block; opacity: 1; transform: translateY(0); }
-        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; position: relative; }
-        .input-label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; font-weight: 600; }
-        .input-field { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: white; font-size: 14px; outline: none; }
-        .input-field:focus { border-color: var(--accent-gold); }
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light)); border: none; border-radius: 16px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .error-banner { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 12px; display: none; text-align: center; }
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 8px 16px;border-radius:26px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);text-decoration:none;color:var(--text);transition:transform .35s var(--spring),border-color .3s}
+.tile:active{transform:scale(.95)}
+@media(hover:hover){.tile:hover,.role:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--gold) 55%,transparent)}}
+.lb{font-size:12px;font-weight:600;text-align:center;line-height:1.35}
+.tile .lk{position:absolute;top:11px;right:11px;width:14px;height:14px;color:var(--gold);stroke-width:2}
+@media(min-width:900px){
+  .shell{max-width:1080px;grid-template-columns:400px 1fr;gap:32px;align-items:start}
+  .hero{position:sticky;top:0}
+  .apps{gap:16px}.tile{padding:32px 10px 26px;gap:16px}.tile .ic{width:62px;height:62px;border-radius:20px}.tile .ic svg{width:28px;height:28px}.lb{font-size:14px}
+}
 
-        .home-screen { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 60px 20px 100px; opacity: 0; transform: scale(1.1); pointer-events: none; transition: all 0.8s var(--spring); }
-        .home-screen.active { opacity: 1; transform: scale(1); pointer-events: all; }
-        .home-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; gap: 30px; }
+/* Dock */
+.dock{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);padding:8px;border-radius:999px;background:var(--dock);border:1px solid var(--line);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .5s}
+.dock button{display:flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;transition:background .2s}
+.dock button:hover{background:var(--icbg)}
+.dock svg{width:20px;height:20px}
 
-        .widget-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .widget-header { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .w-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        
-        .widget-header-right { display: flex; align-items: center; gap: 8px; }
-        .w-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--success); font-weight: 600; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; }
-        .w-status .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+/* Modal sandi */
+.modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.modal.active{display:flex}
+.mcard{width:100%;max-width:360px;padding:28px 24px 22px;border-radius:30px;text-align:center;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);animation:pop .4s var(--spring)}
+.mcard.shake{animation:shake .4s}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(10px)}}
+@keyframes shake{25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+.mcard .mark{width:60px;height:60px;border-radius:20px;margin:0 auto 16px}
+.mcard .mark svg{width:26px;height:26px}
+.mt{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.md{font-size:13px;color:var(--muted);margin:6px 0 18px;line-height:1.5}
+.pw{position:relative;margin-bottom:10px}
+.pw .inp{padding-right:48px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;color:var(--muted);border-radius:12px}
+.eye svg{width:19px;height:19px}
+.merr{min-height:18px;margin-bottom:10px;font-size:12px;font-weight:600;color:var(--bad-t)}
+.mbtn{display:flex;gap:10px}
+.mbtn button{flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:700}
+.mbtn .cancel{background:var(--icbg);border:1px solid var(--line)}
+.mbtn .go{color:var(--ink);background:linear-gradient(135deg,var(--gold2),#C9A04A)}
 
-        /* Tombol Note Kecil di Samping Status Online */
-        .note-btn { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent-gold); font-weight: 600; background: rgba(201,169,97,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(201,169,97,0.3); cursor: pointer; text-decoration: none; transition: 0.2s; }
-        .note-btn:active { transform: scale(0.95); }
-        .note-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
-
-        .widget-stat { display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); }
-        .stat-val { font-size: 24px; font-weight: 700; color: var(--accent-gold); line-height: 1.2; }
-        .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
-        
-        .stat-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .sg-box { display: flex; flex-direction: column; justify-content: center; padding: 15px; border-radius: 16px; }
-        .sg-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .sg-val { font-size: 22px; font-weight: 700; }
-        .sg-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
-        .sg-sub-val { font-size: 12px; font-weight: 600; margin-top: 4px; opacity: 0.9; }
-
-        .sg-box.success { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); transition: transform 0.2s; cursor: pointer; }
-        .sg-box.success:active { transform: scale(0.98); }
-        .sg-box.success .sg-val { color: var(--success); }
-        .sg-box.success .sg-lbl { color: #6EE7B7; }
-        .sg-box.success .sg-sub-val { color: #A7F3D0; }
-
-        .sg-box.danger { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); cursor: default; }
-        .sg-box.danger .sg-val { color: var(--danger); }
-        .sg-box.danger .sg-lbl { color: #FCA5A5; }
-        .sg-box.danger .sg-sub-val { color: #FECACA; }
-
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; justify-items: center; padding-top: 10px; }
-        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; width: 100%; }
-        .app-squircle { width: 64px; height: 64px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border-radius: 22.5%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); transition: all 0.4s var(--spring); }
-        .app-icon-wrapper:active .app-squircle { transform: scale(0.9); }
-        .app-squircle svg { width: 30px; height: 30px; stroke: var(--text-main); stroke-width: 1.5; fill: none; }
-        .app-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.9); text-align: center; line-height: 1.2; letter-spacing: 0.3px; width: 110%; }
-
-        .app-squircle.gold-glow { background: linear-gradient(135deg, rgba(201,169,97,0.3), rgba(201,169,97,0.05)); border-color: rgba(201,169,97,0.4); }
-        .app-squircle.gold-glow svg { stroke: var(--accent-gold-light); }
-        .app-squircle.blue-glow { background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border-color: rgba(59,130,246,0.4); }
-        .app-squircle.blue-glow svg { stroke: #93C5FD; }
-
-        .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; padding: 12px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; z-index: 50; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
-        .dock-item { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
-        .dock-item svg { width: 24px; height: 24px; stroke: rgba(255,255,255,0.9); stroke-width: 2; fill: none; }
-        
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(18, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px 20px; border-radius: 14px; z-index: 9999; font-size: 13px; color: white; transition: 0.4s; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-        .page-transit { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.4s; }
-        .page-transit.active { opacity: 1; pointer-events: all; }
-
-        /* Modal Sandi Note */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: rgba(20, 20, 25, 0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
-        .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; color: white; }
-        .btn-action { padding: 8px 16px; border-radius: 8px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; flex: 1; }
-        .btn-delete { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; }
-    </style>
+.toast{position:fixed;z-index:9999;top:calc(env(safe-area-inset-top,0px) + 16px);left:50%;transform:translate(-50%,-120px);padding:13px 20px;border-radius:16px;font-size:13px;font-weight:600;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .45s var(--spring)}
+.toast.show{transform:translate(-50%,0)}
+.transit{position:fixed;inset:0;z-index:9998;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .4s}
+.transit.active{opacity:1;pointer-events:all}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="transit" id="pageTransit"></div>
 
-    <div class="bg-layer"><div class="aurora-blob blob-1"></div><div class="aurora-blob blob-2"></div><div class="aurora-blob blob-3"></div></div>
-    <div class="page-transit" id="pageTransit"></div>
+<button class="theme-btn" id="themeBtn" aria-label="Ganti tema terang atau gelap">
+  <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button>
 
-    <div class="lock-screen" id="lockScreen">
-        <div class="ls-header">
-            <div class="ls-clock" id="lsClock">00:00</div>
-            <div class="ls-date" id="lsDate">Nuju ngamuat...</div>
-        </div>
-        <div class="ls-brand">
-            <h1>RNB NETWORK</h1>
-            <p>Premium Network System</p>
-        </div>
-        <div class="ls-action" id="unlockBtn">
-            <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
-            <span>Usap ka Luhur pikeun Muka</span>
-        </div>
+<div class="lock" id="lockScreen" tabindex="0">
+  <div>
+    <div class="clock" id="lsClock">00:00</div>
+    <div class="ldate" id="lsDate">Nuju ngamuat...</div>
+  </div>
+  <div class="brand"><h1>RNB NETWORK</h1><p>Premium Network System</p></div>
+  <div class="slide" id="unlockBtn" role="button" tabindex="0">
+    <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+    <span>Usap ka Luhur pikeun Muka</span>
+  </div>
+</div>
+
+<div class="login" id="loginScreen">
+  <div class="lbox">
+    <div class="mark"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h1 class="ltitle">Aksés Sistem</h1>
+    <p class="lsub">Pilih Peran Anjeun</p>
+    <div id="roleSelector" class="roles">
+      <button class="role" onclick="masukTeknisi()">
+        <div class="ic green"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Téknisi
+      </button>
+      <button class="role" onclick="tampilkanFormAdmin()">
+        <div class="ic gold"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>Admin
+      </button>
     </div>
-
-    <div class="login-screen" id="loginScreen">
-        <div class="login-container">
-            <div class="logo-box">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <h1 class="login-title">Aksés Sistem</h1>
-            <p class="login-subtitle">Pilih Peran Anjeun</p>
-
-            <div id="roleSelector" class="role-selector">
-                <div class="role-card" onclick="masukTeknisi()">
-                    <div class="role-icon teknisi">
-                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <div class="role-name">Téknisi</div>
-                </div>
-                <div class="role-card" onclick="tampilkanFormAdmin()">
-                    <div class="role-icon admin">
-                        <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 0 8 0v4h8z"/></svg>
-                    </div>
-                    <div class="role-name">Admin</div>
-                </div>
-            </div>
-
-            <div id="adminForm" class="admin-form">
-                <div class="back-link" onclick="kembaliKePilihan()">
-                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg> Wangsul
-                </div>
-                <div id="errorMsg" class="error-banner"></div>
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label class="input-label">Nami Pamaké</label>
-                        <input type="text" id="username" class="input-field" placeholder="ID Aksés" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Sandi</label>
-                        <input type="password" id="password" class="input-field" placeholder="Sandi" required>
-                    </div>
-                    <button type="submit" class="btn-primary">Asup</button>
-                </form>
-            </div>
-        </div>
+    <div id="adminForm" class="aform">
+      <button class="back" onclick="kembaliKePilihan()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Wangsul</button>
+      <div id="errorMsg" class="err"></div>
+      <form id="loginForm">
+        <div class="field"><label for="username">Nami Pamaké</label><input type="text" id="username" class="inp" placeholder="ID Aksés" autocomplete="username" required></div>
+        <div class="field"><label for="password">Sandi</label><input type="password" id="password" class="inp" placeholder="Sandi" autocomplete="current-password" required></div>
+        <button type="submit" class="btn">Asup</button>
+      </form>
     </div>
+  </div>
+</div>
 
-    <div class="home-screen" id="homeScreen">
-        <div class="home-container">
-            <div class="widget-panel">
-                <div class="widget-header">
-                    <div class="w-title">RnB Network Subang</div>
-                    <div class="widget-header-right">
-                        <!-- Tombol Note dengan Proteksi Sandi -->
-                        <div class="note-btn" onclick="cekPasswordNote()">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg> Note
-                        </div>
-                        <div class="w-status"><div class="dot"></div> Online</div>
-                    </div>
-                </div>
-                <div class="widget-stat">
-                    <div class="stat-val" data-target="0" id="countPelanggan">0</div>
-                    <div class="stat-lbl">Total Pelanggan</div>
-                </div>
-                <div class="widget-stat">
-                    <div class="stat-val" style="color:white;" id="hsClock">00:00</div>
-                    <div class="stat-lbl" id="hsDate">Dinten ieu</div>
-                </div>
-                
-                <div class="stat-grid">
-                    <a href="detail_psb.html" class="transit-link" style="text-decoration: none; display: block;">
-                        <div class="sg-box success">
-                            <div class="sg-top-row">
-                                <div class="sg-lbl" id="labelPSBBulan">PSB (...)</div>
-                                <div class="sg-val" data-target="0" id="countPSBBulan">0</div>
-                            </div>
-                            <div class="sg-sub-val" id="totalRupiahPSB" data-rp="0">Rp 0</div>
-                        </div>
-                    </a>
-
-                    <div class="sg-box danger">
-                        <div class="sg-top-row">
-                            <div class="sg-lbl" id="labelBerhentiBulan">Berhenti (...)</div>
-                            <div class="sg-val" data-target="0" id="countBerhentiBulan">0</div>
-                        </div>
-                        <div class="sg-sub-val">Bulan Ieu</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LINK MENU MENGGUNAKAN IFRAME WRAPPER LOKAL -->
-            <div class="app-grid">
-                <a href="#" id="linkPenarikan" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle gold-glow"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-                    <div class="app-label">Panarikan<br>Perangkat</div>
-                </a>
-                <a href="redaman.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle blue-glow"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
-                    <div class="app-label">Cék<br>Redaman</div>
-                </a>
-                <a href="kalkulator.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
-                    <div class="app-label">Kalkulator<br>Redaman</div>
-                </a>
-                <a href="setting_router.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 16v-8"/></svg></div>
-                    <div class="app-label">Setting<br>Router</div>
-                </a>
-                <a href="pelanggan.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                    <div class="app-label">Pelanggan</div>
-                </a>
-                <a href="dashboard.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-                    <div class="app-label">RnB Dashboard</div>
-                </a>
-                <a href="titik_odp.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-                    <div class="app-label">Titik ODP</div>
-                </a>
-                <a href="psb.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-                    <div class="app-label">Data PSB</div>
-                </a>
-                <!-- MENU BARU: DATA ARROW -->
-                <a href="dataarrow.html" class="app-icon-wrapper transit-link">
-                    <div class="app-squircle"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
-                    <div class="app-label">Data<br>Arrow</div>
-                </a>
-            </div>
+<div class="home" id="homeScreen">
+  <div class="shell">
+    <section class="hero">
+      <div class="hh">
+        <div class="wt">RnB Network Subang</div>
+        <div class="hr">
+          <button class="pill note-btn" data-gate data-title="Aksés Note" data-desc="Lebetkeun sandi pikeun muka Note." data-href="note.html">
+            <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Note
+          </button>
+          <div class="pill online"><span class="dot"></span>Online</div>
         </div>
-    </div>
-
-    <!-- Modal Input Sandi Note -->
-    <div class="modal-overlay" id="modalNotePassword">
-        <div class="modal-content">
-            <div class="modal-title">Aksés Note</div>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Lebetkeun sandi rahasia kanggo muka catatan.</p>
-            <input type="password" id="notePasswordInput" class="input-field" placeholder="Sandi Note..." style="margin-bottom: 15px;">
-            <div style="display: flex; gap: 8px;">
-                <button type="button" class="btn-action btn-delete" onclick="closeNoteModal()">Batal</button>
-                <button type="button" class="btn-action" style="background: var(--accent-gold); color: black;" onclick="prosesBukaNote()">Buka</button>
-            </div>
+      </div>
+      <div class="total" data-target="0" id="countPelanggan">0</div>
+      <div class="tl">Total Pelanggan</div>
+      <div class="now"><b id="hsClock">00:00</b><span id="hsDate">Dinten ieu</span></div>
+      <div class="pair">
+        <a href="detail_psb.html" class="stat ok transit-link">
+          <div class="sl" id="labelPSBBulan">PSB (...)</div>
+          <div class="sv" data-target="0" id="countPSBBulan">0</div>
+          <div class="ss" id="totalRupiahPSB" data-rp="0">Rp 0</div>
+        </a>
+        <div class="stat bad">
+          <div class="sl" id="labelBerhentiBulan">Berhenti (...)</div>
+          <div class="sv" data-target="0" id="countBerhentiBulan">0</div>
+          <div class="ss">Bulan Ieu</div>
         </div>
+      </div>
+    </section>
+
+    <nav class="apps">
+      <a href="#" id="linkPenarikan" class="tile transit-link">
+        <div class="ic gold"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <div class="lb">Panarikan<br>Perangkat</div>
+      </a>
+      <a href="redaman.html" class="tile transit-link">
+        <div class="ic blue"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+        <div class="lb">Cék<br>Redaman</div>
+      </a>
+      <a href="kalkulator.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
+        <div class="lb">Kalkulator<br>Redaman</div>
+      </a>
+      <a href="setting_router.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="4"/><path d="M6 12h.01M10 12h.01M14 12h.01M18 16v-8"/></svg></div>
+        <div class="lb">Setting<br>Router</div>
+      </a>
+      <a href="pelanggan.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="lb">Pelanggan</div>
+      </a>
+      <a href="dashboard.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="lb">RnB<br>Dashboard</div>
+      </a>
+      <a href="titik_odp.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="lb">Titik ODP</div>
+      </a>
+      <a href="psb.html" class="tile transit-link">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div class="lb">Data PSB</div>
+      </a>
+      <a href="dataarrow.html" class="tile" data-gate data-title="Aksés Data Arrow" data-desc="Lebetkeun sandi pikeun muka Data Arrow.">
+        <svg class="lk" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <div class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <div class="lb">Data<br>Arrow</div>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<div class="modal" id="gateModal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="mcard" id="gateCard">
+    <div class="mark"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <div class="mt" id="gateTitle">Aksés</div>
+    <p class="md" id="gateDesc"></p>
+    <div class="pw">
+      <input type="password" id="gateInput" class="inp" placeholder="Sandi" autocomplete="off">
+      <button type="button" class="eye" id="gateEye" aria-label="Tampilkan atau sembunyikan sandi"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
+    <div class="merr" id="gateErr"></div>
+    <div class="mbtn"><button type="button" class="cancel" id="gateCancel">Batal</button><button type="button" class="go" id="gateGo">Buka</button></div>
+  </div>
+</div>
 
-    <div class="dock-container" id="dock">
-        <div class="dock-item" onclick="prosesLogout()">
-            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
-    </div>
-    
-    <div id="toast" class="toast"></div>
+<div class="dock" id="dock">
+  <button onclick="prosesLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Kaluar</button>
+</div>
+<div id="toast" class="toast"></div>
 
-    <script>
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        function showToast(msg) {
-            const t = document.getElementById('toast'); t.textContent = msg; 
-            t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000);
+<script>
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const pageTransit = document.getElementById('pageTransit');
+
+function showToast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg;
+    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
+}
+function goTo(href) { pageTransit.classList.add('active'); setTimeout(() => window.location.href = href, 400); }
+
+/* Tema */
+document.getElementById('themeBtn').addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    applyTheme(next);
+});
+
+/* Gerbang sandi: Data Arrow dan Note memakai sandi yang sama */
+const GATE_PASSWORD = 'Dianhardy704@';
+const gateModal = document.getElementById('gateModal'), gateInput = document.getElementById('gateInput'),
+      gateErr = document.getElementById('gateErr'), gateCard = document.getElementById('gateCard');
+let gateHref = null;
+
+function openGate(title, desc, href) {
+    gateHref = href;
+    document.getElementById('gateTitle').textContent = title;
+    document.getElementById('gateDesc').textContent = desc;
+    gateInput.value = ''; gateInput.type = 'password'; gateErr.textContent = '';
+    gateModal.classList.add('active');
+    setTimeout(() => gateInput.focus(), 80);
+}
+function closeGate() { gateModal.classList.remove('active'); gateHref = null; }
+function submitGate() {
+    if (gateInput.value === GATE_PASSWORD) { const h = gateHref; closeGate(); goTo(h); return; }
+    gateErr.textContent = 'Sandi lepat! Cobian deui.';
+    gateInput.select();
+    gateCard.classList.remove('shake'); void gateCard.offsetWidth; gateCard.classList.add('shake');
+}
+document.querySelectorAll('[data-gate]').forEach(el => el.addEventListener('click', e => {
+    e.preventDefault();
+    openGate(el.dataset.title, el.dataset.desc, el.dataset.href || el.getAttribute('href'));
+}));
+document.getElementById('gateGo').addEventListener('click', submitGate);
+document.getElementById('gateCancel').addEventListener('click', closeGate);
+document.getElementById('gateEye').addEventListener('click', () => { gateInput.type = gateInput.type === 'password' ? 'text' : 'password'; gateInput.focus(); });
+gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitGate(); });
+gateModal.addEventListener('click', e => { if (e.target === gateModal) closeGate(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && gateModal.classList.contains('active')) closeGate(); });
+
+const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+
+function updateClocks() {
+    const now = new Date();
+    const hrs = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const days = ['Minggon','Senén','Salasa','Rebo','Kemis','Jumaah','Saptu'];
+    const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${namaBulanArr[now.getMonth()]}`;
+    document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
+    document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
+    document.getElementById('lsDate').textContent = dateStr;
+    document.getElementById('hsDate').textContent = dateStr;
+    const bln = namaBulanArr[now.getMonth()].toUpperCase();
+    document.getElementById('labelPSBBulan').textContent = `PSB (${bln})`;
+    document.getElementById('labelBerhentiBulan').textContent = `BERHENTI (${bln})`;
+}
+setInterval(updateClocks, 1000); updateClocks();
+
+const lockScreen = document.getElementById('lockScreen');
+const loginScreen = document.getElementById('loginScreen');
+const homeScreen = document.getElementById('homeScreen');
+const dock = document.getElementById('dock');
+let unlocked = false;
+
+if (sessionStorage.getItem('isUnlocked') === 'true') {
+    unlocked = true;
+    lockScreen.style.display = 'none';
+    const userStr = localStorage.getItem('userLoggedIn');
+    if (userStr) { setupLauncherLinks(JSON.parse(userStr)); showHome(); }
+    else { loginScreen.style.display = 'flex'; loginScreen.style.opacity = '1'; }
+}
+
+document.getElementById('unlockBtn').addEventListener('click', doUnlock);
+let touchStartY = 0;
+lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
+lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
+lockScreen.addEventListener('wheel', e => { if (e.deltaY > 30) doUnlock(); }, {passive: true});
+document.addEventListener('keydown', e => { if (!unlocked && ['Enter', ' ', 'ArrowUp'].includes(e.key)) { e.preventDefault(); doUnlock(); } });
+
+function doUnlock() {
+    if (unlocked) return;
+    unlocked = true;
+    sessionStorage.setItem('isUnlocked', 'true');
+    lockScreen.classList.add('unlocked');
+    const userStr = localStorage.getItem('userLoggedIn');
+    if (userStr) { setupLauncherLinks(JSON.parse(userStr)); showHome(); }
+    else { loginScreen.style.display = 'flex'; setTimeout(() => loginScreen.style.opacity = '1', 50); }
+}
+
+function setupLauncherLinks(user) {
+    document.getElementById('linkPenarikan').href = user.role === 'admin' ? 'admin.html' : 'teknisi.html';
+}
+
+function showHome() {
+    loginScreen.style.opacity = '0';
+    setTimeout(() => {
+        loginScreen.style.display = 'none';
+        homeScreen.classList.add('active');
+        dock.style.opacity = '1';
+        dock.style.pointerEvents = 'all';
+        kalkulasiTotalPelanggan();
+    }, 500);
+}
+
+function isBulanIni(tglInput, now) {
+    if (!tglInput) return false;
+    if (typeof tglInput === 'string') {
+        const parts = tglInput.split('T')[0].split(/[-/]/);
+        if (parts.length === 3) {
+            let year, month;
+            if (parts[0].length === 4) { year = parseInt(parts[0], 10); month = parseInt(parts[1], 10) - 1; }
+            else { year = parseInt(parts[2], 10); month = parseInt(parts[1], 10) - 1; }
+            return year === now.getFullYear() && month === now.getMonth();
         }
+    }
+    const d = new Date(tglInput);
+    if (!isNaN(d.getTime())) return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    return false;
+}
 
-        // Fungsi Proteksi Sandi Note
-        function cekPasswordNote() {
-            document.getElementById('notePasswordInput').value = '';
-            document.getElementById('modalNotePassword').classList.add('active');
+async function kalkulasiTotalPelanggan() {
+    try {
+        const { data: psbSemua } = await supabaseClient.from('psb').select('*').order('tanggal_pasang', { ascending: false });
+        const countPSB = psbSemua ? psbSemua.length : 0;
+
+        let { data: tarikanData } = await supabaseClient.from('penarikan_perangkat').select('*');
+        if (!tarikanData || tarikanData.length === 0) {
+            const fallback = await supabaseClient.from('pelanggan').select('*').eq('status', 'Sudah Diambil');
+            tarikanData = fallback.data || [];
         }
-        function closeNoteModal() {
-            document.getElementById('modalNotePassword').classList.remove('active');
-        }
-        function prosesBukaNote() {
-            const pass = document.getElementById('notePasswordInput').value;
-            // Sandi Note (dapat disesuaikan, saat ini menggunakan "070716")
-            if (pass === '070716') {
-                closeNoteModal();
-                const pageTransit = document.getElementById('pageTransit');
-                pageTransit.classList.add('active');
-                setTimeout(() => window.location.href = 'note.html', 400);
-            } else {
-                showToast('Sandi Lepat!');
-            }
-        }
+        const countTarikanAll = tarikanData ? tarikanData.length : 0;
 
-        const namaBulanArr = ['Januari', 'Pébruari', 'Maret', 'April', 'Méi', 'Juni', 'Juli', 'Agustus', 'Séptémber', 'Oktober', 'Nopémber', 'Desémber'];
+        const angkaDasar = 946;
+        document.getElementById('countPelanggan').setAttribute('data-target', angkaDasar + countPSB - countTarikanAll);
 
-        function updateClocks() {
-            const now = new Date();
-            const hrs = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            const days = ['Minggon','Senén','Salasa','Rebo','Kemis','Jumaah','Saptu'];
-            const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${namaBulanArr[now.getMonth()]}`;
-
-            document.getElementById('lsClock').textContent = `${hrs}:${mins}`;
-            document.getElementById('hsClock').textContent = `${hrs}:${mins}`;
-            document.getElementById('lsDate').textContent = dateStr;
-            document.getElementById('hsDate').textContent = dateStr;
-            
-            const elPsb = document.getElementById('labelPSBBulan');
-            if (elPsb) elPsb.textContent = `PSB (${namaBulanArr[now.getMonth()].toUpperCase()})`;
-
-            const elBerhenti = document.getElementById('labelBerhentiBulan');
-            if (elBerhenti) elBerhenti.textContent = `BERHENTI (${namaBulanArr[now.getMonth()].toUpperCase()})`;
-        }
-        setInterval(updateClocks, 1000); updateClocks();
-
-        const lockScreen = document.getElementById('lockScreen');
-        const loginScreen = document.getElementById('loginScreen');
-        const homeScreen = document.getElementById('homeScreen');
-        const dock = document.getElementById('dock');
-        let unlocked = false;
-
-        if (sessionStorage.getItem('isUnlocked') === 'true') {
-            unlocked = true;
-            lockScreen.style.display = 'none';
-            const userStr = localStorage.getItem('userLoggedIn');
-            if (userStr) {
-                setupLauncherLinks(JSON.parse(userStr));
-                showHome();
-            } else {
-                loginScreen.style.display = 'flex';
-                loginScreen.style.opacity = '1';
-            }
-        }
-
-        document.getElementById('unlockBtn').addEventListener('click', doUnlock);
-        let touchStartY = 0;
-        lockScreen.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, {passive: true});
-        lockScreen.addEventListener('touchend', e => { if (touchStartY - e.changedTouches[0].screenY > 50) doUnlock(); });
-
-        function doUnlock() {
-            if(unlocked) return;
-            unlocked = true;
-            sessionStorage.setItem('isUnlocked', 'true');
-            lockScreen.classList.add('unlocked');
-
-            const userStr = localStorage.getItem('userLoggedIn');
-            if (userStr) {
-                setupLauncherLinks(JSON.parse(userStr));
-                showHome();
-            } else {
-                loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.style.opacity = '1', 50);
-            }
-        }
-
-        function setupLauncherLinks(user) {
-            const linkPenarikan = document.getElementById('linkPenarikan');
-            if(user.role === 'admin') {
-                linkPenarikan.href = 'admin.html';
-            } else {
-                linkPenarikan.href = 'teknisi.html';
-            }
-        }
-
-        function showHome() {
-            loginScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginScreen.style.display = 'none';
-                homeScreen.classList.add('active');
-                dock.style.opacity = '1';
-                dock.style.pointerEvents = 'all';
-                
-                kalkulasiTotalPelanggan();
-            }, 500);
-        }
-
-        function isBulanIni(tglInput, now) {
-            if (!tglInput) return false;
-            if (typeof tglInput === 'string') {
-                const cleanStr = tglInput.split('T')[0];
-                const parts = cleanStr.split(/[-/]/);
-
-                if (parts.length === 3) {
-                    let year, month;
-                    if (parts[0].length === 4) {
-                        year = parseInt(parts[0], 10);
-                        month = parseInt(parts[1], 10) - 1;
-                    } else {
-                        year = parseInt(parts[2], 10);
-                        month = parseInt(parts[1], 10) - 1;
-                    }
-                    return year === now.getFullYear() && month === now.getMonth();
-                }
-            }
-
-            const d = new Date(tglInput);
-            if (!isNaN(d.getTime())) {
-                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-            }
-            return false;
-        }
-
-        async function kalkulasiTotalPelanggan() {
-            try {
-                const { data: psbSemua } = await supabaseClient
-                    .from('psb')
-                    .select('*')
-                    .order('tanggal_pasang', { ascending: false });
-                
-                const countPSB = psbSemua ? psbSemua.length : 0;
-                
-                let { data: tarikanData } = await supabaseClient
-                    .from('penarikan_perangkat')
-                    .select('*');
-
-                if (!tarikanData || tarikanData.length === 0) {
-                    const fallback = await supabaseClient
-                        .from('pelanggan')
-                        .select('*')
-                        .eq('status', 'Sudah Diambil');
-                    tarikanData = fallback.data || [];
-                }
-                    
-                const countTarikanAll = tarikanData ? tarikanData.length : 0;
-
-                const angkaDasar = 946; 
-                const totalAyeuna = angkaDasar + countPSB - countTarikanAll;
-                document.getElementById('countPelanggan').setAttribute('data-target', totalAyeuna);
-
-                const now = new Date();
-
-                let countPSBBulanIeu = 0;
-                let totalRupiahBulanIeu = 0;
-                
-                if (psbSemua) {
-                    psbSemua.forEach(item => {
-                        const tgl = item.tanggal_pasang || item.created_at || item.tanggal;
-                        if (isBulanIni(tgl, now)) {
-                            countPSBBulanIeu++;
-                            const hargaPaket = parseInt(item.harga) || 0;
-                            totalRupiahBulanIeu += hargaPaket;
-                        }
-                    });
-                }
-
-                let countBerhentiBulanIeu = 0;
-                if (tarikanData) {
-                    tarikanData.forEach(item => {
-                        const tgl = item.tanggal_tarik 
-                                 || item.tanggal_penarikan 
-                                 || item.tanggal_ambil 
-                                 || item.tgl_tarik 
-                                 || item.created_at 
-                                 || item.tanggal;
-
-                        if (isBulanIni(tgl, now)) {
-                            countBerhentiBulanIeu++;
-                        }
-                    });
-                }
-                
-                const elPsbCount = document.getElementById('countPSBBulan');
-                if (elPsbCount) elPsbCount.setAttribute('data-target', countPSBBulanIeu);
-                
-                const elRp = document.getElementById('totalRupiahPSB');
-                if (elRp) elRp.setAttribute('data-rp', totalRupiahBulanIeu);
-
-                const elBerhentiCount = document.getElementById('countBerhentiBulan');
-                if (elBerhentiCount) elBerhentiCount.setAttribute('data-target', countBerhentiBulanIeu);
-
-                animateCounters(); 
-
-            } catch (error) {
-                console.error("Gagal ngitung total pelanggan", error);
-                animateCounters(); 
-            }
-        }
-
-        function prosesLogout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.reload(); 
-        }
-
-        const roleSelector = document.getElementById('roleSelector');
-        const adminForm = document.getElementById('adminForm');
-
-        function masukTeknisi() {
-            const user = { id: 'teknisi-' + Date.now(), username: 'teknisi', nama: 'Teknisi', role: 'teknisi' };
-            localStorage.setItem('userLoggedIn', JSON.stringify(user));
-            setupLauncherLinks(user);
-            showHome();
-        }
-
-        function tampilkanFormAdmin() {
-            roleSelector.style.opacity = '0'; roleSelector.style.transform = 'scale(0.9)';
-            setTimeout(() => { roleSelector.style.display = 'none'; adminForm.classList.add('active'); }, 300);
-        }
-
-        function kembaliKePilihan() {
-            adminForm.classList.remove('active');
-            setTimeout(() => { roleSelector.style.display = 'grid'; setTimeout(() => { roleSelector.style.opacity = '1'; roleSelector.style.transform = 'scale(1)'; }, 50); }, 400);
-            document.getElementById('errorMsg').style.display = 'none';
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
-            const btn = e.target.querySelector('.btn-primary');
-            
-            errorMsg.style.display = 'none'; btn.textContent = 'Mverifikasi...'; btn.style.opacity = '0.7';
-
-            if (username === 'admin' && password === 'admin') {
-                const user = { id: 'admin-001', username: 'admin', nama: 'Administrator', role: 'admin' };
-                localStorage.setItem('userLoggedIn', JSON.stringify(user));
-                setupLauncherLinks(user); showHome(); return;
-            }
-
-            try {
-                const { data: user, error } = await supabaseClient.from('profiles').select('*').eq('username', username).eq('role', 'admin').single();
-                if (error || !user) throw new Error('Aksés ditolak!');
-                if (user.password_hash !== password) throw new Error('Sandi lepat!');
-                
-                localStorage.setItem('userLoggedIn', JSON.stringify(user));
-                setupLauncherLinks(user); showHome();
-            } catch (err) {
-                errorMsg.textContent = err.message; errorMsg.style.display = 'block';
-                btn.textContent = 'Asup'; btn.style.opacity = '1';
-                adminForm.style.transform = 'translateX(10px)';
-                setTimeout(() => adminForm.style.transform = 'translateX(-10px)', 100);
-                setTimeout(() => adminForm.style.transform = 'translateX(10px)', 200);
-                setTimeout(() => adminForm.style.transform = 'translateY(0)', 300);
-            }
-        });
-
-        function animateCounters() {
-            const counters = [
-                document.getElementById('countPelanggan'),
-                document.getElementById('countPSBBulan'),
-                document.getElementById('countBerhentiBulan')
-            ];
-            
-            counters.forEach(counter => {
-                if(!counter) return;
-                const target = +counter.getAttribute('data-target') || 0;
-                const start = performance.now();
-                function update(currentTime) {
-                    const progress = Math.min((currentTime - start) / 1500, 1);
-                    counter.innerText = Math.floor((1 - Math.pow(1 - progress, 4)) * target).toLocaleString('id-ID');
-                    if (progress < 1) requestAnimationFrame(update);
-                }
-                requestAnimationFrame(update);
-            });
-            
-            const rpCounter = document.getElementById('totalRupiahPSB');
-            if(rpCounter) {
-                const rpTarget = +rpCounter.getAttribute('data-rp') || 0;
-                const startRp = performance.now();
-                function updateRp(currentTime) {
-                    const progress = Math.min((currentTime - startRp) / 1500, 1);
-                    const currentVal = Math.floor((1 - Math.pow(1 - progress, 4)) * rpTarget);
-                    rpCounter.innerText = "Rp " + currentVal.toLocaleString('id-ID');
-                    if (progress < 1) requestAnimationFrame(updateRp);
-                }
-                requestAnimationFrame(updateRp);
-            }
-        }
-
-        const pageTransit = document.getElementById('pageTransit');
-        document.querySelectorAll('.transit-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if(this.getAttribute('target') === '_blank') return; 
-                e.preventDefault(); const href = this.getAttribute('href');
-                pageTransit.classList.add('active'); setTimeout(() => window.location.href = href, 400);
-            });
-        });
-        window.addEventListener('pageshow', e => { if(e.persisted) pageTransit.classList.remove('active'); });
-        
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/Router/sw.js').then(reg => {
-                    console.log('SW Suksés didaptarkeun', reg.scope);
-                }).catch(err => {
-                    console.log('SW Gagal:', err);
-                });
+        const now = new Date();
+        let countPSBBulanIeu = 0, totalRupiahBulanIeu = 0;
+        if (psbSemua) {
+            psbSemua.forEach(item => {
+                const tgl = item.tanggal_pasang || item.created_at || item.tanggal;
+                if (isBulanIni(tgl, now)) { countPSBBulanIeu++; totalRupiahBulanIeu += parseInt(item.harga) || 0; }
             });
         }
-    </script>
+        let countBerhentiBulanIeu = 0;
+        if (tarikanData) {
+            tarikanData.forEach(item => {
+                const tgl = item.tanggal_tarik || item.tanggal_penarikan || item.tanggal_ambil || item.tgl_tarik || item.created_at || item.tanggal;
+                if (isBulanIni(tgl, now)) countBerhentiBulanIeu++;
+            });
+        }
+        document.getElementById('countPSBBulan').setAttribute('data-target', countPSBBulanIeu);
+        document.getElementById('totalRupiahPSB').setAttribute('data-rp', totalRupiahBulanIeu);
+        document.getElementById('countBerhentiBulan').setAttribute('data-target', countBerhentiBulanIeu);
+        animateCounters();
+    } catch (error) {
+        console.error("Gagal ngitung total pelanggan", error);
+        animateCounters();
+    }
+}
+
+function prosesLogout() {
+    localStorage.removeItem('userLoggedIn');
+    window.location.reload();
+}
+
+const roleSelector = document.getElementById('roleSelector');
+const adminForm = document.getElementById('adminForm');
+
+function masukTeknisi() {
+    const user = { id: 'teknisi-' + Date.now(), username: 'teknisi', nama: 'Teknisi', role: 'teknisi' };
+    localStorage.setItem('userLoggedIn', JSON.stringify(user));
+    setupLauncherLinks(user);
+    showHome();
+}
+
+function tampilkanFormAdmin() {
+    roleSelector.style.opacity = '0'; roleSelector.style.transform = 'scale(0.9)';
+    setTimeout(() => { roleSelector.style.display = 'none'; adminForm.classList.add('active'); }, 300);
+}
+
+function kembaliKePilihan() {
+    adminForm.classList.remove('active');
+    setTimeout(() => { roleSelector.style.display = 'grid'; setTimeout(() => { roleSelector.style.opacity = '1'; roleSelector.style.transform = 'scale(1)'; }, 50); }, 400);
+    document.getElementById('errorMsg').style.display = 'none';
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const btn = e.target.querySelector('.btn');
+
+    errorMsg.style.display = 'none'; btn.textContent = 'Verifikasi...'; btn.style.opacity = '0.7';
+
+    if (username === 'admin' && password === 'admin') {
+        const user = { id: 'admin-001', username: 'admin', nama: 'Administrator', role: 'admin' };
+        localStorage.setItem('userLoggedIn', JSON.stringify(user));
+        setupLauncherLinks(user); showHome(); return;
+    }
+
+    try {
+        const { data: user, error } = await supabaseClient.from('profiles').select('*').eq('username', username).eq('role', 'admin').single();
+        if (error || !user) throw new Error('Aksés ditolak!');
+        if (user.password_hash !== password) throw new Error('Sandi lepat!');
+        localStorage.setItem('userLoggedIn', JSON.stringify(user));
+        setupLauncherLinks(user); showHome();
+    } catch (err) {
+        errorMsg.textContent = err.message; errorMsg.style.display = 'block';
+        btn.textContent = 'Asup'; btn.style.opacity = '1';
+        adminForm.style.transform = 'translateX(10px)';
+        setTimeout(() => adminForm.style.transform = 'translateX(-10px)', 100);
+        setTimeout(() => adminForm.style.transform = 'translateX(10px)', 200);
+        setTimeout(() => adminForm.style.transform = 'translateY(0)', 300);
+    }
+});
+
+function animateCounters() {
+    ['countPelanggan', 'countPSBBulan', 'countBerhentiBulan'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const target = +el.getAttribute('data-target') || 0, start = performance.now();
+        (function step(t) {
+            const p = Math.min((t - start) / 1500, 1);
+            el.innerText = Math.floor((1 - Math.pow(1 - p, 4)) * target).toLocaleString('id-ID');
+            if (p < 1) requestAnimationFrame(step);
+        })(start);
+    });
+    const rp = document.getElementById('totalRupiahPSB');
+    if (rp) {
+        const target = +rp.getAttribute('data-rp') || 0, start = performance.now();
+        (function step(t) {
+            const p = Math.min((t - start) / 1500, 1);
+            rp.innerText = 'Rp ' + Math.floor((1 - Math.pow(1 - p, 4)) * target).toLocaleString('id-ID');
+            if (p < 1) requestAnimationFrame(step);
+        })(start);
+    }
+}
+
+document.querySelectorAll('.transit-link').forEach(link => {
+    link.addEventListener('click', function (e) {
+        if (this.getAttribute('target') === '_blank') return;
+        e.preventDefault(); goTo(this.getAttribute('href'));
+    });
+});
+window.addEventListener('pageshow', e => { if (e.persisted) pageTransit.classList.remove('active'); });
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/Router/sw.js')
+            .then(reg => console.log('SW Suksés didaptarkeun', reg.scope))
+            .catch(err => console.log('SW Gagal:', err));
+    });
+}
+</script>
 </body>
 </html>
