@@ -294,10 +294,10 @@ a.stat:active{transform:scale(.97)}
           <span class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
           <b>Data PSB</b><svg class="go" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg>
         </a>
-        <a href="dataarrow.html" class="tile arrow rise" data-gate data-title="Aksés Data Arrow" data-desc="Lebetkeun sandi pikeun muka Data Arrow.">
+        <a href="dataarrow.html" class="tile arrow rise transit-link">
           <span class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
-          <div><b>Data Arrow</b><small>Dikunci sandi</small></div>
-          <svg class="go" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <div><b>Data Arrow</b><small>Aksés Langsung</small></div>
+          <svg class="go" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg>
         </a>
       </nav>
     </div>
@@ -335,7 +335,7 @@ $('themeBtn').addEventListener('click', () => {
     applyTheme(next);
 });
 
-/* Gerbang sandi: Data Arrow dan Note memakai sandi yang sama */
+/* Gerbang sandi: Khusus Note */
 const GATE_PASSWORD = 'Dianhardy704@';
 const gateModal = $('gateModal'), gateInput = $('gateInput'), gateErr = $('gateErr'), gateCard = $('gateCard');
 let gateHref = null;
